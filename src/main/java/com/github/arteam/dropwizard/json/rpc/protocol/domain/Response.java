@@ -1,9 +1,7 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import com.google.gson.JsonPrimitive;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
