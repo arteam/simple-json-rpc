@@ -9,4 +9,5 @@ import com.yammer.dropwizard.config.Configuration;
  * @author Artem Prigoda
  */
 public class JsonRpcConfiguration extends Configuration {
+
 }

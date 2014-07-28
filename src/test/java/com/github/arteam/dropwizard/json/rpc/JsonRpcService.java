@@ -11,7 +11,7 @@ import com.yammer.dropwizard.config.Environment;
  *
  * @author Artem Prigoda
  */
-public class Main extends Service<JsonRpcConfiguration> {
+public class JsonRpcService extends Service<JsonRpcConfiguration> {
 
     @Override
     public void initialize(Bootstrap<JsonRpcConfiguration> bootstrap) {
@@ -24,6 +24,6 @@ public class Main extends Service<JsonRpcConfiguration> {
     }
 
     public static void main(String[] args) throws Exception {
-        new Main().run(args);
+        new JsonRpcService().run(args);
     }
 }

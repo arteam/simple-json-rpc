@@ -1,12 +1,10 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.BaseJsonNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcMethod;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcParam;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.Optional;
-import com.google.gson.JsonElement;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
