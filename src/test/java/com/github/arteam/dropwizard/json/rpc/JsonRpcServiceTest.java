@@ -1,6 +1,9 @@
 package com.github.arteam.dropwizard.json.rpc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.github.arteam.dropwizard.json.rpc.util.RequestResponse;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.yammer.dropwizard.testing.integration.TestServer;
@@ -10,10 +13,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+
+import java.util.Map;
 
 /**
  * Date: 7/28/14
@@ -29,7 +31,17 @@ public class JsonRpcServiceTest {
 
     private DefaultHttpClient client = new DefaultHttpClient();
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
+    private static Map<String, RequestResponse> testData;
+
+    @BeforeClass
+    public static void init() throws Exception {
+        testData = mapper.readValue(Resources.toString(
+                Resources.getResource(JsonRpcServiceTest.class, "/test_data.json"),
+                Charsets.UTF_8), MapType.construct(Map.class,
+                SimpleType.construct(String.class),
+                SimpleType.construct(RequestResponse.class)));
+    }
 
     @Before
     public void setup() throws Exception {
@@ -48,14 +60,14 @@ public class JsonRpcServiceTest {
 
     @Test
     public void test() throws Exception {
+        RequestResponse requestResponse = testData.get("add_player");
+
         HttpPost post = new HttpPost("http://127.0.0.1:8080/team");
         post.setHeader(new BasicHeader("content-type", "application/json"));
-        post.setEntity(new StringEntity("{\"jsonrpc\": \"2.0\", \"method\": \"add\", \"params\": " +
-                "{\"player\": \"David Backes\"}, \"id\": 1}"));
+        post.setEntity(new StringEntity(mapper.writeValueAsString(requestResponse.request)));
         HttpEntity entity = client.execute(post).getEntity();
         String actual = EntityUtils.toString(entity, Charsets.UTF_8);
-        String expected = Resources.toString(Resources.getResource(getClass(), "/testAddPlayer.json"), Charsets.UTF_8);
-        Assert.assertEquals(mapper.readTree(expected), mapper.readTree(actual));
+        Assert.assertEquals(requestResponse.response, mapper.readTree(actual));
         EntityUtils.consume(entity);
     }
 }

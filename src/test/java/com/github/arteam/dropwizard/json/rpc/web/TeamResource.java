@@ -26,7 +26,7 @@ public class TeamResource {
     private JsonRpcController jsonRpcController = new JsonRpcController();
 
     @POST
-    public Response handle(Request request) {
+    public String handle(String request) {
         return jsonRpcController.handle(request, teamService);
     }
 }
