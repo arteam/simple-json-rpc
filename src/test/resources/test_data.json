@@ -1,0 +1,17 @@
+{
+    "add_player": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "add",
+            "params": {
+                "player": "David Backes"
+            },
+            "id": 2342
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 2342,
+            "result": true
+        }
+    }
+}

@@ -1,5 +1,6 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ContainerNode;
@@ -8,8 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 /**
  * Date: 07.06.14
@@ -28,15 +35,43 @@ public class JsonRpcController {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    public Response handle(Request request, Object service) {
+
+    public String handle(String textRequest, Object service) {
+        Request request;
+        try {
+            request = mapper.readValue(textRequest, Request.class);
+        } catch (IOException e) {
+            log.error("Bad request json", e);
+            try {
+                return mapper.writeValueAsString(new ErrorResponse(PARSE_ERROR));
+            } catch (JsonProcessingException ignore) {
+                throw new AssertionError(ignore);
+            }
+        }
+
+        try {
+            return mapper.writeValueAsString(handle0(request, service));
+        } catch (JsonProcessingException e) {
+            log.error("Unable convert response to json", e);
+            try {
+                return mapper.writeValueAsString(new ErrorResponse(INTERNAL_ERROR));
+            } catch (JsonProcessingException ignore) {
+                throw new AssertionError(ignore);
+            }
+        }
+    }
+
+    private Response handle0(Request request, Object service) {
+        String requestMethod = request.getMethod();
+        ContainerNode requestParams = request.getParams();
+        if (requestMethod == null || !nullToEmpty(request.getJsonrpc()).equals("2.0") || requestParams == null) {
+            log.error("Bad " + request);
+            return new ErrorResponse(request.getId(), INVALID_REQUEST);
+        }
 
         // If it's a notification, then we can send response early
         // TODO check notification
         boolean isNotification = request.getId() == null;
-
-        String requestMethod = request.getMethod();
-        ContainerNode<?> requestParams = request.getParams();
-
         Method method = Reflections.findMethod(service.getClass(), requestMethod);
         if (method == null) {
             log.error("Unable find method " + requestMethod + " of " + service.getClass());
