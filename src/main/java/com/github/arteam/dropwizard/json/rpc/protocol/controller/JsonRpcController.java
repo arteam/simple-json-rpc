@@ -2,7 +2,8 @@ package com.github.arteam.dropwizard.json.rpc.protocol.controller;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.*;
@@ -11,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * Date: 07.06.14
@@ -27,14 +28,18 @@ public class JsonRpcController {
     private static final ErrorMessage INVALID_REQUEST = new ErrorMessage(-32600, "Invalid Request");
     private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid params");
     private static final ErrorMessage INTERNAL_ERROR = new ErrorMessage(-32603, "Internal error");
-    private static final Logger log = LoggerFactory.getLogger(JsonRpcController.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private static final Logger log = LoggerFactory.getLogger(JsonRpcController.class);
+    private static final String VERSION = "2.0";
+
+    @NotNull
+    private ObjectMapper mapper;
 
     public JsonRpcController() {
+        mapper = new ObjectMapper();
     }
 
-    public JsonRpcController(ObjectMapper mapper) {
+    public JsonRpcController(@NotNull ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -69,7 +74,7 @@ public class JsonRpcController {
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
-        if (!jsonrpc.equals("2.0")) {
+        if (!jsonrpc.equals(VERSION)) {
             log.error("Not a JSON_RPC 2.0 request");
             return new ErrorResponse(id, INVALID_REQUEST);
         }
@@ -83,37 +88,51 @@ public class JsonRpcController {
             return new ErrorResponse(id, METHOD_NOT_FOUND);
         }
 
-        Object[] convertedMethodParams;
+        Object[] methodParams;
         try {
-            JsonNode[] methodParams = Reflections.getMethodParams(method, requestParams);
-            convertedMethodParams = convertFromJson(methodParams, method.getParameterTypes());
+            methodParams = convertToMethodParams(requestParams, method);
         } catch (IllegalArgumentException e) {
-            log.error("Bad params of " + request, e);
+            log.error("Bad params: " + requestParams + " of a method '" + method.getName() + "'", e);
             return new ErrorResponse(id, INVALID_PARAMS);
         }
 
-        Object result = method.invoke(service, convertedMethodParams);
+        Object result = method.invoke(service, methodParams);
         return new SuccessResponse(id, result);
     }
 
 
     /**
-     * Check that parameters are set and have right type
+     * Convert JSON params to method params
      */
     @NotNull
-    @SuppressWarnings("unchecked")
-    private Object[] convertFromJson(@NotNull JsonNode[] jsonNodes, @NotNull Class<?>[] parameterTypes) {
-        if (jsonNodes.length != parameterTypes.length) {
-            throw new IllegalArgumentException("Invalid amount of arguments of " + Arrays.toString(jsonNodes));
+    private Object[] convertToMethodParams(@NotNull ContainerNode<?> params,
+                                           @NotNull Method method) {
+        Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
+        Object[] methodParams = new Object[allParametersAnnotations.length];
+        if (methodParams.length != params.size()) {
+            throw new IllegalArgumentException("Wrong amount arguments: " + params.size() +
+                    " for a method '" + method.getName() + "'. Actual amount: " + methodParams.length);
         }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        for (int i = 0; i < allParametersAnnotations.length; i++) {
+            Annotation[] parameterAnnotations = allParametersAnnotations[i];
 
-        Object[] methodParams = new Object[jsonNodes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
+            JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
+            if (jsonRpcParam == null) {
+                throw new IllegalArgumentException("Annotation @JsonRpcParam is not set for the " + i +
+                        " parameter of a method '" + method.getName() + "'");
+            }
+
+            JsonNode jsonNode = params.isObject() ? params.get(jsonRpcParam.value()) : params.get(i);
+            if (jsonNode == null && Reflections.getAnnotation(parameterAnnotations, Optional.class) == null) {
+                throw new IllegalArgumentException("Mandatory parameter '" + jsonRpcParam.value() + "' of a method '"
+                        + method.getName() + "' is not set");
+            }
+
             Class<?> parameterType = parameterTypes[i];
-            JsonNode jsonNode = jsonNodes[i];
             try {
                 methodParams[i] = mapper.treeToValue(jsonNode, parameterType);
-            } catch (Exception e) {
+            } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Bad param: " + jsonNode + ". " +
                         "Should have been type '" + parameterType + "'", e);
             }
@@ -124,8 +143,9 @@ public class JsonRpcController {
     private String toJson(Object value) {
         try {
             return mapper.writeValueAsString(value);
-        } catch (JsonProcessingException ignore) {
-            throw new AssertionError(ignore);
+        } catch (JsonProcessingException e) {
+            log.error("Unable write json", e);
+            throw new IllegalStateException(e);
         }
     }
 }

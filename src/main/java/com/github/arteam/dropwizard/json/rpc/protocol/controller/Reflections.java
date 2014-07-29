@@ -1,10 +1,6 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcMethod;
-import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcParam;
-import com.github.arteam.dropwizard.json.rpc.protocol.domain.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -23,7 +19,6 @@ import java.lang.reflect.Modifier;
 public final class Reflections {
 
     private static final Logger log = LoggerFactory.getLogger(JsonRpcController.class);
-
 
     @Nullable
     public static Method findMethod(@NotNull Class clazz, @NotNull String name) {
@@ -49,31 +44,6 @@ public final class Reflections {
         return null;
     }
 
-    @NotNull
-    public static JsonNode[] getMethodParams(@NotNull Method method,
-                                             @NotNull ContainerNode<?> params) {
-        Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
-        JsonNode[] methodParams = new JsonNode[allParametersAnnotations.length];
-        if (methodParams.length != params.size()) {
-            throw new IllegalArgumentException("Wrong amount arguments: " + params.size() +
-                    " for a method '" + method.getName() + "'. Actual amount: " + methodParams.length);
-        }
-        for (int i = 0; i < allParametersAnnotations.length; i++) {
-            Annotation[] parameterAnnotations = allParametersAnnotations[i];
-            JsonRpcParam jsonRpcParam = getAnnotation(parameterAnnotations, JsonRpcParam.class);
-            if (jsonRpcParam == null) {
-                throw new IllegalArgumentException("Annotation @JsonRpcParam is not set for the " + i +
-                        " parameter of a method '" + method.getName() + "'");
-            }
-            JsonNode jsonNode = params.isObject() ? params.get(jsonRpcParam.value()) : params.get(i);
-            if (jsonNode == null && getAnnotation(parameterAnnotations, Optional.class) == null) {
-                throw new IllegalArgumentException("Mandatory parameter '" + jsonRpcParam.value() + "' of a method '"
-                        + method.getName() + "' is not set");
-            }
-            methodParams[i] = jsonNode;
-        }
-        return methodParams;
-    }
 
     @Nullable
     @SuppressWarnings("unchecked")
