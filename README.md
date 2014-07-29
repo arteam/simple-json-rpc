@@ -1,5 +1,5 @@
-dropwizard-json-rpc
+simle-json-rpc
 ===================
 
-Attempt to write a simple bundle for joining Dropwizard and JSON-RPC.
+Simple JSON-RPC Java library
 *Currently in process*
