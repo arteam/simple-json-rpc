@@ -1,5 +1,6 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Artem Prigoda
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse extends Response {
 
     @NotNull
