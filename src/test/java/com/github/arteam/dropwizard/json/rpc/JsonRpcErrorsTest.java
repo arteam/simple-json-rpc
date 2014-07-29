@@ -109,4 +109,59 @@ public class JsonRpcErrorsTest {
         String response = rpcController.handle(requestFile("not_json_rpc_20.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_request_with_id.json")));
     }
+
+    @Test
+    public void testUnableFindMethod() {
+        String response = rpcController.handle(requestFile("not_existed_method.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
+    }
+
+    @Test
+    public void testNotAnnotatedMethod() {
+        String response = rpcController.handle(requestFile("not_annotated_method.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
+    }
+
+    @Test
+    public void testNotPublicMethod() {
+        String response = rpcController.handle(requestFile("not_public_method.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
+    }
+
+    @Test
+    public void testWrongAmountOfArgumentsInMap() {
+        String response = rpcController.handle(requestFile("wrong_amount_of_arguments_map.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testWrongAmountOfArgumentsInArray() {
+        String response = rpcController.handle(requestFile("wrong_amount_of_arguments_array.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testParamAnnotationIsNotSpecified() {
+        String response = rpcController.handle(requestFile("param_annotation_is_not_specified.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testMandatoryParameterIsNotSet() {
+        String response = rpcController.handle(requestFile("mandatory_parameter_is_not_set.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testWrongParameterType() {
+        String response = rpcController.handle(requestFile("wrong_parameter_type.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testInternalError() {
+        String response = rpcController.handle(requestFile("not_implemented_method.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
+    }
+
 }

@@ -7,6 +7,8 @@ import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcParam;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -20,13 +22,24 @@ import java.lang.reflect.Modifier;
  */
 public final class Reflections {
 
+    private static final Logger log = LoggerFactory.getLogger(JsonRpcController.class);
+
+
     @Nullable
     public static Method findMethod(@NotNull Class clazz, @NotNull String name) {
+        // TODO Check methods params length for overloading
         Class<?> searchType = clazz;
         while (searchType != null) {
             for (Method method : searchType.getDeclaredMethods()) {
-                if (getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class) != null &&
-                        Modifier.isPublic(method.getModifiers()) && name.equals(method.getName())) {
+                if (name.equals(method.getName())) {
+                    if (getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class) == null) {
+                        log.warn("Annotation @JsonRpcMethod is not set for a method '" + method.getName() + "'");
+                        continue;
+                    }
+                    if (!Modifier.isPublic(method.getModifiers())) {
+                        log.warn("Method '" + method.getName() + "' is not public");
+                        continue;
+                    }
                     method.setAccessible(true);
                     return method;
                 }
@@ -41,22 +54,21 @@ public final class Reflections {
                                              @NotNull ContainerNode<?> params) {
         Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
         JsonNode[] methodParams = new JsonNode[allParametersAnnotations.length];
-        int paramsSize = params.size();
-        if (methodParams.length != paramsSize) {
-            throw new IllegalArgumentException("Wrong amount arguments: " + paramsSize +
-                    " for method: " + method.getName());
+        if (methodParams.length != params.size()) {
+            throw new IllegalArgumentException("Wrong amount arguments: " + params.size() +
+                    " for a method '" + method.getName() + "'. Actual amount: " + methodParams.length);
         }
         for (int i = 0; i < allParametersAnnotations.length; i++) {
             Annotation[] parameterAnnotations = allParametersAnnotations[i];
             JsonRpcParam jsonRpcParam = getAnnotation(parameterAnnotations, JsonRpcParam.class);
             if (jsonRpcParam == null) {
-                throw new IllegalArgumentException("Unable get param name for " + i +
-                        " parameter of method: " + method.getName());
+                throw new IllegalArgumentException("Annotation @JsonRpcParam is not set for the " + i +
+                        " parameter of a method '" + method.getName() + "'");
             }
-            JsonNode jsonNode = params.isObject() ? params.get(jsonRpcParam.value()) :   params.get(i);
+            JsonNode jsonNode = params.isObject() ? params.get(jsonRpcParam.value()) : params.get(i);
             if (jsonNode == null && getAnnotation(parameterAnnotations, Optional.class) == null) {
-                throw new IllegalArgumentException("Mandatory parameter: " + jsonRpcParam.value() + " of method: "
-                        + method.getName() + " is not set");
+                throw new IllegalArgumentException("Mandatory parameter '" + jsonRpcParam.value() + "' of a method '"
+                        + method.getName() + "' is not set");
             }
             methodParams[i] = jsonNode;
         }

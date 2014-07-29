@@ -96,6 +96,25 @@ public class TeamService {
         return players;
     }
 
+    public List<Player> bogusGetPlayers() {
+        return players;
+    }
+
+    @JsonRpcMethod
+    private List<Player> privateGetPlayers() {
+        return players;
+    }
+
+    @JsonRpcMethod
+    public Player bogusFindByInitials(@JsonRpcParam("firstName") String firstName, String lastName) {
+        return findByInitials(firstName, lastName);
+    }
+
+    @JsonRpcMethod
+    public Player findByCapHit(@JsonRpcParam("cap") double capHit) {
+        throw new IllegalStateException("Not implemented");
+    }
+
     private static Date date(String textDate) {
         return fmt.parseDateTime(textDate).toDate();
     }

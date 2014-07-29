@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import static com.google.common.base.Strings.nullToEmpty;
-
 /**
  * Date: 07.06.14
  * Time: 12:06
@@ -55,8 +53,8 @@ public class JsonRpcController {
         try {
             return toJson(handle0(request, service));
         } catch (Exception e) {
-            log.error("Internal error");
-            return toJson(new ErrorResponse(INTERNAL_ERROR));
+            log.error("Internal error", e);
+            return toJson(new ErrorResponse(request.getId(), INTERNAL_ERROR));
         }
     }
 
@@ -81,14 +79,14 @@ public class JsonRpcController {
         boolean isNotification = id == null;
         Method method = Reflections.findMethod(service.getClass(), requestMethod);
         if (method == null) {
-            log.error("Unable find method " + requestMethod + " of " + service.getClass());
+            log.error("Unable find a method: '" + requestMethod + "' in a " + service.getClass());
             return new ErrorResponse(id, METHOD_NOT_FOUND);
         }
 
         Object[] convertedMethodParams;
         try {
-            convertedMethodParams = convertParams(Reflections.getMethodParams(method, requestParams),
-                    method.getParameterTypes());
+            JsonNode[] methodParams = Reflections.getMethodParams(method, requestParams);
+            convertedMethodParams = convertFromJson(methodParams, method.getParameterTypes());
         } catch (IllegalArgumentException e) {
             log.error("Bad params of " + request, e);
             return new ErrorResponse(id, INVALID_PARAMS);
@@ -104,7 +102,7 @@ public class JsonRpcController {
      */
     @NotNull
     @SuppressWarnings("unchecked")
-    private Object[] convertParams(@NotNull JsonNode[] jsonNodes, @NotNull Class<?>[] parameterTypes) {
+    private Object[] convertFromJson(@NotNull JsonNode[] jsonNodes, @NotNull Class<?>[] parameterTypes) {
         if (jsonNodes.length != parameterTypes.length) {
             throw new IllegalArgumentException("Invalid amount of arguments of " + Arrays.toString(jsonNodes));
         }
@@ -116,7 +114,8 @@ public class JsonRpcController {
             try {
                 methodParams[i] = mapper.treeToValue(jsonNode, parameterType);
             } catch (Exception e) {
-                throw new IllegalArgumentException("Bad param: " + jsonNode + ". Should have been " + parameterType, e);
+                throw new IllegalArgumentException("Bad param: " + jsonNode + ". " +
+                        "Should have been type '" + parameterType + "'", e);
             }
         }
         return methodParams;
