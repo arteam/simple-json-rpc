@@ -2,9 +2,8 @@ package com.github.arteam.dropwizard.json.rpc.protocol.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ValueNode;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Date: 07.06.14

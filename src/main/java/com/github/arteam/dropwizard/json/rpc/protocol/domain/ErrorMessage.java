@@ -1,6 +1,7 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Date: 07.06.14
@@ -11,9 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ErrorMessage {
 
     private final int code;
+
+    @NotNull
     private final String message;
 
-    public ErrorMessage(@JsonProperty int code, @JsonProperty String message) {
+    public ErrorMessage(@JsonProperty int code, @JsonProperty @NotNull String message) {
         this.code = code;
         this.message = message;
     }
