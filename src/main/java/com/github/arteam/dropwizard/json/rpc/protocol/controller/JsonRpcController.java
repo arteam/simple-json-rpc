@@ -1,8 +1,10 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.controller;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -42,42 +44,45 @@ public class JsonRpcController {
         Request request;
         try {
             request = mapper.readValue(textRequest, Request.class);
+        } catch (JsonParseException e) {
+            log.error("Bad json request", e);
+            return toJson(new ErrorResponse(PARSE_ERROR));
         } catch (IOException e) {
-            log.error("Bad request json", e);
-            try {
-                return mapper.writeValueAsString(new ErrorResponse(PARSE_ERROR));
-            } catch (JsonProcessingException ignore) {
-                throw new AssertionError(ignore);
-            }
+            log.error("Invalid json request", e);
+            return toJson(new ErrorResponse(INVALID_REQUEST));
         }
 
         try {
-            return mapper.writeValueAsString(handle0(request, service));
-        } catch (JsonProcessingException e) {
-            log.error("Unable convert response to json", e);
-            try {
-                return mapper.writeValueAsString(new ErrorResponse(INTERNAL_ERROR));
-            } catch (JsonProcessingException ignore) {
-                throw new AssertionError(ignore);
-            }
+            return toJson(handle0(request, service));
+        } catch (Exception e) {
+            log.error("Internal error");
+            return toJson(new ErrorResponse(INTERNAL_ERROR));
         }
     }
 
-    private Response handle0(Request request, Object service) {
+    private Response handle0(Request request, Object service) throws Exception {
         String requestMethod = request.getMethod();
         ContainerNode requestParams = request.getParams();
-        if (requestMethod == null || !nullToEmpty(request.getJsonrpc()).equals("2.0") || requestParams == null) {
-            log.error("Bad " + request);
-            return new ErrorResponse(request.getId(), INVALID_REQUEST);
+        String jsonrpc = request.getJsonrpc();
+        ValueNode id = request.getId();
+
+        if (jsonrpc == null || requestMethod == null || requestParams == null) {
+            log.error("Not a JSON-RPC request");
+            return new ErrorResponse(id, INVALID_REQUEST);
+        }
+
+        if (!jsonrpc.equals("2.0")) {
+            log.error("Not a JSON_RPC 2.0 request");
+            return new ErrorResponse(id, INVALID_REQUEST);
         }
 
         // If it's a notification, then we can send response early
         // TODO check notification
-        boolean isNotification = request.getId() == null;
+        boolean isNotification = id == null;
         Method method = Reflections.findMethod(service.getClass(), requestMethod);
         if (method == null) {
             log.error("Unable find method " + requestMethod + " of " + service.getClass());
-            return new ErrorResponse(request.getId(), METHOD_NOT_FOUND);
+            return new ErrorResponse(id, METHOD_NOT_FOUND);
         }
 
         Object[] convertedMethodParams;
@@ -86,16 +91,11 @@ public class JsonRpcController {
                     method.getParameterTypes());
         } catch (IllegalArgumentException e) {
             log.error("Bad params of " + request, e);
-            return new ErrorResponse(request.getId(), INVALID_PARAMS);
+            return new ErrorResponse(id, INVALID_PARAMS);
         }
 
-        try {
-            Object result = method.invoke(service, convertedMethodParams);
-            return new SuccessResponse(request.getId(), result);
-        } catch (Exception e) {
-            log.error("Internal error", e);
-            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
-        }
+        Object result = method.invoke(service, convertedMethodParams);
+        return new SuccessResponse(id, result);
     }
 
 
@@ -120,5 +120,13 @@ public class JsonRpcController {
             }
         }
         return methodParams;
+    }
+
+    private String toJson(Object value) {
+        try {
+            return mapper.writeValueAsString(value);
+        } catch (JsonProcessingException ignore) {
+            throw new AssertionError(ignore);
+        }
     }
 }
