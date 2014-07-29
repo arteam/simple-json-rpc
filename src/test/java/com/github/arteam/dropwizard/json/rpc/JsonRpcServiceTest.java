@@ -24,11 +24,11 @@ import java.util.Map;
  */
 public class JsonRpcServiceTest {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper()
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static Map<String, RequestResponse> testData;
 
-    private JsonRpcController rpcController = new JsonRpcController(new ObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false));
+    private JsonRpcController rpcController = new JsonRpcController(mapper);
     private TeamService teamService = new TeamService();
 
     @BeforeClass
@@ -55,6 +55,15 @@ public class JsonRpcServiceTest {
     @Test
     public void testFindPlayer() throws Exception {
         RequestResponse requestResponse = testData.get("find_player");
+
+        String textRequest = mapper.writeValueAsString(requestResponse.request);
+        String actual = rpcController.handle(textRequest, teamService);
+        Assert.assertEquals(requestResponse.response, mapper.readTree(actual));
+    }
+
+    @Test
+    public void testFind() throws Exception {
+        RequestResponse requestResponse = testData.get("find");
 
         String textRequest = mapper.writeValueAsString(requestResponse.request);
         String actual = rpcController.handle(textRequest, teamService);

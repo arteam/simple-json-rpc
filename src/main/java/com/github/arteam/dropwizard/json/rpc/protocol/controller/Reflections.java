@@ -16,7 +16,7 @@ import java.lang.reflect.Modifier;
  *
  * @author Artem Prigoda
  */
-public final class Reflections {
+class Reflections {
 
     private static final Logger log = LoggerFactory.getLogger(JsonRpcController.class);
 

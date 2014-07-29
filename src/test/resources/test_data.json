@@ -51,5 +51,35 @@
                 "capHit" : 7.5
             }
         }
+    },
+    "find": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "find",
+            "params": {
+                "team" : {
+                    "name": "St. Louis Blues",
+                    "league" : "NHL"
+                },
+                "number": 91
+            },
+            "id": "xar331"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "xar331",
+            "result": [{
+                "firstName" : "Vladimir",
+                "lastName" : "Tarasenko",
+                "team" : {
+                    "name": "St. Louis Blues",
+                    "league" : "NHL"
+                },
+                "number":91,
+                "position": "RW",
+                "birthDate" : "1991-12-13T00:00:00.000+0000",
+                "capHit" : 0.9
+            }]
+        }
     }
 }

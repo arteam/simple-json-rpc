@@ -70,12 +70,12 @@ public class TeamService {
 
     @JsonRpcMethod
     public List<Player> find(@Optional @JsonRpcParam("position") @Nullable final Position position,
-                             @Optional @JsonRpcParam("number") final int number,
-                             @Optional @JsonRpcParam("team") final Team team,
+                             @Optional @JsonRpcParam("number") @Nullable final int number,
+                             @Optional @JsonRpcParam("team") @Nullable final Team team,
                              @Optional @JsonRpcParam("firstName") @Nullable final String firstName,
                              @Optional @JsonRpcParam("lastName") @Nullable final String lastName,
                              @Optional @JsonRpcParam("birthDate") @Nullable final Date birthDate,
-                             @Optional @JsonRpcParam("capHit") final double capHit) {
+                             @Optional @JsonRpcParam("capHit") @Nullable final double capHit) {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {

@@ -56,19 +56,19 @@ public class JsonRpcController {
         }
 
         try {
-            return toJson(handle0(request, service));
+            return toJson(typedHandle(request, service));
         } catch (Exception e) {
             log.error("Internal error", e);
             return toJson(new ErrorResponse(request.getId(), INTERNAL_ERROR));
         }
     }
 
-    private Response handle0(Request request, Object service) throws Exception {
+    private Response typedHandle(Request request, Object service) throws Exception {
+        // Validate params are set
         String requestMethod = request.getMethod();
         ContainerNode requestParams = request.getParams();
         String jsonrpc = request.getJsonrpc();
         ValueNode id = request.getId();
-
         if (jsonrpc == null || requestMethod == null || requestParams == null) {
             log.error("Not a JSON-RPC request");
             return new ErrorResponse(id, INVALID_REQUEST);
@@ -100,7 +100,6 @@ public class JsonRpcController {
         return new SuccessResponse(id, result);
     }
 
-
     /**
      * Convert JSON params to method params
      */
@@ -108,13 +107,15 @@ public class JsonRpcController {
     private Object[] convertToMethodParams(@NotNull ContainerNode<?> params,
                                            @NotNull Method method) {
         Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
-        Object[] methodParams = new Object[allParametersAnnotations.length];
-        if (methodParams.length != params.size()) {
+        int amountMethodParams = allParametersAnnotations.length;
+        if (params.size() > amountMethodParams) {
             throw new IllegalArgumentException("Wrong amount arguments: " + params.size() +
-                    " for a method '" + method.getName() + "'. Actual amount: " + methodParams.length);
+                    " for a method '" + method.getName() + "'. Actual amount: " + amountMethodParams);
         }
+
+        Object[] methodParams = new Object[amountMethodParams];
         Class<?>[] parameterTypes = method.getParameterTypes();
-        for (int i = 0; i < allParametersAnnotations.length; i++) {
+        for (int i = 0; i < amountMethodParams; i++) {
             Annotation[] parameterAnnotations = allParametersAnnotations[i];
 
             JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
@@ -123,13 +124,21 @@ public class JsonRpcController {
                         " parameter of a method '" + method.getName() + "'");
             }
 
+            Class<?> parameterType = parameterTypes[i];
             JsonNode jsonNode = params.isObject() ? params.get(jsonRpcParam.value()) : params.get(i);
-            if (jsonNode == null && Reflections.getAnnotation(parameterAnnotations, Optional.class) == null) {
-                throw new IllegalArgumentException("Mandatory parameter '" + jsonRpcParam.value() + "' of a method '"
-                        + method.getName() + "' is not set");
+            if (jsonNode == null) {
+                if (Reflections.getAnnotation(parameterAnnotations, Optional.class) != null) {
+                    // If primitive is optional
+                    if (parameterType.isPrimitive()) {
+                        methodParams[i] = Primitives.getDefaultValue(parameterType);
+                    }
+                    continue;
+                } else {
+                    throw new IllegalArgumentException("Mandatory parameter '" + jsonRpcParam.value() +
+                            "' of a method '" + method.getName() + "' is not set");
+                }
             }
 
-            Class<?> parameterType = parameterTypes[i];
             try {
                 methodParams[i] = mapper.treeToValue(jsonNode, parameterType);
             } catch (JsonProcessingException e) {
