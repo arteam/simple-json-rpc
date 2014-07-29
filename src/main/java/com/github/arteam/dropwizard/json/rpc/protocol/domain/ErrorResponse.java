@@ -29,4 +29,8 @@ public class ErrorResponse extends Response {
         this.error = error;
     }
 
+    @NotNull
+    public Object getError() {
+        return error;
+    }
 }

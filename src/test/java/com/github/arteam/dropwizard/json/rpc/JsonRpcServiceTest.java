@@ -1,8 +1,10 @@
 package com.github.arteam.dropwizard.json.rpc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.github.arteam.dropwizard.json.rpc.domain.Player;
 import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcController;
 import com.github.arteam.dropwizard.json.rpc.service.TeamService;
 import com.github.arteam.dropwizard.json.rpc.util.RequestResponse;
@@ -25,7 +27,8 @@ public class JsonRpcServiceTest {
     private static ObjectMapper mapper = new ObjectMapper();
     private static Map<String, RequestResponse> testData;
 
-    private JsonRpcController rpcController = new JsonRpcController();
+    private JsonRpcController rpcController = new JsonRpcController(new ObjectMapper()
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false));
     private TeamService teamService = new TeamService();
 
     @BeforeClass
@@ -38,8 +41,20 @@ public class JsonRpcServiceTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void testAddPlayer() throws Exception {
         RequestResponse requestResponse = testData.get("add_player");
+
+        String textRequest = mapper.writeValueAsString(requestResponse.request);
+        String actual = rpcController.handle(textRequest, teamService);
+        Assert.assertEquals(requestResponse.response, mapper.readTree(actual));
+
+        Player player = teamService.findByInitials("Kevin", "Shattenkirk");
+        System.out.println(player);
+    }
+
+    @Test
+    public void testFindPlayer() throws Exception {
+        RequestResponse requestResponse = testData.get("find_player");
 
         String textRequest = mapper.writeValueAsString(requestResponse.request);
         String actual = rpcController.handle(textRequest, teamService);

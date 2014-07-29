@@ -11,13 +11,24 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ErrorMessage {
 
+    @JsonProperty("code")
     private final int code;
 
     @NotNull
+    @JsonProperty("message")
     private final String message;
 
-    public ErrorMessage(@JsonProperty int code, @JsonProperty @NotNull String message) {
+    public ErrorMessage(int code, @NotNull String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    @NotNull
+    public String getMessage() {
+        return message;
     }
 }
