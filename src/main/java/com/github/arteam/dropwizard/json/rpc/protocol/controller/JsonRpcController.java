@@ -1,8 +1,7 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.*;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +31,12 @@ public class JsonRpcController {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    public JsonRpcController() {
+    }
+
+    public JsonRpcController(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     public String handle(String textRequest, Object service) {
         Request request;
