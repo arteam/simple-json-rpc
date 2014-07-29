@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcMethod;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcParam;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

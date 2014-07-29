@@ -3,17 +3,14 @@ package com.github.arteam.dropwizard.json.rpc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcController;
+import com.github.arteam.dropwizard.json.rpc.service.TeamService;
 import com.github.arteam.dropwizard.json.rpc.util.RequestResponse;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import com.yammer.dropwizard.testing.integration.TestServer;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.Map;
 
@@ -25,14 +22,11 @@ import java.util.Map;
  */
 public class JsonRpcServiceTest {
 
-    private static final String TEST_CONFIG = JsonRpcServiceTest.class.getResource("/json-rpc.yml")
-            .getPath();
-    private TestServer<JsonRpcConfiguration, JsonRpcService> testServer;
-
-    private DefaultHttpClient client = new DefaultHttpClient();
-
     private static ObjectMapper mapper = new ObjectMapper();
     private static Map<String, RequestResponse> testData;
+
+    private JsonRpcController rpcController = new JsonRpcController();
+    private TeamService teamService = new TeamService();
 
     @BeforeClass
     public static void init() throws Exception {
@@ -43,31 +37,12 @@ public class JsonRpcServiceTest {
                 SimpleType.construct(RequestResponse.class)));
     }
 
-    @Before
-    public void setup() throws Exception {
-        testServer = TestServer.create(JsonRpcServiceTest.class, new JsonRpcService(), TEST_CONFIG);
-        testServer.start();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        client.getConnectionManager().shutdown();
-
-        if (testServer.isRunning()) {
-            testServer.stop();
-        }
-    }
-
     @Test
     public void test() throws Exception {
         RequestResponse requestResponse = testData.get("add_player");
 
-        HttpPost post = new HttpPost("http://127.0.0.1:8080/team");
-        post.setHeader(new BasicHeader("content-type", "application/json"));
-        post.setEntity(new StringEntity(mapper.writeValueAsString(requestResponse.request)));
-        HttpEntity entity = client.execute(post).getEntity();
-        String actual = EntityUtils.toString(entity, Charsets.UTF_8);
+        String textRequest = mapper.writeValueAsString(requestResponse.request);
+        String actual = rpcController.handle(textRequest, teamService);
         Assert.assertEquals(requestResponse.response, mapper.readTree(actual));
-        EntityUtils.consume(entity);
     }
 }

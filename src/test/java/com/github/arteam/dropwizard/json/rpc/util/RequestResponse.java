@@ -11,9 +11,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class RequestResponse {
 
-     @JsonProperty
-     public ObjectNode request;
+    @JsonProperty
+    public ObjectNode request;
 
     @JsonProperty
-     public ObjectNode response;
+    public ObjectNode response;
 }

@@ -2,8 +2,8 @@ package com.github.arteam.dropwizard.json.rpc.protocol.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ValueNode;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Date: 07.06.14
@@ -18,7 +18,7 @@ public class SuccessResponse extends Response {
     @JsonProperty("result")
     private final Object result;
 
-    public SuccessResponse(ValueNode id, @Nullable Object result) {
+    public SuccessResponse(@NotNull ValueNode id, @Nullable Object result) {
         super(id);
         this.result = result;
     }
