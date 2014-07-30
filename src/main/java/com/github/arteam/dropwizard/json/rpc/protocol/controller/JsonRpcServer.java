@@ -1,10 +1,11 @@
 package com.github.arteam.dropwizard.json.rpc.protocol.controller;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.*;
 import com.google.common.base.Defaults;
@@ -45,30 +46,63 @@ public class JsonRpcServer {
     }
 
     public String handle(String textRequest, Object service) {
-        Request request;
+        JsonNode rootRequest;
         try {
-            request = mapper.readValue(textRequest, Request.class);
-        } catch (JsonParseException e) {
+            rootRequest = mapper.readTree(textRequest);
+        } catch (IOException e) {
             log.error("Bad json request", e);
             return toJson(new ErrorResponse(PARSE_ERROR));
-        } catch (IOException e) {
+        }
+        if (rootRequest.isObject()) {
+            Response response = convertRequestAndHandle(rootRequest, service);
+            return isNotification(rootRequest, response) ? "" : toJson(response);
+        } else if (rootRequest.isArray()) {
+            ArrayNode responses = mapper.createArrayNode();
+            for (JsonNode request : (ArrayNode) rootRequest) {
+                Response response = convertRequestAndHandle(request, service);
+                if (!isNotification(request, response)) {
+                    responses.add(mapper.convertValue(response, ObjectNode.class));
+                }
+            }
+            return toJson(responses);
+        }
+        log.error("Json primitive is not valid request");
+        return toJson(new ErrorResponse(INVALID_REQUEST));
+    }
+
+    private boolean isNotification(JsonNode requestNode, Response response) {
+        if (requestNode.get("id") == null) {
+            if (response instanceof SuccessResponse) {
+                return true;
+            } else if (response instanceof ErrorResponse) {
+                int errorCode = ((ErrorResponse) response).getError().getCode();
+                if (errorCode != PARSE_ERROR.getCode() && errorCode != INVALID_REQUEST.getCode()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private Response convertRequestAndHandle(JsonNode requestNode, Object service) {
+        Request request;
+        try {
+            request = mapper.convertValue(requestNode, Request.class);
+        } catch (Exception e) {
             log.error("Invalid json request", e);
-            return toJson(new ErrorResponse(INVALID_REQUEST));
+            return new ErrorResponse(INVALID_REQUEST);
         }
 
         try {
-            Response response = typedHandle(request, service);
-            return !response.getId().isNull() ? toJson(response) : "";
+            return innerHandle(request, service);
         } catch (Exception e) {
             log.error("Internal error", e);
-            return !request.getId().isNull() ? toJson(new ErrorResponse(request.getId(), INTERNAL_ERROR)) : "";
+            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
         }
     }
 
-    private Response typedHandle(Request request, Object service) throws Exception {
-        // Validate params are set
+    private Response innerHandle(Request request, Object service) throws Exception {
         String requestMethod = request.getMethod();
-        ContainerNode requestParams = request.getParams();
         String jsonrpc = request.getJsonrpc();
         ValueNode id = request.getId();
         if (jsonrpc == null || requestMethod == null) {
@@ -88,6 +122,7 @@ public class JsonRpcServer {
         }
 
         Object[] methodParams;
+        ContainerNode requestParams = request.getParams();
         try {
             methodParams = convertToMethodParams(requestParams, method);
         } catch (IllegalArgumentException e) {

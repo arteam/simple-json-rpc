@@ -110,6 +110,16 @@ public class JsonRpcServiceTest {
         test("notification");
     }
 
+    @Test
+    public void testBatch() {
+        test("batch");
+    }
+
+    @Test
+    public void testBatchWithNotification() {
+        test("batchWithNotification");
+    }
+
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);

@@ -260,5 +260,125 @@
             "params": {}
         },
         "response": ""
+    },
+    "batch": {
+        "request": [
+            {
+                "jsonrpc": "2.0",
+                "method": "findByInitials",
+                "params": {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos"
+                },
+                "id": "43121"
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "findByInitials",
+                "params": {
+                    "firstName": "Jack",
+                    "lastName": "Allen"
+                },
+                "id": "43122"
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "findByInitials",
+                "params": {
+                    "firstName": "Vladimir",
+                    "lastName": "Sobotka"
+                },
+                "id": "43123"
+            }
+        ],
+        "response": [
+            {
+                "jsonrpc": "2.0",
+                "id": "43121",
+                "result": {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "C",
+                    "birthDate": "1990-02-07T00:00:00.000+0000",
+                    "capHit": 7.5
+                }
+            },
+            {
+                "jsonrpc": "2.0",
+                "id": "43122",
+                "result": {
+                    "firstName": "Jack",
+                    "lastName": "Allen",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 34,
+                    "position": "G",
+                    "birthDate": "1990-08-07T00:00:00.000+0000",
+                    "capHit": 0.5
+                }
+            },
+            {
+                "jsonrpc": "2.0",
+                "id": "43123",
+                "result": null
+            }
+        ]
+    },
+    "batchWithNotification": {
+        "request": [
+            {
+                "jsonrpc": "2.0",
+                "method": "findByInitials",
+                "params": {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos"
+                },
+                "id": 8911
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "updateCache",
+                "params": []
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "findByInitials",
+                "params": {
+                    "firstName": "Vladimir",
+                    "lastName": "Sobotka"
+                },
+                "id": 8913
+            }
+        ],
+        "response": [
+            {
+                "jsonrpc": "2.0",
+                "id": 8911,
+                "result": {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "C",
+                    "birthDate": "1990-02-07T00:00:00.000+0000",
+                    "capHit": 7.5
+                }
+            },
+            {
+                "jsonrpc": "2.0",
+                "id": 8913,
+                "result": null
+            }
+        ]
     }
 }

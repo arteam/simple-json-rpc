@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class RequestResponse {
 
     @JsonProperty
-    public ObjectNode request;
+    public JsonNode request;
 
     @JsonProperty
     public JsonNode response;
