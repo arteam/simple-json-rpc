@@ -41,37 +41,58 @@ public class JsonRpcServiceTest {
                 SimpleType.construct(RequestResponse.class)));
     }
 
+    /**
+     * Test additional of a complex object
+     */
     @Test
     public void testAddPlayer() {
         test("add_player");
         test("find_shattenkirk");
     }
 
+    /**
+     * Test usual case (request and complex response)
+     */
     @Test
     public void testFindPlayer() {
         test("find_player");
     }
 
+    /**
+     * Test null as a result
+     */
     @Test
     public void testPlayerIsNotFound() {
         test("player_is_not_found");
     }
 
+    /**
+     * Test params are set as array
+     */
     @Test
     public void testFindPlayerWithArrayParams() {
         test("find_player_array");
     }
 
+    /**
+     * Test optional fields
+     */
     @Test
     public void testFind() {
         test("find");
     }
 
+    /**
+     * Test overridden method name and response as a list of objects
+     */
     @Test
     public void testFindByBirthYear() {
         test("findByBirthYear");
     }
 
+    /**
+     * Test optional fields in array params
+     */
     @Test
     public void testFindWithArrayNullParams() {
         test("find_array_null_params");

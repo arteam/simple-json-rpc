@@ -191,7 +191,7 @@
     "findByBirthYear": {
         "request": {
             "jsonrpc": "2.0",
-            "method": "findByBirthYear",
+            "method": "find_by_birth_year",
             "params": {
                 "birth_year": 1990
             },
