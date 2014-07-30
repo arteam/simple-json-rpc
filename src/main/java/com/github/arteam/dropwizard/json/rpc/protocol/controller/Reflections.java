@@ -42,6 +42,10 @@ class Reflections {
                         log.warn("Method '" + methodName + "' is not public");
                         continue;
                     }
+                    if (Modifier.isStatic(modifiers)) {
+                        log.warn("Method '" + methodName + "' is static");
+                        continue;
+                    }
                     method.setAccessible(true);
                     return method;
                 }

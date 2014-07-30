@@ -116,7 +116,8 @@ public class TeamService {
         throw new IllegalStateException("Not implemented");
     }
 
-    private static Date date(String textDate) {
+    @JsonRpcMethod
+    public static Date date(@JsonRpcParam("textDate") String textDate) {
         return fmt.parseDateTime(textDate).toDate();
     }
 }

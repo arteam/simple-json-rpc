@@ -129,6 +129,12 @@ public class JsonRpcErrorsTest {
     }
 
     @Test
+    public void testMethodIsStatic(){
+        String response = rpcController.handle(requestFile("static_method.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
+    }
+
+    @Test
     public void testWrongAmountOfArgumentsInMap() {
         String response = rpcController.handle(requestFile("wrong_amount_of_arguments_map.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
