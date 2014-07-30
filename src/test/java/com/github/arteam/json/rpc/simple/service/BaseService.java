@@ -1,6 +1,6 @@
-package com.github.arteam.dropwizard.json.rpc.service;
+package com.github.arteam.json.rpc.simple.service;
 
-import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.domain.JsonRpcMethod;
 
 /**
  * Date: 7/30/14

@@ -1,9 +1,9 @@
-package com.github.arteam.dropwizard.json.rpc;
+package com.github.arteam.json.rpc.simple;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcServer;
-import com.github.arteam.dropwizard.json.rpc.service.TeamService;
+import com.github.arteam.json.rpc.simple.controller.JsonRpcServer;
+import com.github.arteam.json.rpc.simple.service.TeamService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.junit.Test;

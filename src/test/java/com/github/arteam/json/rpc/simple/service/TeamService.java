@@ -1,11 +1,11 @@
-package com.github.arteam.dropwizard.json.rpc.service;
+package com.github.arteam.json.rpc.simple.service;
 
-import com.github.arteam.dropwizard.json.rpc.domain.Player;
-import com.github.arteam.dropwizard.json.rpc.domain.Position;
-import com.github.arteam.dropwizard.json.rpc.domain.Team;
-import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcMethod;
-import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcParam;
-import com.github.arteam.dropwizard.json.rpc.protocol.domain.Optional;
+import com.github.arteam.json.rpc.simple.domain.Player;
+import com.github.arteam.json.rpc.simple.domain.Position;
+import com.github.arteam.json.rpc.simple.domain.Team;
+import com.github.arteam.json.rpc.simple.domain.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.domain.JsonRpcParam;
+import com.github.arteam.json.rpc.simple.domain.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -15,7 +15,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.joda.time.tz.FixedDateTimeZone;
 
 import java.util.Date;
 import java.util.List;

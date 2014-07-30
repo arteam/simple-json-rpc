@@ -1,8 +1,7 @@
-package com.github.arteam.dropwizard.json.rpc.util;
+package com.github.arteam.json.rpc.simple.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Date: 7/28/14

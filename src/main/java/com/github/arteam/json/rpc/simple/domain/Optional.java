@@ -1,4 +1,4 @@
-package com.github.arteam.dropwizard.json.rpc.protocol.domain;
+package com.github.arteam.json.rpc.simple.domain;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

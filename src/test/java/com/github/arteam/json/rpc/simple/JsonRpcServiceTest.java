@@ -1,12 +1,12 @@
-package com.github.arteam.dropwizard.json.rpc;
+package com.github.arteam.json.rpc.simple;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcServer;
-import com.github.arteam.dropwizard.json.rpc.service.TeamService;
-import com.github.arteam.dropwizard.json.rpc.util.RequestResponse;
+import com.github.arteam.json.rpc.simple.controller.JsonRpcServer;
+import com.github.arteam.json.rpc.simple.service.TeamService;
+import com.github.arteam.json.rpc.simple.util.RequestResponse;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.junit.BeforeClass;

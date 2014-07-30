@@ -1,4 +1,4 @@
-package com.github.arteam.dropwizard.json.rpc.domain;
+package com.github.arteam.json.rpc.simple.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
