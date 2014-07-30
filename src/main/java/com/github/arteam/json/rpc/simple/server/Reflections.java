@@ -1,6 +1,6 @@
-package com.github.arteam.json.rpc.simple.controller;
+package com.github.arteam.json.rpc.simple.server;
 
-import com.github.arteam.json.rpc.simple.domain.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

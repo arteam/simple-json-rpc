@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.github.arteam.json.rpc.simple.controller.JsonRpcServer;
+import com.github.arteam.json.rpc.simple.server.JsonRpcServer;
 import com.github.arteam.json.rpc.simple.service.TeamService;
 import com.github.arteam.json.rpc.simple.util.RequestResponse;
 import com.google.common.base.Charsets;
@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 7/28/14
  * Time: 10:29 PM
+ * Tests typical patterns of a JSON-RPC interaction
  *
  * @author Artem Prigoda
  */
@@ -41,7 +42,7 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test additional of a complex object
+     * Tests adding of a complex object
      */
     @Test
     public void testAddPlayer() {
@@ -50,7 +51,7 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test usual case (request and complex response)
+     * Tests usual case (request and complex response)
      */
     @Test
     public void testFindPlayer() {
@@ -58,7 +59,7 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test null as a result
+     * Tests null as a result
      */
     @Test
     public void testPlayerIsNotFound() {
@@ -66,7 +67,7 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test params are set as array
+     * Tests params are set as array
      */
     @Test
     public void testFindPlayerWithArrayParams() {
@@ -74,7 +75,7 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test optional fields
+     * Tests optional fields
      */
     @Test
     public void testFind() {
@@ -82,7 +83,7 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test overridden method name and response as a list of objects
+     * Tests overridden method name and response as a list of objects
      */
     @Test
     public void testFindByBirthYear() {
@@ -90,7 +91,7 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test optional fields in array params
+     * Tests optional fields in array params
      */
     @Test
     public void testFindWithArrayNullParams() {
@@ -98,23 +99,32 @@ public class JsonRpcServiceTest {
     }
 
     /**
-     * Test calling a method from super-class and method without parameters
+     * Tests calling a method from super-class and method without parameters
      */
     @Test
     public void testIsAlive() {
         test("isAlive");
     }
 
+    /**
+     * Tests a notification request
+     */
     @Test
     public void testNotification() {
         test("notification");
     }
 
+    /**
+     * Tests a batch request
+     */
     @Test
     public void testBatch() {
         test("batch");
     }
 
+    /**
+     * Tests a mixed request
+     */
     @Test
     public void testBatchWithNotification() {
         test("batchWithNotification");
