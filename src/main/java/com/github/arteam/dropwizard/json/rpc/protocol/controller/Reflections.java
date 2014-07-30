@@ -22,7 +22,6 @@ class Reflections {
 
     @Nullable
     public static Method findMethod(@NotNull Class clazz, @NotNull String name) {
-        // TODO Check methods params length for overloading
         Class<?> searchType = clazz;
         while (searchType != null) {
             for (Method method : searchType.getDeclaredMethods()) {
