@@ -71,7 +71,7 @@ public class JsonRpcServer {
         ContainerNode requestParams = request.getParams();
         String jsonrpc = request.getJsonrpc();
         ValueNode id = request.getId();
-        if (jsonrpc == null || requestMethod == null || requestParams == null) {
+        if (jsonrpc == null || requestMethod == null) {
             log.error("Not a JSON-RPC request");
             return new ErrorResponse(id, INVALID_REQUEST);
         }
