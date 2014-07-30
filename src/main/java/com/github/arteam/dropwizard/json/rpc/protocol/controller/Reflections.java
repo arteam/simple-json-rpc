@@ -26,13 +26,20 @@ class Reflections {
         Class<?> searchType = clazz;
         while (searchType != null) {
             for (Method method : searchType.getDeclaredMethods()) {
-                if (name.equals(method.getName())) {
-                    if (getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class) == null) {
-                        log.warn("Annotation @JsonRpcMethod is not set for a method '" + method.getName() + "'");
-                        continue;
+                String methodName = method.getName();
+                JsonRpcMethod jsonRpcMethod = getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class);
+                if (jsonRpcMethod == null) {
+                    if (name.equals(methodName)) {
+                        log.warn("Annotation @JsonRpcMethod is not set for a method '" + methodName + "'");
                     }
-                    if (!Modifier.isPublic(method.getModifiers())) {
-                        log.warn("Method '" + method.getName() + "' is not public");
+                    continue;
+                }
+
+                String rpcMethodName = !jsonRpcMethod.value().isEmpty() ? jsonRpcMethod.value() : methodName;
+                if (name.equals(rpcMethodName)) {
+                    int modifiers = method.getModifiers();
+                    if (!Modifier.isPublic(modifiers)) {
+                        log.warn("Method '" + methodName + "' is not public");
                         continue;
                     }
                     method.setAccessible(true);

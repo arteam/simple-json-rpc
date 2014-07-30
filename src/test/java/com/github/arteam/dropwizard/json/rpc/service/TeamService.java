@@ -46,7 +46,7 @@ public class TeamService {
         return players.add(s);
     }
 
-    @JsonRpcMethod
+    @JsonRpcMethod("find_by_birth_year")
     public List<Player> findByBirthYear(@JsonRpcParam("birth_year") final int birthYear) {
         return ImmutableList.copyOf(Iterables.filter(players, new Predicate<Player>() {
             @Override

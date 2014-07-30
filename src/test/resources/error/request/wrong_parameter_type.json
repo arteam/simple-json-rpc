@@ -1,6 +1,6 @@
 {
     "jsonrpc": 2.0,
-    "method": "findByBirthYear",
+    "method": "find_by_birth_year",
     "params": {
         "birthYear" : "June 1990"
     },
