@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Date: 07.06.14
  * Time: 12:34
+ * <p/>
+ * Base representation of a JSON-RPC response (success or error)
  *
  * @author Artem Prigoda
  */
