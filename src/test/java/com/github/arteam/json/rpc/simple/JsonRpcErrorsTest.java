@@ -2,7 +2,7 @@ package com.github.arteam.json.rpc.simple;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.arteam.json.rpc.simple.controller.JsonRpcServer;
+import com.github.arteam.json.rpc.simple.server.JsonRpcServer;
 import com.github.arteam.json.rpc.simple.service.TeamService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 7/29/14
  * Time: 7:58 PM
+ * Tests various JSON-RPC errors
  *
  * @author Artem Prigoda
  */

@@ -1,6 +1,6 @@
 package com.github.arteam.json.rpc.simple.service;
 
-import com.github.arteam.json.rpc.simple.domain.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
 
 /**
  * Date: 7/30/14

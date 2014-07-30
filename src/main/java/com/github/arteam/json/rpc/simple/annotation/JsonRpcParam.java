@@ -1,4 +1,4 @@
-package com.github.arteam.json.rpc.simple.domain;
+package com.github.arteam.json.rpc.simple.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
