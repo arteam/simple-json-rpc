@@ -1,0 +1,8 @@
+{
+    "jsonrpc": 2.0,
+    "method": "date",
+    "params": {
+        "textDate" : "1984-05-01"
+    },
+    "id": "7272"
+}
