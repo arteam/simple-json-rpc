@@ -144,8 +144,8 @@ public class JsonRpcServer {
                 methodParams[i] = mapper.treeToValue(jsonNode, parameterType);
                 processed++;
             } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException("Bad param: " + jsonNode + ". " +
-                        "Should have been type '" + parameterType + "'", e);
+                throw new IllegalArgumentException("Wrong type of " + i + " param: " + jsonNode + ". " +
+                        "Should have type '" + parameterType + "'", e);
             }
         }
         if (processed < jsonParamsSize) {

@@ -72,6 +72,11 @@ public class JsonRpcServiceTest {
         test("findByBirthYear");
     }
 
+    @Test
+    public void testFindWithArrayNullParams() {
+        test("find_array_null_params");
+    }
+
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);
