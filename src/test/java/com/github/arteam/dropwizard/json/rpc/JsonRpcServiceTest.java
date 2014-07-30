@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.github.arteam.dropwizard.json.rpc.domain.Player;
 import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcServer;
 import com.github.arteam.dropwizard.json.rpc.service.TeamService;
 import com.github.arteam.dropwizard.json.rpc.util.RequestResponse;
@@ -15,6 +14,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Date: 7/28/14
@@ -41,32 +42,45 @@ public class JsonRpcServiceTest {
     }
 
     @Test
-    public void testAddPlayer() throws Exception {
-        RequestResponse requestResponse = testData.get("add_player");
-
-        String textRequest = mapper.writeValueAsString(requestResponse.request);
-        String actual = rpcController.handle(textRequest, teamService);
-        Assert.assertEquals(requestResponse.response, mapper.readTree(actual));
-
-        Player player = teamService.findByInitials("Kevin", "Shattenkirk");
-        System.out.println(player);
+    public void testAddPlayer() {
+        test("add_player");
+        test("find_shattenkirk");
     }
 
     @Test
-    public void testFindPlayer() throws Exception {
-        RequestResponse requestResponse = testData.get("find_player");
-
-        String textRequest = mapper.writeValueAsString(requestResponse.request);
-        String actual = rpcController.handle(textRequest, teamService);
-        Assert.assertEquals(requestResponse.response, mapper.readTree(actual));
+    public void testFindPlayer() {
+        test("find_player");
     }
 
     @Test
-    public void testFind() throws Exception {
-        RequestResponse requestResponse = testData.get("find");
+    public void testPlayerIsNotFound() {
+        test("player_is_not_found");
+    }
 
-        String textRequest = mapper.writeValueAsString(requestResponse.request);
-        String actual = rpcController.handle(textRequest, teamService);
-        Assert.assertEquals(requestResponse.response, mapper.readTree(actual));
+    @Test
+    public void testFindPlayerWithArrayParams() {
+        test("find_player_array");
+    }
+
+    @Test
+    public void testFind() {
+        test("find");
+    }
+
+    @Test
+    public void testFindByBirthYear() {
+        test("findByBirthYear");
+    }
+
+    private void test(String testName) {
+        try {
+            RequestResponse requestResponse = testData.get(testName);
+            String textRequest = mapper.writeValueAsString(requestResponse.request);
+
+            String actual = rpcController.handle(textRequest, teamService);
+            assertThat(requestResponse.response).isEqualTo(mapper.readTree(actual));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 }
