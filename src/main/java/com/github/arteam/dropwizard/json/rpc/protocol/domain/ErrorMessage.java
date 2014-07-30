@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Date: 07.06.14
  * Time: 15:16
+ * <p/>
+ * Representation of a JSON-RPC error message
  *
  * @author Artem Prigoda
  */

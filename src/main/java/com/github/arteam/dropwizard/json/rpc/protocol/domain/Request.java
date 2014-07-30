@@ -10,7 +10,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Date: 07.06.14
  * Time: 12:24
- * JSON-RPC request
+ * <p/>
+ * Representation of a JSON-RPC request
  *
  * @author Artem Prigoda
  */
@@ -26,12 +27,12 @@ public class Request {
     private final ValueNode id;
 
     @NotNull
-    private final ContainerNode params;
+    private final ContainerNode<?> params;
 
     public Request(@JsonProperty("jsonrpc") @Nullable String jsonrpc,
                    @JsonProperty("method") @Nullable String method,
                    @JsonProperty("id") @NotNull ValueNode id,
-                   @JsonProperty("params") @NotNull ContainerNode params) {
+                   @JsonProperty("params") @NotNull ContainerNode<?> params) {
         this.jsonrpc = jsonrpc;
         this.method = method;
         this.id = id;
@@ -54,7 +55,7 @@ public class Request {
     }
 
     @NotNull
-    public ContainerNode getParams() {
+    public ContainerNode<?> getParams() {
         return params;
     }
 }
