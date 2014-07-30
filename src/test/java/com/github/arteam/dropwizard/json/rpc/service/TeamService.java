@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Artem Prigoda
  */
-public class TeamService {
+public class TeamService extends BaseService {
 
     private static final DateTimeFormatter fmt = ISODateTimeFormat.date().withZone(DateTimeZone.UTC);
 
