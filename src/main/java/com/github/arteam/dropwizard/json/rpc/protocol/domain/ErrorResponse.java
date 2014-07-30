@@ -20,7 +20,7 @@ public class ErrorResponse extends Response {
     @JsonProperty("error")
     private final Object error;
 
-    public ErrorResponse(@Nullable ValueNode id,
+    public ErrorResponse(@NotNull ValueNode id,
                         @NotNull ErrorMessage error) {
         super(id);
         this.error = error;

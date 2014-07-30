@@ -252,5 +252,13 @@
             "id": "34252",
             "result": true
         }
+    },
+    "notification": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "updateCache",
+            "params": {}
+        },
+        "response": ""
     }
 }

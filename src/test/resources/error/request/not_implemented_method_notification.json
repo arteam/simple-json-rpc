@@ -1,0 +1,7 @@
+{
+    "jsonrpc": 2.0,
+    "method": "findByCapHit",
+    "params": {
+        "cap": 4.5
+    }
+}

@@ -1,6 +1,7 @@
 package com.github.arteam.dropwizard.json.rpc.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -15,5 +16,5 @@ public class RequestResponse {
     public ObjectNode request;
 
     @JsonProperty
-    public ObjectNode response;
+    public JsonNode response;
 }
