@@ -2,7 +2,7 @@ package com.github.arteam.dropwizard.json.rpc;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcController;
+import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcServer;
 import com.github.arteam.dropwizard.json.rpc.service.TeamService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcErrorsTest {
 
-    private JsonRpcController rpcController = new JsonRpcController();
+    private JsonRpcServer rpcController = new JsonRpcServer();
     private TeamService teamService = new TeamService();
 
     private static ObjectMapper objectMapper = new ObjectMapper();

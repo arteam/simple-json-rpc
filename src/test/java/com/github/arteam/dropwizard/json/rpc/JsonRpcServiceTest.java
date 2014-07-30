@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.github.arteam.dropwizard.json.rpc.domain.Player;
-import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcController;
+import com.github.arteam.dropwizard.json.rpc.protocol.controller.JsonRpcServer;
 import com.github.arteam.dropwizard.json.rpc.service.TeamService;
 import com.github.arteam.dropwizard.json.rpc.util.RequestResponse;
 import com.google.common.base.Charsets;
@@ -28,7 +28,7 @@ public class JsonRpcServiceTest {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static Map<String, RequestResponse> testData;
 
-    private JsonRpcController rpcController = new JsonRpcController(mapper);
+    private JsonRpcServer rpcController = new JsonRpcServer(mapper);
     private TeamService teamService = new TeamService();
 
     @BeforeClass

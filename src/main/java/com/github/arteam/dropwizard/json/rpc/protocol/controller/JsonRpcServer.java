@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
  *
  * @author Artem Prigoda
  */
-public class JsonRpcController {
+public class JsonRpcServer {
 
     private static final ErrorMessage PARSE_ERROR = new ErrorMessage(-32700, "Parse error");
     private static final ErrorMessage METHOD_NOT_FOUND = new ErrorMessage(-32601, "Method not found");
@@ -30,17 +30,17 @@ public class JsonRpcController {
     private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid params");
     private static final ErrorMessage INTERNAL_ERROR = new ErrorMessage(-32603, "Internal error");
 
-    private static final Logger log = LoggerFactory.getLogger(JsonRpcController.class);
+    private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
     private static final String VERSION = "2.0";
 
     @NotNull
     private ObjectMapper mapper;
 
-    public JsonRpcController() {
+    public JsonRpcServer() {
         mapper = new ObjectMapper();
     }
 
-    public JsonRpcController(@NotNull ObjectMapper mapper) {
+    public JsonRpcServer(@NotNull ObjectMapper mapper) {
         this.mapper = mapper;
     }
 

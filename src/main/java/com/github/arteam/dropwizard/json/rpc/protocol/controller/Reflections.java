@@ -18,7 +18,7 @@ import java.lang.reflect.Modifier;
  */
 class Reflections {
 
-    private static final Logger log = LoggerFactory.getLogger(JsonRpcController.class);
+    private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
 
     @Nullable
     public static Method findMethod(@NotNull Class clazz, @NotNull String name) {
