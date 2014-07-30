@@ -19,11 +19,21 @@ public class Response {
     @JsonProperty("jsonrpc")
     private final String jsonrpc = VERSION;
 
-    @Nullable
+    @NotNull
     @JsonProperty("id")
     private final ValueNode id;
 
-    public Response(@Nullable ValueNode id) {
+    public Response(@NotNull ValueNode id) {
         this.id = id;
+    }
+
+    @NotNull
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
+
+    @NotNull
+    public ValueNode getId() {
+        return id;
     }
 }

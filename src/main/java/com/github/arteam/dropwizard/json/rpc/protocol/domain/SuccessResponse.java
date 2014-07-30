@@ -22,4 +22,9 @@ public class SuccessResponse extends Response {
         super(id);
         this.result = result;
     }
+
+    @Nullable
+    public Object getResult() {
+        return result;
+    }
 }

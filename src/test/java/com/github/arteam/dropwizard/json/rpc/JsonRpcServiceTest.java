@@ -105,13 +105,22 @@ public class JsonRpcServiceTest {
         test("isAlive");
     }
 
+    @Test
+    public void testNotification() {
+        test("notification");
+    }
+
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);
             String textRequest = userMapper.writeValueAsString(requestResponse.request);
 
             String actual = rpcServer.handle(textRequest, teamService);
-            assertThat(requestResponse.response).isEqualTo(userMapper.readTree(actual));
+            if (!actual.isEmpty()) {
+                assertThat(userMapper.readTree(actual)).isEqualTo(requestResponse.response);
+            } else {
+                assertThat(actual).isEqualTo(requestResponse.response.asText());
+            }
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

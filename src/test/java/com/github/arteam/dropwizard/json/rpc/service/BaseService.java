@@ -14,4 +14,16 @@ public class BaseService {
     public boolean isAlive() {
         return true;
     }
+
+    @JsonRpcMethod
+    public void updateCache() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Updating cache...");
+                // Some time...
+                System.out.println("Done!");
+            }
+        }).start();
+    }
 }

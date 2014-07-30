@@ -176,4 +176,10 @@ public class JsonRpcErrorsTest {
         assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
     }
 
+    @Test
+    public void testInternalErrorNotification() {
+        String response = rpcController.handle(requestFile("not_implemented_method_notification.json"), teamService);
+        assertThat(response.isEmpty());
+    }
+
 }

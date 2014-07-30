@@ -57,10 +57,11 @@ public class JsonRpcServer {
         }
 
         try {
-            return toJson(typedHandle(request, service));
+            Response response = typedHandle(request, service);
+            return !response.getId().isNull() ? toJson(response) : "";
         } catch (Exception e) {
             log.error("Internal error", e);
-            return toJson(new ErrorResponse(request.getId(), INTERNAL_ERROR));
+            return !request.getId().isNull() ? toJson(new ErrorResponse(request.getId(), INTERNAL_ERROR)) : "";
         }
     }
 
@@ -80,9 +81,6 @@ public class JsonRpcServer {
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
-        // If it's a notification, then we can send response early
-        // TODO check notification
-        boolean isNotification = id == null;
         Method method = Reflections.findMethod(service.getClass(), requestMethod);
         if (method == null) {
             log.error("Unable find a method: '" + requestMethod + "' in a " + service.getClass());
