@@ -2,6 +2,7 @@ package com.github.arteam.dropwizard.json.rpc.protocol.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,26 +14,25 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Artem Prigoda
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse extends Response {
 
     @NotNull
     @JsonProperty("error")
-    private final Object error;
+    private final ErrorMessage error;
 
     public ErrorResponse(@NotNull ValueNode id,
-                        @NotNull ErrorMessage error) {
+                         @NotNull ErrorMessage error) {
         super(id);
         this.error = error;
     }
 
     public ErrorResponse(@NotNull ErrorMessage error) {
-        super(null);
+        super(NullNode.getInstance());
         this.error = error;
     }
 
     @NotNull
-    public Object getError() {
+    public ErrorMessage getError() {
         return error;
     }
 }

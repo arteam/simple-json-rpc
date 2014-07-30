@@ -129,7 +129,7 @@ public class JsonRpcErrorsTest {
     }
 
     @Test
-    public void testMethodIsStatic(){
+    public void testMethodIsStatic() {
         String response = rpcController.handle(requestFile("static_method.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
     }
@@ -180,6 +180,12 @@ public class JsonRpcErrorsTest {
     public void testInternalErrorNotification() {
         String response = rpcController.handle(requestFile("not_implemented_method_notification.json"), teamService);
         assertThat(response.isEmpty());
+    }
+
+    @Test
+    public void testBatchErrorResponse() {
+        String response = rpcController.handle(requestFile("batch_error.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("batch_response.json")));
     }
 
 }
