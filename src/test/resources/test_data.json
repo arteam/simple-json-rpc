@@ -127,6 +127,43 @@
             ]
         }
     },
+    "find_array_null_params": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "find",
+            "params": [
+                null,
+                19,
+                {
+                    "name": "St. Louis Blues",
+                    "league": "NHL"
+                },
+                null,
+                null,
+                null,
+                null
+            ],
+            "id": "pasd81"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "pasd81",
+            "result": [
+                {
+                    "firstName": "Jay",
+                    "lastName": "Bouwmeester",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 19,
+                    "position": "D",
+                    "birthDate": "1985-08-07T00:00:00.000+0000",
+                    "capHit": 5.4
+                }
+            ]
+        }
+    },
     "find_player_array": {
         "request": {
             "jsonrpc": "2.0",
