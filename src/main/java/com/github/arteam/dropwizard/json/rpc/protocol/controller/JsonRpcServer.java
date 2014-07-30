@@ -108,15 +108,17 @@ public class JsonRpcServer {
     private Object[] convertToMethodParams(@NotNull ContainerNode<?> params,
                                            @NotNull Method method) {
         Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
-        int amountMethodParams = allParametersAnnotations.length;
-        if (params.size() > amountMethodParams) {
-            throw new IllegalArgumentException("Wrong amount arguments: " + params.size() +
-                    " for a method '" + method.getName() + "'. Actual amount: " + amountMethodParams);
+        int methodParamsSize = allParametersAnnotations.length;
+        int jsonParamsSize = params.size();
+        if (jsonParamsSize > methodParamsSize) {
+            throw new IllegalArgumentException("Wrong amount arguments: " + jsonParamsSize +
+                    " for a method '" + method.getName() + "'. Actual amount: " + methodParamsSize);
         }
 
-        Object[] methodParams = new Object[amountMethodParams];
+        Object[] methodParams = new Object[methodParamsSize];
         Class<?>[] parameterTypes = method.getParameterTypes();
-        for (int i = 0; i < amountMethodParams; i++) {
+        int processed = 0;
+        for (int i = 0; i < methodParamsSize; i++) {
             Annotation[] parameterAnnotations = allParametersAnnotations[i];
 
             JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
@@ -140,10 +142,15 @@ public class JsonRpcServer {
 
             try {
                 methodParams[i] = mapper.treeToValue(jsonNode, parameterType);
+                processed++;
             } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Bad param: " + jsonNode + ". " +
                         "Should have been type '" + parameterType + "'", e);
             }
+        }
+        if (processed < jsonParamsSize) {
+            throw new IllegalArgumentException("Some unspecified parameters in " + params +
+                    " are passed to a method '" + method.getName() + "'");
         }
         return methodParams;
     }

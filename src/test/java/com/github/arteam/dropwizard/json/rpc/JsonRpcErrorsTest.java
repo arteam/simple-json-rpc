@@ -159,6 +159,12 @@ public class JsonRpcErrorsTest {
     }
 
     @Test
+    public void testWrongParameterName() {
+        String response = rpcController.handle(requestFile("wrong_parameter_name.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
     public void testInternalError() {
         String response = rpcController.handle(requestFile("not_implemented_method.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));

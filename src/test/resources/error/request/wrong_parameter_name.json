@@ -1,0 +1,10 @@
+{
+    "jsonrpc": 2.0,
+    "method": "find",
+    "params": {
+        "firstName" : "Steven",
+        "lastName" : "Stamkos",
+        "cap_hit" : 7.5
+    },
+    "id": "7272"
+}
