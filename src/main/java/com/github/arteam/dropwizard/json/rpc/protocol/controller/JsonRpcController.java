@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.dropwizard.json.rpc.protocol.domain.*;
+import com.google.common.base.Defaults;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,9 +130,7 @@ public class JsonRpcController {
             if (jsonNode == null) {
                 if (Reflections.getAnnotation(parameterAnnotations, Optional.class) != null) {
                     // If primitive is optional
-                    if (parameterType.isPrimitive()) {
-                        methodParams[i] = Primitives.getDefaultValue(parameterType);
-                    }
+                    methodParams[i] = Defaults.defaultValue(parameterType);
                     continue;
                 } else {
                     throw new IllegalArgumentException("Mandatory parameter '" + jsonRpcParam.value() +
