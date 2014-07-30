@@ -9,7 +9,6 @@ import com.github.arteam.dropwizard.json.rpc.service.TeamService;
 import com.github.arteam.dropwizard.json.rpc.util.RequestResponse;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,20 +24,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcServiceTest {
 
-    private static ObjectMapper mapper = new ObjectMapper()
+    private static ObjectMapper userMapper = new ObjectMapper()
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static Map<String, RequestResponse> testData;
 
-    private JsonRpcServer rpcController = new JsonRpcServer(mapper);
+    private JsonRpcServer rpcServer = new JsonRpcServer(userMapper);
     private TeamService teamService = new TeamService();
 
     @BeforeClass
     public static void init() throws Exception {
-        testData = mapper.readValue(Resources.toString(
-                Resources.getResource(JsonRpcServiceTest.class, "/test_data.json"),
-                Charsets.UTF_8), MapType.construct(Map.class,
-                SimpleType.construct(String.class),
-                SimpleType.construct(RequestResponse.class)));
+        testData = new ObjectMapper().readValue(
+                Resources.toString(JsonRpcServiceTest.class.getResource("/test_data.json"), Charsets.UTF_8),
+                MapType.construct(Map.class,
+                        SimpleType.construct(String.class),
+                        SimpleType.construct(RequestResponse.class)));
     }
 
     /**
@@ -98,13 +97,21 @@ public class JsonRpcServiceTest {
         test("find_array_null_params");
     }
 
+    /**
+     * Test calling a method from super-class and method without parameters
+     */
+    @Test
+    public void testIsAlive() {
+        test("isAlive");
+    }
+
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);
-            String textRequest = mapper.writeValueAsString(requestResponse.request);
+            String textRequest = userMapper.writeValueAsString(requestResponse.request);
 
-            String actual = rpcController.handle(textRequest, teamService);
-            assertThat(requestResponse.response).isEqualTo(mapper.readTree(actual));
+            String actual = rpcServer.handle(textRequest, teamService);
+            assertThat(requestResponse.response).isEqualTo(userMapper.readTree(actual));
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

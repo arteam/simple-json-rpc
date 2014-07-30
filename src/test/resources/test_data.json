@@ -239,5 +239,18 @@
                 }
             ]
         }
+    },
+    "isAlive": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "isAlive",
+            "params": {},
+            "id": "34252"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "34252",
+            "result": true
+        }
     }
 }
