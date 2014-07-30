@@ -1,9 +1,8 @@
-package com.github.arteam.dropwizard.json.rpc.protocol.domain;
+package com.github.arteam.json.rpc.simple.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Date: 07.06.14

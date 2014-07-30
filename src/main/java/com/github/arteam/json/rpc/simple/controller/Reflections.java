@@ -1,6 +1,6 @@
-package com.github.arteam.dropwizard.json.rpc.protocol.controller;
+package com.github.arteam.json.rpc.simple.controller;
 
-import com.github.arteam.dropwizard.json.rpc.protocol.domain.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.domain.JsonRpcMethod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
