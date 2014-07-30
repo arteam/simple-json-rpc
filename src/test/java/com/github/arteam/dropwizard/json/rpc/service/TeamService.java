@@ -34,7 +34,7 @@ public class TeamService {
             .add(new Player("David", "Backes", new Team("St. Louis Blues", "NHL"), 42, Position.CENTER, date("1984-05-01"), 4.5))
             .add(new Player("Vladimir", "Tarasenko", new Team("St. Louis Blues", "NHL"), 91, Position.RIGHT_WINGER, date("1991-12-13"), 0.9))
             .add(new Player("Jack", "Allen", new Team("St. Louis Blues", "NHL"), 34, Position.GOALTENDER, date("1990-08-07"), 0.5))
-            .add(new Player("Jay", "Bouwmeester", new Team("St. Louis Blues", "NHL"), 19, Position.DEFENDER, date("1990-08-07"), 5.4))
+            .add(new Player("Jay", "Bouwmeester", new Team("St. Louis Blues", "NHL"), 19, Position.DEFENDER, date("1985-08-07"), 5.4))
             .add(new Player("Steven", "Stamkos", new Team("Tampa Bay Lightning", "NHL"), 91, Position.CENTER, date("1990-02-07"), 7.5))
             .add(new Player("Ryan", "Callahan", new Team("Tampa Bay Lightning", "NHL"), 24, Position.RIGHT_WINGER, date("1985-03-21"), 5.8))
             .add(new Player("Ben", "Bishop", new Team("Tampa Bay Lightning", "NHL"), 30, Position.GOALTENDER, date("1986-11-21"), 2.3))
@@ -47,11 +47,12 @@ public class TeamService {
     }
 
     @JsonRpcMethod
-    public List<Player> findByBirthYear(@JsonRpcParam("birthYear") final int birthYear) {
-        return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
+    public List<Player> findByBirthYear(@JsonRpcParam("birth_year") final int birthYear) {
+        return ImmutableList.copyOf(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
-                return new DateTime(player.getBirthDate()).getYear() == birthYear;
+                int year = new DateTime(player.getBirthDate()).getYear();
+                return year == birthYear;
             }
         }));
     }
