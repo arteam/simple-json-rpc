@@ -80,11 +80,13 @@ class Reflections {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation> T getAnnotation(@NotNull Annotation[] annotations,
+    public static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations,
                                                          @NotNull Class<T> clazz) {
-        for (Annotation annotation : annotations) {
-            if (annotation.annotationType().equals(clazz)) {
-                return (T) annotation;
+        if (annotations != null) {
+            for (Annotation annotation : annotations) {
+                if (annotation.annotationType().equals(clazz)) {
+                    return (T) annotation;
+                }
             }
         }
         return null;

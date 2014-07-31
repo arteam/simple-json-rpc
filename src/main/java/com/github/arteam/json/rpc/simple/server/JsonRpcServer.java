@@ -7,10 +7,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcError;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
 import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.domain.*;
 import com.google.common.base.Defaults;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Range;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +48,10 @@ public class JsonRpcServer {
     private static final ErrorMessage PARSE_ERROR = new ErrorMessage(-32700, "Parse error");
     private static final ErrorMessage METHOD_NOT_FOUND = new ErrorMessage(-32601, "Method not found");
     private static final ErrorMessage INVALID_REQUEST = new ErrorMessage(-32600, "Invalid Request");
-    private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid paramsInvalid params");
+    private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid params");
     private static final ErrorMessage INTERNAL_ERROR = new ErrorMessage(-32603, "Internal error");
 
+    private static final Range<Integer> SERVER_ERRORS_RANGE = Range.closed(-32099, -32000);
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
     private static final String VERSION = "2.0";
 
@@ -151,8 +156,42 @@ public class JsonRpcServer {
             return handleSingle(request, service);
         } catch (Exception e) {
             log.error("Internal error", e);
-            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
+            return handleError(request, e);
         }
+    }
+
+    /**
+     * Handles a runtime exception. If root exception is marked with {@link JsonRpcError} annotation,
+     * it will be converted to appropriate error message.
+     * Otherwise "Internal error" message will be returned.
+     *
+     * @param request JSON-RPC request as a Java object
+     * @param e       invocation exception
+     * @return JSON-RPC error response
+     */
+    @NotNull
+    private ErrorResponse handleError(@NotNull Request request, @NotNull Exception e) {
+        Throwable rootCause = Throwables.getRootCause(e);
+        Annotation[] annotations = rootCause.getClass().getAnnotations();
+        JsonRpcError jsonRpcErrorAnnotation =
+                Reflections.getAnnotation(annotations, JsonRpcError.class);
+        if (jsonRpcErrorAnnotation != null) {
+            do {
+                int code = jsonRpcErrorAnnotation.code();
+                String message = jsonRpcErrorAnnotation.message();
+                if (!SERVER_ERRORS_RANGE.contains(code)) {
+                    log.warn("Error code=" + code + " not in a range [-32000 -32099]");
+                    break;
+                }
+                if (Strings.isNullOrEmpty(message)) {
+                    log.warn("Error message should not be empty");
+                    break;
+                }
+                return new ErrorResponse(request.getId(), new ErrorMessage(code, message));
+            } while (false);
+
+        }
+        return new ErrorResponse(request.getId(), INTERNAL_ERROR);
     }
 
     /**
