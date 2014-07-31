@@ -95,3 +95,13 @@ String response = rpcServer.handle(request, teamService);
 ```
 
 See the full service [code](https://github.com/arteam/simple-json-rpc/blob/master/src/test/java/com/github/arteam/json/rpc/simple/service/TeamService.java) more examples in [tests](https://github.com/arteam/simple-json-rpc/tree/master/src/test/java/com/github/arteam/json/rpc/simple).
+
+## Setup
+Maven:
+```xml
+<dependency>
+   <groupId>com.github.arteam</groupId>
+   <artifactId>simple-json-rpc</artifactId>
+   <version>0.0.1</version>
+</dependency>
+```
