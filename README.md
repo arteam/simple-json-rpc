@@ -22,7 +22,8 @@ public class TeamService {
     }
 
     @JsonRpcMethod("find_by_birth_year")
-    public List<Player> findByBirthYear(@JsonRpcParam("birth_year") final int birthYear) {
+    public List<Player> findByBirthYear(@JsonRpcParam("birth_year") 
+                                        final int birthYear) {
         return ImmutableList.copyOf(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
@@ -96,3 +97,5 @@ String textRequest = "{\n" +
                     "}";
 String response = rpcServer.handle(request, teamService);
 ```
+
+See the full service [code](https://github.com/arteam/simple-json-rpc/blob/master/src/test/java/com/github/arteam/json/rpc/simple/service/TeamService.java) more examples in [tests](https://github.com/arteam/simple-json-rpc/tree/master/src/test/java/com/github/arteam/json/rpc/simple).
