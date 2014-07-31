@@ -1,20 +1,20 @@
-Simple-json-rpc
+Simple JSON-RPC
 ===================
 
 Library for simple integration JSON-RPC 2.0 protocol into a Java application.
 
 ## JSON-RPC 2.0 service example
 
-Annotate you service class with *JsonRpcMethod* and *JsonRpcParam* annotations.
+Annotate you service class with `@JsonRpcMethod` and `@JsonRpcParam` annotations.
 
-* *JsonRpcMethod* marks a method as eligble for calling from the web.
+* `@JsonRpcMethod` marks a method as eligble for calling from the web.
 
-* *JsonRpcParam* is a mandatory annotation for the method parameter and should contain parameter name (this is forced requirement because Java compiler doesn't retain information about parameter names in a class file and therefore this information is not available in runtime).
+* `@JsonRpcParam` is a mandatory annotation for the method parameter and should contain parameter name (this is forced requirement because Java compiler doesn't retain information about parameter names in a class file and therefore this information is not available in runtime).
 
 Additional annotations:
 
-* *Optional* is used for marking method parameter as an optional, so the caller is able ignore it when invokes the method. 
-* *JsonRpcError* is used for marking an exception as a JSON-RPC error.
+* `@Optional` is used for marking method parameter as an optional, so the caller is able ignore it when invokes the method. 
+* `@JsonRpcError` is used for marking an exception as a JSON-RPC error.
 
 ```java
 public class TeamService {
@@ -23,7 +23,7 @@ public class TeamService {
 
     @JsonRpcMethod
     public boolean add(@JsonRpcParam("player") Player s) throws TeamServiceException {
-        if (players.size() > 5) throws new TeamServiceException();
+        if (players.size() > 5) throw new TeamServiceException();
         return players.add(s);
     }
 
@@ -53,7 +53,7 @@ public class TeamService {
 
     @JsonRpcMethod
     public List<Player> find(@Optional @JsonRpcParam("position") final Position position,
-                             @Optional @JsonRpcParam("number")  final int number) {
+                             @Optional @JsonRpcParam("number") final int number) {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
