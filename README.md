@@ -8,8 +8,13 @@ Library for simple integration JSON-RPC 2.0 protocol into a Java application.
 Annotate you service class with *JsonRpcMethod* and *JsonRpcParam* annotations.
 
 * *JsonRpcMethod* marks a method as eligble for calling from the web.
+
 * *JsonRpcParam* is a mandatory annotation for the method parameter and should contain parameter name (this is forced requirement because Java compiler doesn't retain information about parameter names in a class file and therefore this information is not available in runtime).
+
+Additional annotations:
+
 * *Optional* is used for marking method parameter as an optional, so the caller is able ignore it when invokes the method. 
+* *JsonRpcError* is used for marking an exception as a JSON-RPC error.
 
 ```java
 public class TeamService {
@@ -17,7 +22,8 @@ public class TeamService {
     private List<Player> players = Lists.newArrayList();
 
     @JsonRpcMethod
-    public boolean add(@JsonRpcParam("player") Player s) {
+    public boolean add(@JsonRpcParam("player") Player s) throws TeamServiceException {
+        if (players.size() > 5) throws new TeamServiceException();
         return players.add(s);
     }
 
@@ -47,28 +53,13 @@ public class TeamService {
 
     @JsonRpcMethod
     public List<Player> find(@Optional @JsonRpcParam("position") final Position position,
-                             @Optional @JsonRpcParam("number")  final int number,
-                             @Optional @JsonRpcParam("team") final Team team,
-                             @Optional @JsonRpcParam("firstName") final String firstName,
-                             @Optional @JsonRpcParam("lastName")  final String lastName,
-                             @Optional @JsonRpcParam("birthDate") final Date birthDate,
-                             @Optional @JsonRpcParam("capHit") final double capHit) {
+                             @Optional @JsonRpcParam("number")  final int number) {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
                 if (position != null && !player.getPosition().equals(position)) 
                     return false;
                 if (number != 0 && player.getNumber() != number) 
-                    return false;
-                if (team != null && !player.getTeam().equals(team))
-                    return false;
-                if (firstName != null && !player.getFirstName().equals(firstName)) 
-                    return false;
-                if (lastName != null && !player.getLastName().equals(lastName)) 
-                    return false;
-                if (birthDate != null && !player.getBirthDate().equals(birthDate))
-                    return false;
-                if (capHit != 0 && player.getCapHit() != capHit) 
                     return false;
                 return true;
             }
@@ -79,6 +70,11 @@ public class TeamService {
     public List<Player> getPlayers() {
         return players;
     }
+}    
+
+@JsonRpcError(code = -32032, message = "It's not permitted to add new players")
+public class TeamServiceException extends RuntimeException {
+}
 ```
 
 Invoke the service through *JsonRpcServer*
