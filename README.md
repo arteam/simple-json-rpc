@@ -1,4 +1,4 @@
-Simple JSON-RPC
+Simple JSON-RPC [![Build Status](https://travis-ci.org/arteam/simple-json-rpc.png?branch=master)](https://travis-ci.org/arteam/simple-json-rpc)
 ===================
 
 Library for simple integration JSON-RPC 2.0 protocol into a Java application.
