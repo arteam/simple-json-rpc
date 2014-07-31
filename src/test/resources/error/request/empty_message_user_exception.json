@@ -1,0 +1,10 @@
+{
+
+    "jsonrpc": "2.0",
+    "method": "bogusMessageLogin",
+    "params": {
+        "login": "secret",
+        "password": "stuff"
+    },
+    "id": "7272"
+}

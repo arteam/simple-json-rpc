@@ -6,6 +6,9 @@ import com.github.arteam.json.rpc.simple.domain.Team;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
 import com.github.arteam.json.rpc.simple.annotation.Optional;
+import com.github.arteam.json.rpc.simple.exception.BadCodeTeamServiceException;
+import com.github.arteam.json.rpc.simple.exception.EmptyMessageTeamServiceException;
+import com.github.arteam.json.rpc.simple.exception.TeamServiceAuthException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -113,6 +116,30 @@ public class TeamService extends BaseService {
     @JsonRpcMethod
     public Player findByCapHit(@JsonRpcParam("cap") double capHit) {
         throw new IllegalStateException("Not implemented");
+    }
+
+    @JsonRpcMethod
+    public long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new TeamServiceAuthException("Not authorized");
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long bogusCodeLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new BadCodeTeamServiceException("Not authorized");
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long bogusMessageLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new EmptyMessageTeamServiceException("Not authorized");
+        }
+        return 0xCAFEBABE;
     }
 
     @JsonRpcMethod
