@@ -14,7 +14,7 @@ Annotate you service class with *JsonRpcMethod* and *JsonRpcParam* annotations.
 ```java
 public class TeamService {
 
-    private List<Player> players = Lists.newArrayList(;
+    private List<Player> players = Lists.newArrayList();
 
     @JsonRpcMethod
     public boolean add(@JsonRpcParam("player") Player s) {
@@ -55,13 +55,20 @@ public class TeamService {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
-                if (position != null && !player.getPosition().equals(position)) return false;
-                if (number != 0 && player.getNumber() != number) return false;
-                if (team != null && !player.getTeam().equals(team)) return false;
-                if (firstName != null && !player.getFirstName().equals(firstName)) return false;
-                if (lastName != null && !player.getLastName().equals(lastName)) return false;
-                if (birthDate != null && !player.getBirthDate().equals(birthDate)) return false;
-                if (capHit != 0 && player.getCapHit() != capHit) return false;
+                if (position != null && !player.getPosition().equals(position)) 
+                    return false;
+                if (number != 0 && player.getNumber() != number) 
+                    return false;
+                if (team != null && !player.getTeam().equals(team))
+                    return false;
+                if (firstName != null && !player.getFirstName().equals(firstName)) 
+                    return false;
+                if (lastName != null && !player.getLastName().equals(lastName)) 
+                    return false;
+                if (birthDate != null && !player.getBirthDate().equals(birthDate))
+                    return false;
+                if (capHit != 0 && player.getCapHit() != capHit) 
+                    return false;
                 return true;
             }
         }));
@@ -73,7 +80,7 @@ public class TeamService {
     }
 ```
 
-Invoke it through *JsonRpcServer*
+Invoke the service through *JsonRpcServer*
 
 ```java
 TeamService teamService = new TeamService();
