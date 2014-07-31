@@ -1,7 +1,7 @@
 Simple JSON-RPC [![Build Status](https://travis-ci.org/arteam/simple-json-rpc.png?branch=master)](https://travis-ci.org/arteam/simple-json-rpc)
 ===================
 
-Library for simple integration JSON-RPC 2.0 protocol into a Java application.
+Library for a simple integration JSON-RPC 2.0 protocol into a Java application.
 
 ## JSON-RPC 2.0 service example
 
@@ -105,3 +105,13 @@ Maven:
    <version>0.0.1</version>
 </dependency>
 ```
+## Requirements
+
+JDK 1.6 and higher
+
+## Dependencies
+
+* [Jackson](https://github.com/FasterXML/jackson) 2.4.1
+* [Guava](http://code.google.com/p/guava-libraries/) 17.0
+* [SLF4J](http://www.slf4j.org/) 1.7.6
+* [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
