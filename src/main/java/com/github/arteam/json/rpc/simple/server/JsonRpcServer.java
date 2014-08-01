@@ -94,7 +94,7 @@ public class JsonRpcServer {
         if (rootRequest.isObject()) {
             Response response = handleWrapper(rootRequest, service);
             return isNotification(rootRequest, response) ? "" : toJson(response);
-        } else if (rootRequest.isArray()) {
+        } else if (rootRequest.isArray() && rootRequest.size() > 0) {
             ArrayNode responses = mapper.createArrayNode();
             for (JsonNode request : (ArrayNode) rootRequest) {
                 Response response = handleWrapper(request, service);
@@ -102,10 +102,11 @@ public class JsonRpcServer {
                     responses.add(mapper.convertValue(response, ObjectNode.class));
                 }
             }
-            return toJson(responses);
+
+            return responses.size() > 0 ? toJson(responses) : "";
         }
 
-        log.error("Json primitive is not valid request");
+        log.error("Invalid JSON-RPC request: " + rootRequest);
         return toJson(new ErrorResponse(INVALID_REQUEST));
     }
 
@@ -148,7 +149,7 @@ public class JsonRpcServer {
         try {
             request = mapper.convertValue(requestNode, Request.class);
         } catch (Exception e) {
-            log.error("Invalid json request", e);
+            log.error("Invalid JSON-RPC request: " + requestNode, e);
             return new ErrorResponse(INVALID_REQUEST);
         }
 
@@ -209,18 +210,18 @@ public class JsonRpcServer {
         String jsonrpc = request.getJsonrpc();
         ValueNode id = request.getId();
         if (jsonrpc == null || requestMethod == null) {
-            log.error("Not a JSON-RPC request");
+            log.error("Not a JSON-RPC request: " + request);
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
         if (!jsonrpc.equals(VERSION)) {
-            log.error("Not a JSON_RPC 2.0 request");
+            log.error("Not a JSON_RPC 2.0 request: " + request);
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
         JsonNode params = request.getParams();
         if (!params.isObject() && !params.isArray() && !params.isNull()) {
-            log.error("Params should be an object, an array or null");
+            log.error("Params of request: '" + request + "' should be an object, an array or null");
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
@@ -319,7 +320,7 @@ public class JsonRpcServer {
         try {
             return mapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            log.error("Unable write json", e);
+            log.error("Unable write json: " + value, e);
             throw new IllegalStateException(e);
         }
     }
