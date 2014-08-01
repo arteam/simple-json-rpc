@@ -201,4 +201,10 @@ public class JsonRpcErrorsTest {
         assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
     }
 
+    @Test
+    public void testUnspecifiedParameter() {
+        String response = rpcController.handle(requestFile("unspecified_parameter.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
 }

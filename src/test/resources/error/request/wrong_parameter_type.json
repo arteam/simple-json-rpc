@@ -2,7 +2,7 @@
     "jsonrpc": 2.0,
     "method": "find_by_birth_year",
     "params": {
-        "birthYear" : "June 1990"
+        "birth_year" : "June 1990"
     },
     "id": "7272"
 }
