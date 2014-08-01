@@ -218,18 +218,25 @@ public class JsonRpcServer {
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
+        JsonNode params = request.getParams();
+        if (!params.isObject() && !params.isArray() && !params.isNull()) {
+            log.error("Params should be an object, an array or null");
+            return new ErrorResponse(id, INVALID_REQUEST);
+        }
+
         Method method = Reflections.findMethod(service.getClass(), requestMethod);
         if (method == null) {
             log.error("Unable find a method: '" + requestMethod + "' in a " + service.getClass());
             return new ErrorResponse(id, METHOD_NOT_FOUND);
         }
 
-        ContainerNode<?> requestParams = request.getParams();
+        ContainerNode<?> notNullParams = !params.isNull() ?
+                (ContainerNode<?>) params : mapper.createObjectNode();
         Object[] methodParams;
         try {
-            methodParams = convertToMethodParams(requestParams, method);
+            methodParams = convertToMethodParams(notNullParams, method);
         } catch (IllegalArgumentException e) {
-            log.error("Bad params: " + requestParams + " of a method '" + method.getName() + "'", e);
+            log.error("Bad params: " + notNullParams + " of a method '" + method.getName() + "'", e);
             return new ErrorResponse(id, INVALID_PARAMS);
         }
 

@@ -1,6 +1,7 @@
 package com.github.arteam.json.rpc.simple.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import org.jetbrains.annotations.NotNull;
@@ -27,12 +28,12 @@ public class Request {
     private final ValueNode id;
 
     @NotNull
-    private final ContainerNode<?> params;
+    private final JsonNode params;
 
     public Request(@JsonProperty("jsonrpc") @Nullable String jsonrpc,
                    @JsonProperty("method") @Nullable String method,
                    @JsonProperty("id") @NotNull ValueNode id,
-                   @JsonProperty("params") @NotNull ContainerNode<?> params) {
+                   @JsonProperty("params") @NotNull JsonNode params) {
         this.jsonrpc = jsonrpc;
         this.method = method;
         this.id = id;
@@ -55,7 +56,7 @@ public class Request {
     }
 
     @NotNull
-    public ContainerNode<?> getParams() {
+    public JsonNode getParams() {
         return params;
     }
 }

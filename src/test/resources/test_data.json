@@ -257,7 +257,7 @@
         "request": {
             "jsonrpc": "2.0",
             "method": "updateCache",
-            "params": {}
+            "params": []
         },
         "response": ""
     },
@@ -344,8 +344,7 @@
             },
             {
                 "jsonrpc": "2.0",
-                "method": "updateCache",
-                "params": []
+                "method": "updateCache"
             },
             {
                 "jsonrpc": "2.0",
