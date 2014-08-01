@@ -76,12 +76,6 @@ public class JsonRpcErrorsTest {
     }
 
     @Test
-    public void testNoParams() {
-        String response = rpcController.handle(requestFile("no_params.json"), teamService);
-        assertThat(json(response)).isEqualTo(json(responseFile("invalid_request.json")));
-    }
-
-    @Test
     public void testBadMethodType() {
         String response = rpcController.handle(requestFile("bad_method_type.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_request.json")));
@@ -90,7 +84,7 @@ public class JsonRpcErrorsTest {
     @Test
     public void testBadParamsType() {
         String response = rpcController.handle(requestFile("bad_params_type.json"), teamService);
-        assertThat(json(response)).isEqualTo(json(responseFile("invalid_request.json")));
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_request_with_id.json")));
     }
 
     @Test
