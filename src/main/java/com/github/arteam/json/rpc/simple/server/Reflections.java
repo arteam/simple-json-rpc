@@ -22,6 +22,9 @@ class Reflections {
 
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
 
+    private Reflections() {
+    }
+
     /**
      * Finds an appropriate method by it's name or a name in a {@link JsonRpcMethod} annotation.
      * <p/>
