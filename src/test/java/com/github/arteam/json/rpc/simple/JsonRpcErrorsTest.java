@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcErrorsTest {
 
-    private JsonRpcServer rpcController = new JsonRpcServer();
-    private TeamService teamService = new TeamService();
+    private static JsonRpcServer rpcController = new JsonRpcServer();
+    private static TeamService teamService = new TeamService();
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -144,7 +144,7 @@ public class JsonRpcErrorsTest {
     @Test
     public void testParamAnnotationIsNotSpecified() {
         String response = rpcController.handle(requestFile("param_annotation_is_not_specified.json"), teamService);
-        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+        assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
     }
 
     @Test

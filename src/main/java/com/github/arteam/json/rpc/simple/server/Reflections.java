@@ -1,6 +1,12 @@
 package com.github.arteam.json.rpc.simple.server;
 
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
+import com.github.arteam.json.rpc.simple.annotation.Optional;
+import com.github.arteam.json.rpc.simple.server.metadata.ClassMetadata;
+import com.github.arteam.json.rpc.simple.server.metadata.MethodMetadata;
+import com.github.arteam.json.rpc.simple.server.metadata.ParameterMetadata;
+import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -25,53 +31,6 @@ class Reflections {
     private Reflections() {
     }
 
-    /**
-     * Finds an appropriate method by it's name or a name in a {@link JsonRpcMethod} annotation.
-     * <p/>
-     * Methods should be public and non-static and be exposed as a web-method by placing on
-     * it a {@link JsonRpcMethod} annotation.
-     *
-     * @param clazz service class
-     * @param name  RPC method name
-     * @return method metadata or {@code null} if it wasn't found
-     */
-    @Nullable
-    public static Method findMethod(@NotNull Class clazz, @NotNull String name) {
-        Class<?> searchType = clazz;
-        // Search through the class hierarchy
-        while (searchType != null) {
-            for (Method method : searchType.getDeclaredMethods()) {
-                String methodName = method.getName();
-                // Checks the annotation
-                JsonRpcMethod jsonRpcMethod = getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class);
-                if (jsonRpcMethod == null) {
-                    if (name.equals(methodName)) {
-                        log.warn("Annotation @JsonRpcMethod is not set for a method '" + methodName + "'");
-                    }
-                    continue;
-                }
-
-                String rpcMethodName = !jsonRpcMethod.value().isEmpty() ? jsonRpcMethod.value() : methodName;
-                if (name.equals(rpcMethodName)) {
-                    // Check modifiers, only public non-static methods are permitted
-                    int modifiers = method.getModifiers();
-                    if (!Modifier.isPublic(modifiers)) {
-                        log.warn("Method '" + methodName + "' is not public");
-                        continue;
-                    }
-                    if (Modifier.isStatic(modifiers)) {
-                        log.warn("Method '" + methodName + "' is static");
-                        continue;
-                    }
-                    method.setAccessible(true);
-                    return method;
-                }
-            }
-            searchType = searchType.getSuperclass();
-        }
-        return null;
-    }
-
 
     /**
      * Finds an entity annotation with appropriate type.
@@ -93,5 +52,96 @@ class Reflections {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets class metadata for JSON-RPC processing.
+     * It scans the class and builds JSON-RPC meta-information about methods and it's parameters
+     *
+     * @param clazz actual service class
+     * @return service class JSON-RPC meta-information
+     */
+    @NotNull
+    public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
+        ImmutableMap.Builder<String, MethodMetadata> methodsMetadata = ImmutableMap.builder();
+
+        Class<?> searchType = clazz;
+        // Search through the class hierarchy
+        while (searchType != null) {
+            for (Method method : searchType.getDeclaredMethods()) {
+                String methodName = method.getName();
+                // Checks the annotation
+                JsonRpcMethod jsonRpcMethod = getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class);
+                if (jsonRpcMethod == null) {
+                    continue;
+                }
+
+                // Check modifiers, only public non-static methods are permitted
+                int modifiers = method.getModifiers();
+                if (!Modifier.isPublic(modifiers)) {
+                    log.warn("Method '" + methodName + "' is not public");
+                    continue;
+                }
+                if (Modifier.isStatic(modifiers)) {
+                    log.warn("Method '" + methodName + "' is static");
+                    continue;
+                }
+
+                String rpcMethodName = !jsonRpcMethod.value().isEmpty() ? jsonRpcMethod.value() : methodName;
+                ImmutableMap<String, ParameterMetadata> methodParams = getMethodParameters(method);
+                if (methodParams == null) {
+                    log.warn("Method '" + methodName + "' has misconfigured parameters");
+                    continue;
+                }
+
+                method.setAccessible(true);
+                try {
+                    methodsMetadata.put(rpcMethodName,
+                            new MethodMetadata(rpcMethodName, method,  methodParams));
+                }  catch (IllegalArgumentException e){
+                    // Throw exception, because two methods with the same name leads to unexpected behaviour
+                    throw new IllegalArgumentException("Two methods with the same name: " + rpcMethodName, e);
+                }
+            }
+            searchType = searchType.getSuperclass();
+        }
+        return new ClassMetadata(true, methodsMetadata.build());
+    }
+
+    /**
+     * Gets JSON-RPC meta-information about method parameters.
+     *
+     * @param method actual method
+     * @return map of parameters metadata by their names
+     */
+    @Nullable
+    private static ImmutableMap<String, ParameterMetadata> getMethodParameters(@NotNull Method method) {
+        Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
+        int methodParamsSize = allParametersAnnotations.length;
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        ImmutableMap.Builder<String, ParameterMetadata> parametersMetadata = ImmutableMap.builder();
+        for (int i = 0; i < methodParamsSize; i++) {
+            Annotation[] parameterAnnotations = allParametersAnnotations[i];
+            JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
+            if (jsonRpcParam == null) {
+                log.warn("Annotation @JsonRpcParam is not set for the " + i +
+                        " parameter of a method '" + method.getName() + "'");
+                return null;
+            }
+
+            Class<?> parameterType = parameterTypes[i];
+            String paramName = jsonRpcParam.value();
+            boolean optional = Reflections.getAnnotation(parameterAnnotations, Optional.class) != null;
+            try {
+                parametersMetadata.put(paramName,
+                        new ParameterMetadata(paramName, parameterType, i, optional));
+            }  catch (IllegalArgumentException e){
+                log.error("Two parameters with the same name: " + paramName, e);
+                return null;
+            }
+        }
+
+        return parametersMetadata.build();
     }
 }

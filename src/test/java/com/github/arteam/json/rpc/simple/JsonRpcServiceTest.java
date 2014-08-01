@@ -29,8 +29,8 @@ public class JsonRpcServiceTest {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static Map<String, RequestResponse> testData;
 
-    private JsonRpcServer rpcServer = new JsonRpcServer(userMapper);
-    private TeamService teamService = new TeamService();
+    private static JsonRpcServer rpcServer = new JsonRpcServer(userMapper);
+    private static TeamService teamService = new TeamService();
 
     @BeforeClass
     public static void init() throws Exception {

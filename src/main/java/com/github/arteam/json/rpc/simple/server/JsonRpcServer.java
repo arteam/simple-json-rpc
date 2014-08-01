@@ -8,12 +8,14 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcError;
-import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
-import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.domain.*;
+import com.github.arteam.json.rpc.simple.server.metadata.ClassMetadata;
+import com.github.arteam.json.rpc.simple.server.metadata.MethodMetadata;
+import com.github.arteam.json.rpc.simple.server.metadata.ParameterMetadata;
 import com.google.common.base.Defaults;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -21,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Date: 07.06.14
@@ -57,6 +59,8 @@ public class JsonRpcServer {
 
     @NotNull
     private ObjectMapper mapper;
+
+    private Map<Class<?>, ClassMetadata> classesMetadata = Maps.newHashMap();
 
     public JsonRpcServer() {
         mapper = new ObjectMapper();
@@ -225,7 +229,18 @@ public class JsonRpcServer {
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
-        Method method = Reflections.findMethod(service.getClass(), requestMethod);
+        ClassMetadata classMetadata = classesMetadata.get(service.getClass());
+        if (classMetadata == null) {
+            classMetadata = Reflections.getClassMetadata(service.getClass());
+            classesMetadata.put(service.getClass(), classMetadata);
+        }
+
+        if(!classMetadata.isService()){
+           log.warn(classMetadata + " is not available as a JSON-RPC 2.0 service");
+            return new ErrorResponse(id, METHOD_NOT_FOUND);
+        }
+
+        MethodMetadata method = classMetadata.getMethods().get(requestMethod);
         if (method == null) {
             log.error("Unable find a method: '" + requestMethod + "' in a " + service.getClass());
             return new ErrorResponse(id, METHOD_NOT_FOUND);
@@ -241,7 +256,7 @@ public class JsonRpcServer {
             return new ErrorResponse(id, INVALID_PARAMS);
         }
 
-        Object result = method.invoke(service, methodParams);
+        Object result = method.getMethod().invoke(service, methodParams);
         return new SuccessResponse(id, result);
     }
 
@@ -254,9 +269,8 @@ public class JsonRpcServer {
      */
     @NotNull
     private Object[] convertToMethodParams(@NotNull ContainerNode<?> params,
-                                           @NotNull Method method) {
-        Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
-        int methodParamsSize = allParametersAnnotations.length;
+                                           @NotNull MethodMetadata method) {
+        int methodParamsSize = method.getParams().size();
         int jsonParamsSize = params.size();
         // Check amount arguments
         if (jsonParamsSize > methodParamsSize) {
@@ -265,38 +279,31 @@ public class JsonRpcServer {
         }
 
         Object[] methodParams = new Object[methodParamsSize];
-        Class<?>[] parameterTypes = method.getParameterTypes();
         int processed = 0;
-        for (int i = 0; i < methodParamsSize; i++) {
-            Annotation[] parameterAnnotations = allParametersAnnotations[i];
-
-            JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
-            if (jsonRpcParam == null) {
-                throw new IllegalArgumentException("Annotation @JsonRpcParam is not set for the " + i +
-                        " parameter of a method '" + method.getName() + "'");
-            }
-
-            Class<?> parameterType = parameterTypes[i];
-            JsonNode jsonNode = params.isObject() ? params.get(jsonRpcParam.value()) : params.get(i);
+        for (ParameterMetadata param : method.getParams().values()) {
+            Class<?> parameterType = param.getType();
+            int index = param.getIndex();
+            String name = param.getName();
+            JsonNode jsonNode = params.isObject() ? params.get(name) : params.get(index);
             // Handle omitted value
             if (jsonNode == null) {
-                if (Reflections.getAnnotation(parameterAnnotations, Optional.class) != null) {
+                if (param.isOptional()) {
                     // If parameter is a primitive set the appropriate default value
-                    methodParams[i] = Defaults.defaultValue(parameterType);
+                    methodParams[index] = Defaults.defaultValue(parameterType);
                     continue;
                 } else {
-                    throw new IllegalArgumentException("Mandatory parameter '" + jsonRpcParam.value() +
+                    throw new IllegalArgumentException("Mandatory parameter '" + name +
                             "' of a method '" + method.getName() + "' is not set");
                 }
             }
 
             // Convert JSON object to an actual Java object
             try {
-                methodParams[i] = mapper.treeToValue(jsonNode, parameterType);
+                methodParams[index] = mapper.treeToValue(jsonNode, parameterType);
                 processed++;
             } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException("Wrong type of " + i + " param: " + jsonNode + ". " +
-                        "Should have type '" + parameterType + "'", e);
+                throw new IllegalArgumentException("Wrong type of '" + name + "' param: " + jsonNode +
+                        ". Should have type '" + parameterType + "'", e);
             }
         }
 
