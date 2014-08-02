@@ -1,0 +1,6 @@
+{
+    "jsonrpc": 2.0,
+    "method": "bogus",
+    "params": {},
+    "id": "7272"
+}

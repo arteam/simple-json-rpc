@@ -96,19 +96,18 @@ class Reflections {
                 }
 
                 method.setAccessible(true);
-                try {
-                    methodsMetadata.put(rpcMethodName,
-                            new MethodMetadata(rpcMethodName, method,  methodParams));
-                }  catch (IllegalArgumentException e){
-                    // Throw exception, because two methods with the same name leads to unexpected behaviour
-                    throw new IllegalArgumentException("Two methods with the same name: " + rpcMethodName, e);
-                }
+                methodsMetadata.put(rpcMethodName, new MethodMetadata(rpcMethodName, method, methodParams));
             }
             searchType = searchType.getSuperclass();
         }
 
         boolean isService = getAnnotation(clazz.getAnnotations(), JsonRpcService.class) != null;
-        return new ClassMetadata(isService, methodsMetadata.build());
+        try {
+            return new ClassMetadata(isService, methodsMetadata.build());
+        } catch (IllegalArgumentException e) {
+            // Throw exception, because two methods with the same name leads to unexpected behaviour
+            throw new IllegalArgumentException("There two methods with the same name in " + clazz, e);
+        }
     }
 
     /**
@@ -139,7 +138,7 @@ class Reflections {
             try {
                 parametersMetadata.put(paramName,
                         new ParameterMetadata(paramName, parameterType, i, optional));
-            }  catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 log.error("Two parameters with the same name: " + paramName, e);
                 return null;
             }

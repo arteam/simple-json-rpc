@@ -1,5 +1,6 @@
 package com.github.arteam.json.rpc.simple.server.metadata;
 
+import com.google.common.base.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -56,5 +57,15 @@ public class ParameterMetadata {
 
     public int getIndex() {
         return index;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("name", name)
+                .add("type", type)
+                .add("index", index)
+                .add("optional", optional)
+                .toString();
     }
 }
