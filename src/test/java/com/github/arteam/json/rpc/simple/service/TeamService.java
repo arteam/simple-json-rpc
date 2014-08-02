@@ -1,12 +1,12 @@
 package com.github.arteam.json.rpc.simple.service;
 
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcService;
+import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.domain.Player;
 import com.github.arteam.json.rpc.simple.domain.Position;
 import com.github.arteam.json.rpc.simple.domain.Team;
-import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
-import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
-import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.exception.BadCodeTeamServiceException;
 import com.github.arteam.json.rpc.simple.exception.EmptyMessageTeamServiceException;
 import com.github.arteam.json.rpc.simple.exception.TeamServiceAuthException;
@@ -142,6 +142,13 @@ public class TeamService extends BaseService {
             throw new EmptyMessageTeamServiceException("Not authorized");
         }
         return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public Player bogusFind(@JsonRpcParam("firstName") String firstName,
+                            @JsonRpcParam("firstName") String lastName,
+                            @JsonRpcParam("age") int age){
+       return null;
     }
 
     @JsonRpcMethod

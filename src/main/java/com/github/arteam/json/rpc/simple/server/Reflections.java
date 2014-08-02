@@ -135,15 +135,15 @@ class Reflections {
             Class<?> parameterType = parameterTypes[i];
             String paramName = jsonRpcParam.value();
             boolean optional = Reflections.getAnnotation(parameterAnnotations, Optional.class) != null;
-            try {
-                parametersMetadata.put(paramName,
-                        new ParameterMetadata(paramName, parameterType, i, optional));
-            } catch (IllegalArgumentException e) {
-                log.error("Two parameters with the same name: " + paramName, e);
-                return null;
-            }
+            parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterType, i, optional));
         }
 
-        return parametersMetadata.build();
+        try {
+            return parametersMetadata.build();
+        } catch (IllegalArgumentException e) {
+            log.error("There two parameters with the same name in method '" + method.getName() +
+                    "' of the class '" + method.getDeclaringClass() + "'", e);
+            return null;
+        }
     }
 }
