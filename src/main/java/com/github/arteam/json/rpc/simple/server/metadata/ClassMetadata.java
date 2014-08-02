@@ -1,5 +1,6 @@
 package com.github.arteam.json.rpc.simple.server.metadata;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,5 +36,13 @@ public class ClassMetadata {
     @NotNull
     public ImmutableMap<String, MethodMetadata> getMethods() {
         return methods;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("service", service)
+                .add("methods", methods)
+                .toString();
     }
 }
