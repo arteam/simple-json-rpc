@@ -3,6 +3,7 @@ package com.github.arteam.json.rpc.spec;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.json.rpc.simple.server.JsonRpcServer;
+import com.google.common.cache.CacheBuilderSpec;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -19,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpecTest {
 
     CalculatorService calculatorService = new CalculatorService();
-    JsonRpcServer rpcServer = new JsonRpcServer();
+    // Just test factory method
+    JsonRpcServer rpcServer =  JsonRpcServer.withCacheSpec(CacheBuilderSpec.disableCaching());
     ObjectMapper mapper = new ObjectMapper();
 
     private void test(String testName) {

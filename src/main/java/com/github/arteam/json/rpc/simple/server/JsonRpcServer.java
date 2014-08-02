@@ -15,7 +15,10 @@ import com.github.arteam.json.rpc.simple.server.metadata.ParameterMetadata;
 import com.google.common.base.Defaults;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheBuilderSpec;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Range;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -23,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
 /**
  * Date: 07.06.14
@@ -60,21 +62,57 @@ public class JsonRpcServer {
     @NotNull
     private ObjectMapper mapper;
 
-    private Map<Class<?>, ClassMetadata> classesMetadata = Maps.newHashMap();
+    /**
+     * Default Cache params specification
+     */
+    private static final CacheBuilderSpec DEFAULT_SPEC = CacheBuilderSpec.parse("expireAfterWrite=1h");
 
-    public JsonRpcServer() {
-        mapper = new ObjectMapper();
+    /**
+     * Cache of classes metadata
+     */
+    private LoadingCache<Class<?>, ClassMetadata> classesMetadata;
+
+    /**
+     * Init JSON-RPC server
+     *
+     * @param mapper used-defined JSON mapper
+     * @param cacheBuilderSpec classes metadata cache specification
+     */
+    public JsonRpcServer(@NotNull ObjectMapper mapper, @NotNull CacheBuilderSpec cacheBuilderSpec) {
+        this.mapper = mapper;
+        classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
+                new CacheLoader<Class<?>, ClassMetadata>() {
+                    @Override
+                    public ClassMetadata load(Class<?> clazz) throws Exception {
+                        return Reflections.getClassMetadata(clazz);
+                    }
+                });
     }
 
     /**
-     * Set a user-defined Jackson mapper for processing JSON requests and responses
-     *
-     * @param mapper Jackson mapper
+     * Init JSON-RPC server with default parameters
      */
-    public JsonRpcServer(@NotNull ObjectMapper mapper) {
-        this.mapper = mapper;
+    public JsonRpcServer() {
+        this(new ObjectMapper(), DEFAULT_SPEC);
     }
 
+    /**
+     * Factory for creating a JSON-RPC server with a specific JSON mapper
+     * @param mapper user-defined JSON mapper
+     * @return new JSON-RPC server
+     */
+    public static JsonRpcServer withMapper(@NotNull ObjectMapper mapper){
+        return new JsonRpcServer(mapper, DEFAULT_SPEC);
+    }
+
+    /**
+     * Factory for creating JSON-RPC server with a specific config of classes metadata cache.
+     * @param cacheSpec user-defined cache config
+     * @return new JSON-RPC server
+     */
+    public static JsonRpcServer withCacheSpec(@NotNull CacheBuilderSpec cacheSpec){
+        return new JsonRpcServer(new ObjectMapper(), cacheSpec);
+    }
 
     /**
      * Handles a JSON-RPC request(single or batch),
@@ -230,11 +268,6 @@ public class JsonRpcServer {
         }
 
         ClassMetadata classMetadata = classesMetadata.get(service.getClass());
-        if (classMetadata == null) {
-            classMetadata = Reflections.getClassMetadata(service.getClass());
-            classesMetadata.put(service.getClass(), classMetadata);
-        }
-
         if (!classMetadata.isService()) {
             log.warn(service.getClass() + " is not available as a JSON-RPC 2.0 service");
             return new ErrorResponse(id, METHOD_NOT_FOUND);
