@@ -1,5 +1,6 @@
 package com.github.arteam.json.rpc.simple.service;
 
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcService;
 import com.github.arteam.json.rpc.simple.domain.Player;
 import com.github.arteam.json.rpc.simple.domain.Position;
 import com.github.arteam.json.rpc.simple.domain.Team;
@@ -28,6 +29,7 @@ import java.util.List;
  *
  * @author Artem Prigoda
  */
+@JsonRpcService
 public class TeamService extends BaseService {
 
     private static final DateTimeFormatter fmt = ISODateTimeFormat.date().withZone(DateTimeZone.UTC);

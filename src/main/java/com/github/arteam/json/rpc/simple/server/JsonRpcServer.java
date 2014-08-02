@@ -235,8 +235,8 @@ public class JsonRpcServer {
             classesMetadata.put(service.getClass(), classMetadata);
         }
 
-        if(!classMetadata.isService()){
-           log.warn(classMetadata + " is not available as a JSON-RPC 2.0 service");
+        if (!classMetadata.isService()) {
+            log.warn(service.getClass() + " is not available as a JSON-RPC 2.0 service");
             return new ErrorResponse(id, METHOD_NOT_FOUND);
         }
 

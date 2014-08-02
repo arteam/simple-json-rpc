@@ -2,6 +2,7 @@ package com.github.arteam.json.rpc.spec;
 
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcService;
 
 /**
  * Date: 7/31/14
@@ -9,6 +10,7 @@ import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
  *
  * @author Artem Prigoda
  */
+@JsonRpcService
 public class CalculatorService {
 
     @JsonRpcMethod
