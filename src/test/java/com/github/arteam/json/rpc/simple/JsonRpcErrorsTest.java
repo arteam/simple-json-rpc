@@ -210,15 +210,21 @@ public class JsonRpcErrorsTest {
     }
 
     @Test
-    public void testNotJsonRpcService(){
+    public void testNotJsonRpcService() {
         String response = rpcController.handle(requestFile("not_json_service.json"), new BaseService());
         assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
     }
 
     @Test
-    public void testBogusService(){
+    public void testBogusService() {
         String response = rpcController.handle(requestFile("bogus_service.json"), new BogusService());
         assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
+    }
+
+    @Test
+    public void testMethodWithDoubleParams() {
+        String response = rpcController.handle(requestFile("method_with_double_params.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
     }
 
 }
