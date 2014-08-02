@@ -3,6 +3,7 @@ package com.github.arteam.json.rpc.simple;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.json.rpc.simple.server.JsonRpcServer;
+import com.github.arteam.json.rpc.simple.service.BaseService;
 import com.github.arteam.json.rpc.simple.service.TeamService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -205,6 +206,12 @@ public class JsonRpcErrorsTest {
     public void testUnspecifiedParameter() {
         String response = rpcController.handle(requestFile("unspecified_parameter.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testNotJsonRpcService(){
+        String response = rpcController.handle(requestFile("not_json_service.json"), new BaseService());
+        assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
     }
 
 }

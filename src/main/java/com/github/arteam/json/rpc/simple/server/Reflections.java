@@ -2,6 +2,7 @@ package com.github.arteam.json.rpc.simple.server;
 
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcService;
 import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.server.metadata.ClassMetadata;
 import com.github.arteam.json.rpc.simple.server.metadata.MethodMetadata;
@@ -105,7 +106,9 @@ class Reflections {
             }
             searchType = searchType.getSuperclass();
         }
-        return new ClassMetadata(true, methodsMetadata.build());
+
+        boolean isService = getAnnotation(clazz.getAnnotations(), JsonRpcService.class) != null;
+        return new ClassMetadata(isService, methodsMetadata.build());
     }
 
     /**
