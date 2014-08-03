@@ -21,6 +21,12 @@
         <joda.time.version>2.3</joda.time.version>
         <assertj.version>1.6.1</assertj.version>
     </properties>
+
+    <scm>
+        <developerConnection>scm:git:git@github.com:arteam/simple-json-rpc.git</developerConnection>
+        <url>https://github.com/arteam/simple-json-rpc</url>
+    </scm>
+
     <build>
         <testResources>
             <testResource>
@@ -74,6 +80,12 @@
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>2.2.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
             </plugin>
         </plugins>
     </build>
