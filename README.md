@@ -5,7 +5,9 @@ Library for a simple integration JSON-RPC 2.0 protocol into a Java application.
 
 ## JSON-RPC 2.0 service example
 
-Annotate you service class with `@JsonRpcMethod` and `@JsonRpcParam` annotations.
+Annotate you service class with `@JsonRpcService`, `@JsonRpcMethod` and `@JsonRpcParam` annotations.
+
+* `@JsonRpcService` marks a class a JSON-RPC service.
 
 * `@JsonRpcMethod` marks a method as eligble for calling from the web.
 
@@ -17,6 +19,7 @@ Additional annotations:
 * `@JsonRpcError` is used for marking an exception as a JSON-RPC error.
 
 ```java
+@JsonRpcService
 public class TeamService {
 
     private List<Player> players = Lists.newArrayList();
@@ -73,7 +76,7 @@ public class TeamService {
 }    
 
 @JsonRpcError(code = -32032, message = "It's not permitted to add new players")
-public class TeamServiceException extends RuntimeException {
+public class TeamServiceException extends Exception {
 }
 ```
 
@@ -102,7 +105,7 @@ Maven:
 <dependency>
    <groupId>com.github.arteam</groupId>
    <artifactId>simple-json-rpc</artifactId>
-   <version>${simple-json-rpc.version}</version>
+   <version>0.1</version>
 </dependency>
 ```
 ## Requirements
