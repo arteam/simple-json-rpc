@@ -108,6 +108,8 @@ Maven:
    <version>0.1</version>
 </dependency>
 ```
+Artifacts are available in [jCenter](https://bintray.com/bintray/jcenter) repository.
+
 ## Requirements
 
 JDK 1.6 and higher
