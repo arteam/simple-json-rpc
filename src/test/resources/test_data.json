@@ -381,91 +381,131 @@
         ]
     },
     "findPlayersByFirstNames": {
-            "request": {
-                "jsonrpc": "2.0",
-                "method": "findPlayersByFirstNames",
-                "params": {"names": ["Vladimir","Jack"]},
-                "id": "asd1a121"
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "findPlayersByFirstNames",
+            "params": {
+                "names": ["Vladimir", "Jack"]
             },
-            "response": {
-                "jsonrpc": "2.0",
-                "id": "asd1a121",
-                "result": [
-                 {
-                                     "firstName": "Vladimir",
-                                     "lastName": "Tarasenko",
-                                     "team": {
-                                         "name": "St. Louis Blues",
-                                         "league": "NHL"
-                                     },
-                                     "number": 91,
-                                     "position": "RW",
-                                     "birthDate": "1991-12-13T00:00:00.000+0000",
-                                     "capHit": 0.9
-                 }
-                 ,{
-                                     "firstName": "Jack",
-                                     "lastName": "Allen",
-                                     "team": {
-                                         "name": "St. Louis Blues",
-                                         "league": "NHL"
-                                     },
-                                     "number": 34,
-                                     "position": "G",
-                                     "birthDate": "1990-08-07T00:00:00.000+0000",
-                                     "capHit": 0.5
-                  }
-                ]
-            }
+            "id": "asd1a121"
         },
-     "findPlayersByNumbers": {
-                "request": {
-                    "jsonrpc": "2.0",
-                    "method": "findPlayersByNumbers",
-                    "params": {"numbers": [91, 19]},
-                    "id": "111099"
-                },
-                "response": {
-                    "jsonrpc": "2.0",
-                    "id": "111099",
-                    "result": [
-                     {
-                                         "firstName": "Vladimir",
-                                         "lastName": "Tarasenko",
-                                         "team": {
-                                             "name": "St. Louis Blues",
-                                             "league": "NHL"
-                                         },
-                                         "number": 91,
-                                         "position": "RW",
-                                         "birthDate": "1991-12-13T00:00:00.000+0000",
-                                         "capHit": 0.9
-                     }
-                     ,{
-                                          "firstName": "Jay",
-                                          "lastName": "Bouwmeester",
-                                          "team": {
-                                              "name": "St. Louis Blues",
-                                              "league": "NHL"
-                                          },
-                                          "number": 19,
-                                          "position": "D",
-                                          "birthDate": "1985-08-07T00:00:00.000+0000",
-                                          "capHit": 5.4
-                     }
-                     ,{
-                                      "firstName": "Steven",
-                                      "lastName": "Stamkos",
-                                      "team": {
-                                          "name": "Tampa Bay Lightning",
-                                          "league": "NHL"
-                                      },
-                                      "number": 91,
-                                      "position": "C",
-                                      "birthDate": "1990-02-07T00:00:00.000+0000",
-                                      "capHit": 7.5
-                      }
-                    ]
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "asd1a121",
+            "result": [
+                {
+                    "firstName": "Vladimir",
+                    "lastName": "Tarasenko",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "RW",
+                    "birthDate": "1991-12-13T00:00:00.000+0000",
+                    "capHit": 0.9
                 }
+                ,
+                {
+                    "firstName": "Jack",
+                    "lastName": "Allen",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 34,
+                    "position": "G",
+                    "birthDate": "1990-08-07T00:00:00.000+0000",
+                    "capHit": 0.5
+                }
+            ]
+        }
+    },
+    "findPlayersByNumbers": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "findPlayersByNumbers",
+            "params": {
+                "numbers": [91, 19]
+            },
+            "id": "111099"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "111099",
+            "result": [
+                {
+                    "firstName": "Vladimir",
+                    "lastName": "Tarasenko",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "RW",
+                    "birthDate": "1991-12-13T00:00:00.000+0000",
+                    "capHit": 0.9
+                }
+                ,
+                {
+                    "firstName": "Jay",
+                    "lastName": "Bouwmeester",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 19,
+                    "position": "D",
+                    "birthDate": "1985-08-07T00:00:00.000+0000",
+                    "capHit": 5.4
+                }
+                ,
+                {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "C",
+                    "birthDate": "1990-02-07T00:00:00.000+0000",
+                    "capHit": 7.5
+                }
+            ]
+        }
+    },
+    "getContractSums": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "getContractSums",
+            "params": {
+                "contractLengths": {
+                    "Backes": 4,
+                    "Tarasenko": 3,
+                    "Allen": 2,
+                    "Bouwmeester": 5,
+                    "Stamkos": 8,
+                    "Callahan": 3,
+                    "Bishop": 4,
+                    "Hedman": 2
+                }
+            },
+            "id": 97555
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 97555,
+            "result": {
+                "Backes": 18.0,
+                "Tarasenko": 2.7,
+                "Allen": 1.0,
+                "Bouwmeester": 27.0,
+                "Stamkos": 60.0,
+                "Callahan": 17.4,
+                "Bishop": 9.2,
+                "Hedman": 8.0
             }
+        }
+    }
 }

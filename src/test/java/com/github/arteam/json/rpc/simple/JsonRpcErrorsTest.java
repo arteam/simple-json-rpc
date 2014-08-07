@@ -228,8 +228,20 @@ public class JsonRpcErrorsTest {
     }
 
     @Test
-    public void testBadGenericType(){
+    public void testBadGenericType() {
         String response = rpcController.handle(requestFile("bad_generic_type.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testBadArrayGenericType() {
+        String response = rpcController.handle(requestFile("bad_array_generic_type.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
+
+    @Test
+    public void testBadMapGenericType() {
+        String response = rpcController.handle(requestFile("bad_map_generic_type.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
     }
 }
