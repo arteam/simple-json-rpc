@@ -1,7 +1,12 @@
 package com.github.arteam.json.rpc.simple.server.metadata;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Date: 8/1/14
@@ -24,6 +29,9 @@ public class ParameterMetadata {
     @NotNull
     private final Class<?> type;
 
+    @NotNull
+    private final ImmutableList<Class<?>> genericTypes;
+
     /**
      * Index in method arguments
      */
@@ -34,9 +42,11 @@ public class ParameterMetadata {
      */
     private final boolean optional;
 
-    public ParameterMetadata(@NotNull String name, @NotNull Class<?> type, int index, boolean optional) {
+    public ParameterMetadata(@NotNull String name, @NotNull Class<?> type
+            , @NotNull ImmutableList<Class<?>> genericTypes, int index, boolean optional) {
         this.name = name;
         this.type = type;
+        this.genericTypes = genericTypes;
         this.index = index;
         this.optional = optional;
     }
@@ -59,11 +69,17 @@ public class ParameterMetadata {
         return index;
     }
 
+    @NotNull
+    public ImmutableList<Class<?>> getGenericTypes() {
+        return genericTypes;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("name", name)
                 .add("type", type)
+                .add("genericType", genericTypes)
                 .add("index", index)
                 .add("optional", optional)
                 .toString();

@@ -1,12 +1,18 @@
 package com.github.arteam.json.rpc.simple.server;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.databind.type.ArrayType;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.SimpleType;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcError;
 import com.github.arteam.json.rpc.simple.domain.*;
 import com.github.arteam.json.rpc.simple.server.metadata.ClassMetadata;
@@ -26,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Date: 07.06.14
@@ -75,7 +83,7 @@ public class JsonRpcServer {
     /**
      * Init JSON-RPC server
      *
-     * @param mapper used-defined JSON mapper
+     * @param mapper           used-defined JSON mapper
      * @param cacheBuilderSpec classes metadata cache specification
      */
     public JsonRpcServer(@NotNull ObjectMapper mapper, @NotNull CacheBuilderSpec cacheBuilderSpec) {
@@ -98,19 +106,21 @@ public class JsonRpcServer {
 
     /**
      * Factory for creating a JSON-RPC server with a specific JSON mapper
+     *
      * @param mapper user-defined JSON mapper
      * @return new JSON-RPC server
      */
-    public static JsonRpcServer withMapper(@NotNull ObjectMapper mapper){
+    public static JsonRpcServer withMapper(@NotNull ObjectMapper mapper) {
         return new JsonRpcServer(mapper, DEFAULT_SPEC);
     }
 
     /**
      * Factory for creating JSON-RPC server with a specific config of classes metadata cache.
+     *
      * @param cacheSpec user-defined cache config
      * @return new JSON-RPC server
      */
-    public static JsonRpcServer withCacheSpec(@NotNull CacheBuilderSpec cacheSpec){
+    public static JsonRpcServer withCacheSpec(@NotNull CacheBuilderSpec cacheSpec) {
         return new JsonRpcServer(new ObjectMapper(), cacheSpec);
     }
 
@@ -332,11 +342,25 @@ public class JsonRpcServer {
 
             // Convert JSON object to an actual Java object
             try {
-                methodParams[index] = mapper.treeToValue(jsonNode, parameterType);
+                JsonParser jsonParser = mapper.treeAsTokens(jsonNode);
+                JavaType javaType;
+                if (Collection.class.isAssignableFrom(parameterType)) {
+                    javaType = CollectionType.construct(parameterType,
+                            SimpleType.construct(param.getGenericTypes().get(0)));
+                } else if (parameterType.isArray()) {
+                    javaType = ArrayType.construct(
+                            SimpleType.construct(parameterType.getComponentType()), null, null);
+                } else if (Map.class.isAssignableFrom(parameterType)) {
+                    javaType = MapType.construct(parameterType,
+                            SimpleType.construct(param.getGenericTypes().get(0)),
+                            SimpleType.construct(param.getGenericTypes().get(1)));
+                } else {
+                    javaType = SimpleType.construct(parameterType);
+                }
+                methodParams[index] = mapper.readValue(jsonParser, javaType);
                 processed++;
-            } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException("Wrong type of '" + name + "' param: " + jsonNode +
-                        ". Should have type '" + parameterType + "'", e);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Wrong param: " + jsonNode + ". Expected type: '" + param, e);
             }
         }
 

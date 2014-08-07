@@ -227,4 +227,9 @@ public class JsonRpcErrorsTest {
         assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
     }
 
+    @Test
+    public void testBadGenericType(){
+        String response = rpcController.handle(requestFile("bad_generic_type.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
 }
