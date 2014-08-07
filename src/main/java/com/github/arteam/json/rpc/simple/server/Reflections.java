@@ -161,7 +161,7 @@ class Reflections {
             for (Type actualType : actualTypeArguments) {
                 genericTypes.add(toClass(actualType));
             }
-        } else if (genericType instanceof GenericArrayType){
+        } else if (genericType instanceof GenericArrayType) {
             GenericArrayType genericArrayType = (GenericArrayType) genericType;
             genericTypes.add(toClass(genericArrayType.getGenericComponentType()));
         }
@@ -170,8 +170,11 @@ class Reflections {
 
     @NotNull
     private static Class toClass(@NotNull Type type) {
-        if (type instanceof Class) return (Class) type;
+        if (type instanceof Class) {
+            return (Class) type;
+        }
         if (type instanceof WildcardType) {
+            // We are interested only in upper bounds because a consumer guarantees that accept this type
             Type[] upperBounds = ((WildcardType) type).getUpperBounds();
             return (Class) upperBounds[0];
         }

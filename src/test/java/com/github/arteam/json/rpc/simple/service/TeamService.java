@@ -14,15 +14,17 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Date: 7/27/14
@@ -178,7 +180,19 @@ public class TeamService extends BaseService {
     }
 
     @JsonRpcMethod
+    public Map<String, Double> getContractSums(@JsonRpcParam("contractLengths") Map<String, ? extends Number> contractLengths) {
+        Map<String, Double> playerContractSums = Maps.newLinkedHashMap();
+        for (Player player : players) {
+            playerContractSums.put(player.getLastName(),
+                    player.getCapHit() * contractLengths.get(player.getLastName()).intValue());
+        }
+        return playerContractSums;
+    }
+
+
+    @JsonRpcMethod
     public static Date date(@JsonRpcParam("textDate") String textDate) {
         return fmt.parseDateTime(textDate).toDate();
     }
+
 }

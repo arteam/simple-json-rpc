@@ -143,6 +143,11 @@ public class JsonRpcServiceTest {
        test("findPlayersByNumbers");
     }
 
+    @Test
+    public void testGetContractSums(){
+       test("getContractSums");
+    }
+
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);
