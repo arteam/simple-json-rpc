@@ -7,6 +7,7 @@ import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.server.metadata.ClassMetadata;
 import com.github.arteam.json.rpc.simple.server.metadata.MethodMetadata;
 import com.github.arteam.json.rpc.simple.server.metadata.ParameterMetadata;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 
 /**
  * Date: 07.06.14
@@ -121,6 +121,7 @@ class Reflections {
         Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
         int methodParamsSize = allParametersAnnotations.length;
         Class<?>[] parameterTypes = method.getParameterTypes();
+        Type[] genericParameterTypes = method.getGenericParameterTypes();
 
         ImmutableMap.Builder<String, ParameterMetadata> parametersMetadata = ImmutableMap.builder();
         for (int i = 0; i < methodParamsSize; i++) {
@@ -133,9 +134,12 @@ class Reflections {
             }
 
             Class<?> parameterType = parameterTypes[i];
+            ImmutableList<Class<?>> genericTypes = getGenericTypes(genericParameterTypes[i]);
             String paramName = jsonRpcParam.value();
             boolean optional = Reflections.getAnnotation(parameterAnnotations, Optional.class) != null;
-            parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterType, i, optional));
+
+            parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterType,
+                    genericTypes, i, optional));
         }
 
         try {
@@ -145,5 +149,32 @@ class Reflections {
                     "' of the class '" + method.getDeclaringClass() + "'", e);
             return null;
         }
+    }
+
+    @NotNull
+    private static ImmutableList<Class<?>> getGenericTypes(@NotNull Type genericType) {
+        ImmutableList.Builder<Class<?>> genericTypes = ImmutableList.builder();
+        // If type is parametrized
+        if (genericType instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) genericType)
+                    .getActualTypeArguments();
+            for (Type actualType : actualTypeArguments) {
+                genericTypes.add(toClass(actualType));
+            }
+        } else if (genericType instanceof GenericArrayType){
+            GenericArrayType genericArrayType = (GenericArrayType) genericType;
+            genericTypes.add(toClass(genericArrayType.getGenericComponentType()));
+        }
+        return genericTypes.build();
+    }
+
+    @NotNull
+    private static Class toClass(@NotNull Type type) {
+        if (type instanceof Class) return (Class) type;
+        if (type instanceof WildcardType) {
+            Type[] upperBounds = ((WildcardType) type).getUpperBounds();
+            return (Class) upperBounds[0];
+        }
+        throw new IllegalStateException("Unsupported type: " + type);
     }
 }

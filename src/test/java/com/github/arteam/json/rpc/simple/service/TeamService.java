@@ -20,6 +20,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -147,8 +148,33 @@ public class TeamService extends BaseService {
     @JsonRpcMethod
     public Player bogusFind(@JsonRpcParam("firstName") String firstName,
                             @JsonRpcParam("firstName") String lastName,
-                            @JsonRpcParam("age") int age){
-       return null;
+                            @JsonRpcParam("age") int age) {
+        return null;
+    }
+
+    @JsonRpcMethod
+    public List<Player> findPlayersByFirstNames(@JsonRpcParam("names") final List<String> names) {
+        return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
+            @Override
+            public boolean apply(Player player) {
+                return names.contains(player.getFirstName());
+            }
+        }));
+    }
+
+    @JsonRpcMethod
+    public List<Player> findPlayersByNumbers(@JsonRpcParam("numbers") final int... numbers) {
+        return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
+            @Override
+            public boolean apply(Player player) {
+                for (int number : numbers) {
+                    if (player.getNumber() == number) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }));
     }
 
     @JsonRpcMethod

@@ -130,6 +130,19 @@ public class JsonRpcServiceTest {
         test("batchWithNotification");
     }
 
+    /**
+     * Tests passing list as a parameter
+     */
+    @Test
+    public void testFindPlayersByNames(){
+       test("findPlayersByFirstNames");
+    }
+
+    @Test
+    public void testFindPlayersByNumbers(){
+       test("findPlayersByNumbers");
+    }
+
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);
