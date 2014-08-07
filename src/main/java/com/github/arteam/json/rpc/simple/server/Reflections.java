@@ -134,7 +134,13 @@ class Reflections {
             }
 
             Class<?> parameterType = parameterTypes[i];
-            ImmutableList<Class<?>> genericTypes = getGenericTypes(genericParameterTypes[i]);
+            ImmutableList<Class<?>> genericTypes;
+            try {
+                genericTypes = getGenericTypes(genericParameterTypes[i]);
+            } catch (IllegalStateException e) {
+                log.warn("Unable resolve generic types of a method '" + method.getName() + "'", e);
+                return null;
+            }
             String paramName = jsonRpcParam.value();
             boolean optional = Reflections.getAnnotation(parameterAnnotations, Optional.class) != null;
 

@@ -180,6 +180,21 @@ public class TeamService extends BaseService {
     }
 
     @JsonRpcMethod
+    public <T> List<Player> genericFindPlayersByNumbers(@JsonRpcParam("numbers") final T... numbers) {
+        return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
+            @Override
+            public boolean apply(Player player) {
+                for (T number : numbers) {
+                    if (String.valueOf(player.getNumber()).equals(number.toString())) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }));
+    }
+
+    @JsonRpcMethod
     public Map<String, Double> getContractSums(@JsonRpcParam("contractLengths") Map<String, ? extends Number> contractLengths) {
         Map<String, Double> playerContractSums = Maps.newLinkedHashMap();
         for (Player player : players) {
