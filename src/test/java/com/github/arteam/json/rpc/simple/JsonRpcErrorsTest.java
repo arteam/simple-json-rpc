@@ -250,4 +250,10 @@ public class JsonRpcErrorsTest {
         String response = rpcController.handle(requestFile("unresolved_generic_type.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("method_not_found.json")));
     }
+
+    @Test
+    public void testMandatoryParameterExplicitlyNull(){
+        String response = rpcController.handle(requestFile("mandatory_parameter_explicitly_null.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
+    }
 }
