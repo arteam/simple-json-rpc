@@ -1,9 +1,9 @@
 package com.github.arteam.json.rpc.simple.service;
 
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcOptional;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcService;
-import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.domain.Player;
 import com.github.arteam.json.rpc.simple.domain.Position;
 import com.github.arteam.json.rpc.simple.domain.Team;
@@ -24,7 +24,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Date: 7/27/14
@@ -77,13 +76,13 @@ public class TeamService extends BaseService {
     }
 
     @JsonRpcMethod
-    public List<Player> find(@Optional @JsonRpcParam("position") @Nullable final Position position,
-                             @Optional @JsonRpcParam("number") @Nullable final int number,
-                             @Optional @JsonRpcParam("team") @Nullable final Team team,
-                             @Optional @JsonRpcParam("firstName") @Nullable final String firstName,
-                             @Optional @JsonRpcParam("lastName") @Nullable final String lastName,
-                             @Optional @JsonRpcParam("birthDate") @Nullable final Date birthDate,
-                             @Optional @JsonRpcParam("capHit") @Nullable final double capHit) {
+    public List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable final Position position,
+                             @JsonRpcOptional @JsonRpcParam("number") @Nullable final int number,
+                             @JsonRpcOptional @JsonRpcParam("team") @Nullable final Team team,
+                             @JsonRpcOptional @JsonRpcParam("firstName") @Nullable final String firstName,
+                             @JsonRpcOptional @JsonRpcParam("lastName") @Nullable final String lastName,
+                             @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable final Date birthDate,
+                             @JsonRpcOptional @JsonRpcParam("capHit") @Nullable final double capHit) {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
