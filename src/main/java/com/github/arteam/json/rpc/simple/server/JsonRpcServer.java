@@ -364,7 +364,14 @@ public class JsonRpcServer {
 
     @Nullable
     private Object getDefaultValue(@NotNull Class<?> type) {
-        return Defaults.defaultValue(type);
+        if (type == Optional.class) {
+            // If it's Guava optional then handle it as an absent value
+            return Optional.absent();
+        } else if (type.isPrimitive()) {
+            // If parameter is a primitive set the appropriate default value
+            return Defaults.defaultValue(type);
+        }
+        return null;
     }
 
     /**

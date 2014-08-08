@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -79,21 +80,21 @@ public class TeamService extends BaseService {
     @JsonRpcMethod
     public List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable final Position position,
                              @JsonRpcOptional @JsonRpcParam("number") @Nullable final int number,
-                             @JsonRpcOptional @JsonRpcParam("team") @Nullable final Team team,
+                             @JsonRpcOptional @JsonRpcParam("team") @NotNull final Optional<Team> team,
                              @JsonRpcOptional @JsonRpcParam("firstName") @Nullable final String firstName,
                              @JsonRpcOptional @JsonRpcParam("lastName") @Nullable final String lastName,
                              @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable final Date birthDate,
-                             @JsonRpcOptional @JsonRpcParam("capHit") @Nullable final Double capHit) {
+                             @JsonRpcOptional @JsonRpcParam("capHit") @NotNull final Optional<Double> capHit) {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
                 if (position != null && !player.getPosition().equals(position)) return false;
                 if (number != 0 && player.getNumber() != number) return false;
-                if (team != null && !player.getTeam().equals(team)) return false;
+                if (team.isPresent() && !player.getTeam().equals(team.get())) return false;
                 if (firstName != null && !player.getFirstName().equals(firstName)) return false;
                 if (lastName != null && !player.getLastName().equals(lastName)) return false;
                 if (birthDate != null && !player.getBirthDate().equals(birthDate)) return false;
-                if (capHit!=null && player.getCapHit() != capHit) return false;
+                if (capHit.isPresent() && player.getCapHit() != capHit.get()) return false;
                 return true;
             }
         }));
