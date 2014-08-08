@@ -1,9 +1,9 @@
 package com.github.arteam.json.rpc.simple.server;
 
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcMethod;
+import com.github.arteam.json.rpc.simple.annotation.JsonRpcOptional;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcParam;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcService;
-import com.github.arteam.json.rpc.simple.annotation.Optional;
 import com.github.arteam.json.rpc.simple.server.metadata.ClassMetadata;
 import com.github.arteam.json.rpc.simple.server.metadata.MethodMetadata;
 import com.github.arteam.json.rpc.simple.server.metadata.ParameterMetadata;
@@ -142,7 +142,7 @@ class Reflections {
                 return null;
             }
             String paramName = jsonRpcParam.value();
-            boolean optional = Reflections.getAnnotation(parameterAnnotations, Optional.class) != null;
+            boolean optional = Reflections.getAnnotation(parameterAnnotations, JsonRpcOptional.class) != null;
 
             parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterType,
                     genericTypes, i, optional));

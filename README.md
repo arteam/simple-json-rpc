@@ -15,7 +15,7 @@ Annotate you service class with `@JsonRpcService`, `@JsonRpcMethod` and `@JsonRp
 
 Additional annotations:
 
-* `@Optional` is used for marking method parameter as an optional, so the caller is able ignore it when invokes the method. 
+* `@JsonRpcOptional` is used for marking method parameter as an optional, so the caller is able ignore it when invokes the method.
 * `@JsonRpcError` is used for marking an exception as a JSON-RPC error.
 
 ```java
@@ -55,8 +55,8 @@ public class TeamService {
     }
 
     @JsonRpcMethod
-    public List<Player> find(@Optional @JsonRpcParam("position") final Position position,
-                             @Optional @JsonRpcParam("number") final int number) {
+    public List<Player> find(@JsonRpcOptional @JsonRpcParam("position") final Position position,
+                             @JsonRpcOptional @JsonRpcParam("number") final int number) {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
