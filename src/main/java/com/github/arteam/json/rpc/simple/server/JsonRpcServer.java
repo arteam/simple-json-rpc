@@ -329,7 +329,7 @@ public class JsonRpcServer {
             String name = param.getName();
             JsonNode jsonNode = params.isObject() ? params.get(name) : params.get(index);
             // Handle omitted value
-            if (jsonNode == null) {
+            if (jsonNode == null || jsonNode.isNull()) {
                 if (param.isOptional()) {
                     // If parameter is a primitive set the appropriate default value
                     methodParams[index] = Defaults.defaultValue(parameterType);
