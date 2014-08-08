@@ -507,5 +507,59 @@
                 "Hedman": 8.0
             }
         }
+    },
+    "genericFindPlayersByNumbers": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "genericFindPlayersByNumbers",
+            "params": {
+                "numbers": ["91", "19"]
+            },
+            "id": 23222
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 23222,
+            "result": [
+                {
+                    "firstName": "Vladimir",
+                    "lastName": "Tarasenko",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "RW",
+                    "birthDate": "1991-12-13T00:00:00.000+0000",
+                    "capHit": 0.9
+                }
+                ,
+                {
+                    "firstName": "Jay",
+                    "lastName": "Bouwmeester",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 19,
+                    "position": "D",
+                    "birthDate": "1985-08-07T00:00:00.000+0000",
+                    "capHit": 5.4
+                }
+                ,
+                {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "C",
+                    "birthDate": "1990-02-07T00:00:00.000+0000",
+                    "capHit": 7.5
+                }
+            ]
+        }
     }
 }

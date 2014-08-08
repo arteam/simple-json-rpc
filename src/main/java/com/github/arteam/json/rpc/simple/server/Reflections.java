@@ -133,19 +133,10 @@ class Reflections {
                 return null;
             }
 
-            Class<?> parameterType = parameterTypes[i];
-            ImmutableList<Class<?>> genericTypes;
-            try {
-                genericTypes = getGenericTypes(genericParameterTypes[i]);
-            } catch (IllegalStateException e) {
-                log.warn("Unable resolve generic types of a method '" + method.getName() + "'", e);
-                return null;
-            }
             String paramName = jsonRpcParam.value();
             boolean optional = Reflections.getAnnotation(parameterAnnotations, JsonRpcOptional.class) != null;
-
-            parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterType,
-                    genericTypes, i, optional));
+            parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterTypes[i],
+                    genericParameterTypes[i], i, optional));
         }
 
         try {
@@ -155,35 +146,5 @@ class Reflections {
                     "' of the class '" + method.getDeclaringClass() + "'", e);
             return null;
         }
-    }
-
-    @NotNull
-    private static ImmutableList<Class<?>> getGenericTypes(@NotNull Type genericType) {
-        ImmutableList.Builder<Class<?>> genericTypes = ImmutableList.builder();
-        // If type is parametrized
-        if (genericType instanceof ParameterizedType) {
-            Type[] actualTypeArguments = ((ParameterizedType) genericType)
-                    .getActualTypeArguments();
-            for (Type actualType : actualTypeArguments) {
-                genericTypes.add(toClass(actualType));
-            }
-        } else if (genericType instanceof GenericArrayType) {
-            GenericArrayType genericArrayType = (GenericArrayType) genericType;
-            genericTypes.add(toClass(genericArrayType.getGenericComponentType()));
-        }
-        return genericTypes.build();
-    }
-
-    @NotNull
-    private static Class toClass(@NotNull Type type) {
-        if (type instanceof Class) {
-            return (Class) type;
-        }
-        if (type instanceof WildcardType) {
-            // We are interested only in upper bounds because a consumer guarantees that accept this type
-            Type[] upperBounds = ((WildcardType) type).getUpperBounds();
-            return (Class) upperBounds[0];
-        }
-        throw new IllegalStateException("Unsupported type: " + type);
     }
 }

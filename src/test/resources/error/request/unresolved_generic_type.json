@@ -1,8 +1,0 @@
-{
-    "jsonrpc": "2.0",
-    "method": "genericFindPlayersByNumbers",
-    "params": {
-        "numbers": ["91", "19"]
-    },
-    "id": "7272"
-}

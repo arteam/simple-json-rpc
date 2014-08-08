@@ -9,24 +9,24 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import com.fasterxml.jackson.databind.type.ArrayType;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.*;
 import com.github.arteam.json.rpc.simple.annotation.JsonRpcError;
 import com.github.arteam.json.rpc.simple.domain.*;
 import com.github.arteam.json.rpc.simple.server.metadata.ClassMetadata;
 import com.github.arteam.json.rpc.simple.server.metadata.MethodMetadata;
 import com.github.arteam.json.rpc.simple.server.metadata.ParameterMetadata;
 import com.google.common.base.Defaults;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -331,8 +331,10 @@ public class JsonRpcServer {
             // Handle omitted value
             if (jsonNode == null || jsonNode.isNull()) {
                 if (param.isOptional()) {
-                    // If parameter is a primitive set the appropriate default value
-                    methodParams[index] = Defaults.defaultValue(parameterType);
+                    methodParams[index] = getDefaultValue(parameterType);
+                    if (jsonNode != null) {
+                        processed++;
+                    }
                     continue;
                 } else {
                     throw new IllegalArgumentException("Mandatory parameter '" + name +
@@ -343,20 +345,7 @@ public class JsonRpcServer {
             // Convert JSON object to an actual Java object
             try {
                 JsonParser jsonParser = mapper.treeAsTokens(jsonNode);
-                JavaType javaType;
-                if (Collection.class.isAssignableFrom(parameterType)) {
-                    javaType = CollectionType.construct(parameterType,
-                            SimpleType.construct(param.getGenericTypes().get(0)));
-                } else if (parameterType.isArray()) {
-                    javaType = ArrayType.construct(
-                            SimpleType.construct(parameterType.getComponentType()), null, null);
-                } else if (Map.class.isAssignableFrom(parameterType)) {
-                    javaType = MapType.construct(parameterType,
-                            SimpleType.construct(param.getGenericTypes().get(0)),
-                            SimpleType.construct(param.getGenericTypes().get(1)));
-                } else {
-                    javaType = SimpleType.construct(parameterType);
-                }
+                JavaType javaType = mapper.getTypeFactory().constructType(param.getGenericType());
                 methodParams[index] = mapper.readValue(jsonParser, javaType);
                 processed++;
             } catch (IOException e) {
@@ -371,6 +360,11 @@ public class JsonRpcServer {
         }
 
         return methodParams;
+    }
+
+    @Nullable
+    private Object getDefaultValue(@NotNull Class<?> type) {
+        return Defaults.defaultValue(type);
     }
 
     /**
