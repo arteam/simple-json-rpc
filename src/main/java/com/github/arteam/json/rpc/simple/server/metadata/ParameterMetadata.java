@@ -29,8 +29,11 @@ public class ParameterMetadata {
     @NotNull
     private final Class<?> type;
 
+    /**
+     * Generic java type
+     */
     @NotNull
-    private final ImmutableList<Class<?>> genericTypes;
+    private final Type genericType;
 
     /**
      * Index in method arguments
@@ -43,10 +46,10 @@ public class ParameterMetadata {
     private final boolean optional;
 
     public ParameterMetadata(@NotNull String name, @NotNull Class<?> type
-            , @NotNull ImmutableList<Class<?>> genericTypes, int index, boolean optional) {
+            , @NotNull Type genericType, int index, boolean optional) {
         this.name = name;
         this.type = type;
-        this.genericTypes = genericTypes;
+        this.genericType = genericType;
         this.index = index;
         this.optional = optional;
     }
@@ -70,8 +73,8 @@ public class ParameterMetadata {
     }
 
     @NotNull
-    public ImmutableList<Class<?>> getGenericTypes() {
-        return genericTypes;
+    public Type getGenericType() {
+        return genericType;
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ParameterMetadata {
         return Objects.toStringHelper(this)
                 .add("name", name)
                 .add("type", type)
-                .add("genericTypes", genericTypes)
+                .add("genericType", genericType)
                 .add("index", index)
                 .add("optional", optional)
                 .toString();

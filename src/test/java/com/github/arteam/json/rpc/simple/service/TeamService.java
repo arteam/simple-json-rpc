@@ -10,6 +10,7 @@ import com.github.arteam.json.rpc.simple.domain.Team;
 import com.github.arteam.json.rpc.simple.exception.BadCodeTeamServiceException;
 import com.github.arteam.json.rpc.simple.exception.EmptyMessageTeamServiceException;
 import com.github.arteam.json.rpc.simple.exception.TeamServiceAuthException;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -82,7 +83,7 @@ public class TeamService extends BaseService {
                              @JsonRpcOptional @JsonRpcParam("firstName") @Nullable final String firstName,
                              @JsonRpcOptional @JsonRpcParam("lastName") @Nullable final String lastName,
                              @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable final Date birthDate,
-                             @JsonRpcOptional @JsonRpcParam("capHit") @Nullable final double capHit) {
+                             @JsonRpcOptional @JsonRpcParam("capHit") @Nullable final Double capHit) {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
@@ -92,7 +93,7 @@ public class TeamService extends BaseService {
                 if (firstName != null && !player.getFirstName().equals(firstName)) return false;
                 if (lastName != null && !player.getLastName().equals(lastName)) return false;
                 if (birthDate != null && !player.getBirthDate().equals(birthDate)) return false;
-                if (capHit != 0 && player.getCapHit() != capHit) return false;
+                if (capHit!=null && player.getCapHit() != capHit) return false;
                 return true;
             }
         }));
