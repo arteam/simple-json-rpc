@@ -37,12 +37,4 @@ public class ClassMetadata {
     public ImmutableMap<String, MethodMetadata> getMethods() {
         return methods;
     }
-
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                .add("service", service)
-                .add("methods", methods)
-                .toString();
-    }
 }

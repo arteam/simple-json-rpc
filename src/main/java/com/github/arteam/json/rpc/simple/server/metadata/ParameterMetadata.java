@@ -79,7 +79,7 @@ public class ParameterMetadata {
         return Objects.toStringHelper(this)
                 .add("name", name)
                 .add("type", type)
-                .add("genericType", genericTypes)
+                .add("genericTypes", genericTypes)
                 .add("index", index)
                 .add("optional", optional)
                 .toString();
