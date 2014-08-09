@@ -26,15 +26,15 @@ public class Request {
     private final String method;
 
     @NotNull
-    private final ValueNode id;
+    private final JsonNode params;
 
     @NotNull
-    private final JsonNode params;
+    private final ValueNode id;
 
     public Request(@JsonProperty("jsonrpc") @Nullable String jsonrpc,
                    @JsonProperty("method") @Nullable String method,
-                   @JsonProperty("id") @NotNull ValueNode id,
-                   @JsonProperty("params") @NotNull JsonNode params) {
+                   @JsonProperty("params") @NotNull JsonNode params,
+                   @JsonProperty("id") @NotNull ValueNode id) {
         this.jsonrpc = jsonrpc;
         this.method = method;
         this.id = id;
@@ -63,6 +63,6 @@ public class Request {
 
     @Override
     public String toString() {
-        return "Request{jsonrpc=" + jsonrpc + ", method=" + method +", id=" + id + ", params=" + params + "}";
+        return "Request{jsonrpc=" + jsonrpc + ", method=" + method + ", id=" + id + ", params=" + params + "}";
     }
 }

@@ -1,0 +1,98 @@
+{
+    "add_player": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "add",
+            "params": {
+                "player": {
+                    "firstName": "Kevin",
+                    "lastName": "Shattenkirk",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 22,
+                    "position": "D",
+                    "birthDate": "1989-01-29T00:00:00.000+0000",
+                    "capHit": 4.25
+                }
+            },
+            "id": "asd671"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "asd671",
+            "result": true
+        }
+    },
+    "find_shattenkirk": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "findByInitials",
+            "params": {
+                "firstName": "Kevin",
+                "lastName": "Shattenkirk"
+            },
+            "id": "92739"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "92739",
+            "result": {
+                "firstName": "Kevin",
+                "lastName": "Shattenkirk",
+                "team": {
+                    "name": "St. Louis Blues",
+                    "league": "NHL"
+                },
+                "number": 22,
+                "position": "D",
+                "birthDate": "1989-01-29T00:00:00.000+0000",
+                "capHit": 4.25
+            }
+        }
+    },
+    "find_player": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "findByInitials",
+            "params": {
+                "firstName": "Steven",
+                "lastName": "Stamkos"
+            },
+            "id": "43121"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "43121",
+            "result": {
+                "firstName": "Steven",
+                "lastName": "Stamkos",
+                "team": {
+                    "name": "Tampa Bay Lightning",
+                    "league": "NHL"
+                },
+                "number": 91,
+                "position": "C",
+                "birthDate": "1990-02-07T00:00:00.000+0000",
+                "capHit": 7.5
+            }
+        }
+    },
+    "player_is_not_found": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "findByInitials",
+            "params": {
+                "firstName": "Vladimir",
+                "lastName": "Sobotka"
+            },
+            "id": 4111
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 4111,
+            "result": null
+        }
+    }
+}

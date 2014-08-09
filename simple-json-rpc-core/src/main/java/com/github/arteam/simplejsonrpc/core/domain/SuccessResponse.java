@@ -18,7 +18,8 @@ public class SuccessResponse extends Response {
     @JsonProperty("result")
     private final Object result;
 
-    public SuccessResponse(@NotNull ValueNode id, @Nullable Object result) {
+    public SuccessResponse(@JsonProperty("id") @NotNull ValueNode id,
+                           @JsonProperty("result") @Nullable Object result) {
         super(id);
         this.result = result;
     }
