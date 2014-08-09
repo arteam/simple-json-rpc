@@ -5,6 +5,13 @@
     <groupId>com.github.arteam</groupId>
     <artifactId>simple-json-rpc</artifactId>
     <version>0.3-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>simple-json-rpc-core</module>
+        <module>simple-json-rpc-client</module>
+        <module>simple-json-rpc-server</module>
+    </modules>
+    <version>0.2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,11 +42,6 @@
     </licenses>
 
     <build>
-        <testResources>
-            <testResource>
-                <directory>${project.basedir}/src/test/resources</directory>
-            </testResource>
-        </testResources>
 
         <pluginManagement>
             <plugins>
