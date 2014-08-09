@@ -1,6 +1,7 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,5 +33,10 @@ public class ErrorMessage {
     @NotNull
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public String toString() {
+        return "ErrorMessage{code=" + code + ", message=" + message + "}";
     }
 }

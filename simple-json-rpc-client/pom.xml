@@ -12,4 +12,11 @@
     <artifactId>simple-json-rpc-client</artifactId>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>com.github.arteam</groupId>
+            <artifactId>simple-json-rpc-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

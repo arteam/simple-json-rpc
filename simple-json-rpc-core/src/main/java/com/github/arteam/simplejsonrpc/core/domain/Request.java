@@ -63,11 +63,6 @@ public class Request {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("jsonrpc", jsonrpc)
-                .add("method", method)
-                .add("id", id)
-                .add("params", params)
-                .toString();
+        return "Request{jsonrpc=" + jsonrpc + ", method=" + method +", id=" + id + ", params=" + params + "}";
     }
 }
