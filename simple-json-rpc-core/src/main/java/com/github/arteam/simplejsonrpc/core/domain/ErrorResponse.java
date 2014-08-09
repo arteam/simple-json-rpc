@@ -1,5 +1,6 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
@@ -19,8 +20,9 @@ public class ErrorResponse extends Response {
     @JsonProperty("error")
     private final ErrorMessage error;
 
-    public ErrorResponse(@NotNull ValueNode id,
-                         @NotNull ErrorMessage error) {
+    @JsonCreator
+    public ErrorResponse(@JsonProperty("id") @NotNull ValueNode id,
+                         @JsonProperty("error") @NotNull ErrorMessage error) {
         super(id);
         this.error = error;
     }

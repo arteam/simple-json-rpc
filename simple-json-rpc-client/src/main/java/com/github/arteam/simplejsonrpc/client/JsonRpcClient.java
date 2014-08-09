@@ -17,7 +17,7 @@ public class JsonRpcClient {
     @NotNull
     private ObjectMapper mapper = new ObjectMapper();
 
-    public JsonRpcClient(Transport transport) {
+    public JsonRpcClient(@NotNull Transport transport) {
         this.transport = transport;
     }
 

@@ -1,6 +1,7 @@
 package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
@@ -100,22 +101,27 @@ public class RequestBuilder<T> {
         if (method.isEmpty()) {
             throw new IllegalStateException("Method is not set");
         }
-        Request request = new Request("2.0", method, id, params());
-        Response response;
+        Request request = new Request("2.0", method, params(), id);
         try {
             String textRequest = mapper.writeValueAsString(request);
             String textResponse = transport.pass(textRequest);
-            response = mapper.readValue(textResponse, Response.class);
+
+            JsonNode responseNode = mapper.readTree(textResponse);
+            JsonNode result = responseNode.get("result");
+            JsonNode error = responseNode.get("error");
+            if (result != null) {
+                SuccessResponse response = mapper.treeToValue(responseNode, SuccessResponse.class);
+                return (T) response.getResult();
+            } else if (error != null) {
+                ErrorResponse errorResponse = mapper.treeToValue(responseNode, ErrorResponse.class);
+                throw new JsonRpcException(errorResponse.getError());
+            } else {
+                throw new JsonMappingException(textResponse + " isn't JSON-RPC response");
+            }
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Error in JSON processing", e);
         } catch (IOException e) {
             throw new IllegalStateException("I/O error", e);
-        }
-        if (response instanceof SuccessResponse) {
-            return (T) ((SuccessResponse) response).getResult();
-        } else {
-            ErrorResponse errorResponse = (ErrorResponse) response;
-            throw new JsonRpcException(errorResponse.getError());
         }
     }
 
