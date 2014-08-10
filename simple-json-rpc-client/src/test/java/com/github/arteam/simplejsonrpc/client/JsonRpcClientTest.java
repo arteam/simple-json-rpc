@@ -179,4 +179,51 @@ public class JsonRpcClientTest {
         assertThat(players.pop().getLastName()).isEqualTo("Hedman");
     }
 
+    @Test
+    public void testNoParams() {
+        JsonRpcClient client = initClient("getPlayers");
+        List<Player> players = client.createRequest()
+                .method("getPlayers")
+                .id(1000)
+                .returnAsList(Player.class)
+                .execute();
+        assertThat(players).isNotNull();
+        assertThat(players).hasSize(3);
+        assertThat(players.get(0).getLastName()).isEqualTo("Bishop");
+        assertThat(players.get(1).getLastName()).isEqualTo("Tarasenko");
+        assertThat(players.get(2).getLastName()).isEqualTo("Bouwmeester");
+    }
+
+    @Test
+    public void testMap() {
+        Map<String, Integer> contractLengths = new LinkedHashMap<String, Integer>(){{
+            put("Backes", 4);
+            put("Tarasenko", 3);
+            put("Allen", 2);
+            put("Bouwmeester", 5);
+            put("Stamkos", 8);
+            put("Callahan", 3);
+            put("Bishop", 4);
+            put("Hedman", 2);
+        }};
+        JsonRpcClient client = initClient("getContractSums");
+        Map<String, Double> contractSums = client.createRequest()
+                .method("getContractSums")
+                .id(97555)
+                .param("contractLengths", contractLengths)
+                .returnAsMap(LinkedHashMap.class, Double.class)
+                .execute();
+        assertThat(contractSums).isExactlyInstanceOf(LinkedHashMap.class);
+        assertThat(contractSums).isEqualTo(new HashMap<String, Double>(){{
+            put("Backes", 18.0);
+            put("Tarasenko", 2.7);
+            put("Allen", 1.0);
+            put("Bouwmeester", 27.0);
+            put("Stamkos", 60.0);
+            put("Callahan", 17.4);
+            put("Bishop", 9.2);
+            put("Hedman", 8.0);
+        }});
+    }
+
 }
