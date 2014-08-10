@@ -21,7 +21,8 @@ public class ErrorMessage {
     @JsonProperty("message")
     private final String message;
 
-    public ErrorMessage(int code, @NotNull String message) {
+    public ErrorMessage(@JsonProperty("code") int code,
+                        @JsonProperty("message") @NotNull String message) {
         this.code = code;
         this.message = message;
     }

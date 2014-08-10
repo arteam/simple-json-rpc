@@ -60,11 +60,11 @@
                 "firstName": "Steven",
                 "lastName": "Stamkos"
             },
-            "id": "43121"
+            "id": 43121
         },
         "response": {
             "jsonrpc": "2.0",
-            "id": "43121",
+            "id": 43121,
             "result": {
                 "firstName": "Steven",
                 "lastName": "Stamkos",
@@ -93,6 +93,82 @@
             "jsonrpc": "2.0",
             "id": 4111,
             "result": null
+        }
+    },
+    "find_player_array": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "findByInitials",
+            "params": ["Ben", "Bishop"],
+            "id": "dsfs1214"
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": "dsfs1214",
+            "result": {
+                "firstName": "Ben",
+                "lastName": "Bishop",
+                "team": {
+                    "name": "Tampa Bay Lightning",
+                    "league": "NHL"
+                },
+                "number": 30,
+                "position": "G",
+                "birthDate": "1986-11-21T00:00:00.000+0000",
+                "capHit": 2.3
+            }
+        }
+    },
+    "findByBirthYear": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "find_by_birth_year",
+            "params": {
+                "birth_year": 1990
+            },
+            "id": 5621
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 5621,
+            "result": [
+                {
+                    "firstName": "Jack",
+                    "lastName": "Allen",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 34,
+                    "position": "G",
+                    "birthDate": "1990-08-07T00:00:00.000+0000",
+                    "capHit": 0.5
+                },
+                {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "C",
+                    "birthDate": "1990-02-07T00:00:00.000+0000",
+                    "capHit": 7.5
+                },
+                {
+                    "firstName": "Victor",
+                    "lastName": "Hedman",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 77,
+                    "position": "D",
+                    "birthDate": "1990-12-18T00:00:00.000+0000",
+                    "capHit": 4.0
+                }
+            ]
         }
     }
 }

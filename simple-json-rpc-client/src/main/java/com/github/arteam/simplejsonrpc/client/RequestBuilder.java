@@ -6,13 +6,21 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
+import com.fasterxml.jackson.databind.type.CollectionLikeType;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorResponse;
 import com.github.arteam.simplejsonrpc.core.domain.Request;
 import com.github.arteam.simplejsonrpc.core.domain.SuccessResponse;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Date: 8/9/14
@@ -22,7 +30,8 @@ import java.io.IOException;
  */
 public class RequestBuilder<T> {
 
-    public static final String VERSION = "2.0";
+    public static final String VERSION_2_0 = "2.0";
+
     @NotNull
     private Transport transport;
 
@@ -82,49 +91,91 @@ public class RequestBuilder<T> {
 
     @NotNull
     public RequestBuilder<T> method(@NotNull String method) {
-        this.method = method;
         return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams, javaType);
     }
 
     @NotNull
     public RequestBuilder<T> param(@NotNull String name, @NotNull Object value) {
-        objectParams.set(name, mapper.valueToTree(value));
-        return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams, javaType);
+        ObjectNode newObjectParams = objectParams.deepCopy();
+        newObjectParams.set(name, mapper.valueToTree(value));
+        return new RequestBuilder<T>(transport, mapper, method, id, newObjectParams, arrayParams, javaType);
     }
 
     @NotNull
     public RequestBuilder<T> params(@NotNull Object... values) {
-        for (int i = 0; i < values.length; i++) {
-            arrayParams.set(i, mapper.valueToTree(values[i]));
+        ArrayNode newArrayParams = mapper.createArrayNode();
+        for (Object value : values) {
+            newArrayParams.add(mapper.valueToTree(value));
         }
-        return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams, javaType);
+        return new RequestBuilder<T>(transport, mapper, method, id, objectParams, newArrayParams, javaType);
     }
 
     @NotNull
-    public <NT> RequestBuilder<NT> responseType(@NotNull Class<NT> responseType) {
+    public <NT> RequestBuilder<NT> returnAs(@NotNull Class<NT> responseType) {
         return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
                 SimpleType.construct(responseType));
     }
 
+    @NotNull
+    public <E> RequestBuilder<List<E>> returnAsList(@NotNull Class<E> elementType) {
+        return new RequestBuilder<List<E>>(transport, mapper, method, id, objectParams, arrayParams,
+                mapper.getTypeFactory().constructCollectionType(List.class, elementType));
+    }
+
+    @NotNull
+    public <E> RequestBuilder<Set<E>> returnAsSet(@NotNull Class<E> elementType) {
+        return new RequestBuilder<Set<E>>(transport, mapper, method, id, objectParams, arrayParams,
+                mapper.getTypeFactory().constructCollectionType(Set.class, elementType));
+    }
+
+    @NotNull
+    public <E> RequestBuilder<Collection<E>> returnAsCollection(@NotNull Class<? extends Collection> collectionType,
+                                                         @NotNull Class<E> elementType) {
+        return new RequestBuilder<Collection<E>>(transport, mapper, method, id, objectParams, arrayParams,
+                mapper.getTypeFactory().constructCollectionType(collectionType, elementType));
+    }
+
+    @NotNull
+    public <E> RequestBuilder<E[]> returnAsArray(@NotNull Class<E> elementType) {
+        return new RequestBuilder<E[]>(transport, mapper, method, id, objectParams, arrayParams,
+                mapper.getTypeFactory().constructArrayType(elementType));
+    }
+
+    @NotNull
+    public <K, V> RequestBuilder<Map<K, V>> returnAsMap(@NotNull Class<K> keyType, @NotNull Class<V> valueType) {
+        return new RequestBuilder<Map<K, V>>(transport, mapper, method, id, objectParams, arrayParams,
+                mapper.getTypeFactory().constructMapType(Map.class, keyType, valueType));
+    }
+
+    @Nullable
     @SuppressWarnings("unchecked")
     public T execute() {
         if (method.isEmpty()) {
             throw new IllegalStateException("Method is not set");
         }
-        Request request = new Request(VERSION, method, params(), id);
+        Request request = new Request(VERSION_2_0, method, params(), id);
         try {
             String textRequest = mapper.writeValueAsString(request);
             String textResponse = transport.pass(textRequest);
 
             JsonNode responseNode = mapper.readTree(textResponse);
             JsonNode result = responseNode.get("result");
-            JsonNode version = responseNode.get("error");
+            JsonNode error = responseNode.get("error");
+            JsonNode version = responseNode.get("jsonrpc");
+            JsonNode id = responseNode.get("id");
 
-            if (result != null && version == null) {
-                return mapper.convertValue(responseNode, javaType);
+            if (version == null || !version.asText().equals(VERSION_2_0)) {
+                throw new IllegalStateException("Bad protocol version in response: " + responseNode);
+            }
+            if (id == null) {
+                throw new IllegalStateException("Unspecified id in response: " + responseNode);
+            }
+
+            if (result != null && error == null) {
+                return mapper.convertValue(result, javaType);
             } else {
-                ErrorResponse errorResponse = mapper.treeToValue(responseNode, ErrorResponse.class);
-                throw new JsonRpcException(errorResponse.getError());
+                ErrorMessage errorMessage = mapper.treeToValue(error, ErrorMessage.class);
+                throw new JsonRpcException(errorMessage);
             }
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Error in JSON processing", e);
