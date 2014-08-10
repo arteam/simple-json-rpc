@@ -130,7 +130,7 @@ public class RequestBuilder<T> {
 
     @NotNull
     public <E> RequestBuilder<Collection<E>> returnAsCollection(@NotNull Class<? extends Collection> collectionType,
-                                                         @NotNull Class<E> elementType) {
+                                                                @NotNull Class<E> elementType) {
         return new RequestBuilder<Collection<E>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructCollectionType(collectionType, elementType));
     }
@@ -142,9 +142,9 @@ public class RequestBuilder<T> {
     }
 
     @NotNull
-    public <K, V> RequestBuilder<Map<K, V>> returnAsMap(@NotNull Class<K> keyType, @NotNull Class<V> valueType) {
-        return new RequestBuilder<Map<K, V>>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructMapType(Map.class, keyType, valueType));
+    public <V> RequestBuilder<Map<String, V>> returnAsMap(@NotNull Class<? extends Map> mapClass, @NotNull Class<V> valueType) {
+        return new RequestBuilder<Map<String, V>>(transport, mapper, method, id, objectParams, arrayParams,
+                mapper.getTypeFactory().constructMapType(mapClass, String.class, valueType));
     }
 
     @Nullable
@@ -186,14 +186,12 @@ public class RequestBuilder<T> {
 
     @NotNull
     private JsonNode params() {
-        if (objectParams.size() > 0 && arrayParams.size() > 0) {
-            throw new IllegalStateException("Both object and array params are set");
-        } else if (objectParams.size() > 0 && arrayParams.size() == 0) {
+        if (objectParams.size() > 0) {
+            if (arrayParams.size() > 0) {
+                throw new IllegalStateException("Both object and array params are set");
+            }
             return objectParams;
-        } else if (objectParams.size() == 0 && arrayParams.size() > 0) {
-            return arrayParams;
-        } else {
-            return NullNode.instance;
         }
+        return arrayParams;
     }
 }

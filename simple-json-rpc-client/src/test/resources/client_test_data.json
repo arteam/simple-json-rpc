@@ -170,5 +170,88 @@
                 }
             ]
         }
+    },
+    "getPlayers": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "getPlayers",
+            "params": [],
+            "id": 1000
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                {
+                    "firstName": "Ben",
+                    "lastName": "Bishop",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 30,
+                    "position": "G",
+                    "birthDate": "1986-11-21T00:00:00.000+0000",
+                    "capHit": 2.3
+                },
+                {
+                    "firstName": "Vladimir",
+                    "lastName": "Tarasenko",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "RW",
+                    "birthDate": "1991-12-13T00:00:00.000+0000",
+                    "capHit": 0.9
+                },
+                {
+                    "firstName": "Jay",
+                    "lastName": "Bouwmeester",
+                    "team": {
+                        "name": "St. Louis Blues",
+                        "league": "NHL"
+                    },
+                    "number": 19,
+                    "position": "D",
+                    "birthDate": "1985-08-07T00:00:00.000+0000",
+                    "capHit": 5.4
+                }
+            ]
+        }
+    },
+    "getContractSums": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "getContractSums",
+            "params": {
+                "contractLengths": {
+                    "Backes": 4,
+                    "Tarasenko": 3,
+                    "Allen": 2,
+                    "Bouwmeester": 5,
+                    "Stamkos": 8,
+                    "Callahan": 3,
+                    "Bishop": 4,
+                    "Hedman": 2
+                }
+            },
+            "id": 97555
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 97555,
+            "result": {
+                "Backes": 18.0,
+                "Tarasenko": 2.7,
+                "Allen": 1.0,
+                "Bouwmeester": 27.0,
+                "Stamkos": 60.0,
+                "Callahan": 17.4,
+                "Bishop": 9.2,
+                "Hedman": 8.0
+            }
+        }
     }
 }
