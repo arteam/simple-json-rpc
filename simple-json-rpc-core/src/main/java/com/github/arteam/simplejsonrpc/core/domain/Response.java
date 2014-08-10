@@ -19,7 +19,7 @@ public class Response {
 
     @NotNull
     @JsonProperty("jsonrpc")
-    private final String jsonrpc = VERSION;
+    private final String jsonrpc;
 
     @NotNull
     @JsonProperty("id")
@@ -27,6 +27,12 @@ public class Response {
 
     public Response(@NotNull ValueNode id) {
         this.id = id;
+        jsonrpc = VERSION;
+    }
+
+    public Response(@NotNull ValueNode id, @NotNull String jsonrpc) {
+        this.id = id;
+        this.jsonrpc = jsonrpc;
     }
 
     @NotNull
