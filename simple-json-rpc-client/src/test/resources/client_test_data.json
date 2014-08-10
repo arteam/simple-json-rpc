@@ -253,5 +253,21 @@
                 "Hedman": 8.0
             }
         }
+    },
+    "methodNotFound": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "getPlayer",
+            "params": [],
+            "id": 1001
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 1001,
+            "error": {
+                "code": -32601,
+                "message": "Method not found"
+            }
+        }
     }
 }

@@ -15,10 +15,10 @@ public class JsonRpcClient {
     private Transport transport;
 
     @NotNull
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     public JsonRpcClient(@NotNull Transport transport) {
-        this.transport = transport;
+        this(transport, new ObjectMapper());
     }
 
     public JsonRpcClient(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
@@ -26,8 +26,9 @@ public class JsonRpcClient {
         this.mapper = mapper;
     }
 
-    public RequestBuilder<?> createRequest() {
-        return new RequestBuilder(transport, mapper);
+    @NotNull
+    public RequestBuilder<Object> createRequest() {
+        return new RequestBuilder<Object>(transport, mapper);
     }
 
 }

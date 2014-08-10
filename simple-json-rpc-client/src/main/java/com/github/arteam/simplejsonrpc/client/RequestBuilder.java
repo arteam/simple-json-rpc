@@ -61,6 +61,7 @@ public class RequestBuilder<T> {
         objectParams = mapper.createObjectNode();
         arrayParams = mapper.createArrayNode();
         method = "";
+        javaType = SimpleType.construct(Object.class);
     }
 
     private RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper, @NotNull String method,
