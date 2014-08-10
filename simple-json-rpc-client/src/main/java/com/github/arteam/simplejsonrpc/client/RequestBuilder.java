@@ -1,6 +1,7 @@
 package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -145,6 +146,12 @@ public class RequestBuilder<T> {
     public <V> RequestBuilder<Map<String, V>> returnAsMap(@NotNull Class<? extends Map> mapClass, @NotNull Class<V> valueType) {
         return new RequestBuilder<Map<String, V>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructMapType(mapClass, String.class, valueType));
+    }
+
+    @NotNull
+    public <NT> RequestBuilder<NT> returnAs(@NotNull TypeReference<NT> tr){
+        return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
+                mapper.getTypeFactory().constructType(tr.getType()));
     }
 
     @Nullable

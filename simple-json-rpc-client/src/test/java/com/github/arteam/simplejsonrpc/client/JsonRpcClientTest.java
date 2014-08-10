@@ -1,11 +1,14 @@
 package com.github.arteam.simplejsonrpc.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTimeZone;
@@ -30,7 +33,8 @@ public class JsonRpcClientTest {
     private static Map<String, RequestResponse> requestsResponses;
 
     ObjectMapper mapper = new ObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .registerModule(new GuavaModule());
 
 
     @BeforeClass
@@ -196,7 +200,7 @@ public class JsonRpcClientTest {
 
     @Test
     public void testMap() {
-        Map<String, Integer> contractLengths = new LinkedHashMap<String, Integer>(){{
+        Map<String, Integer> contractLengths = new LinkedHashMap<String, Integer>() {{
             put("Backes", 4);
             put("Tarasenko", 3);
             put("Allen", 2);
@@ -214,7 +218,7 @@ public class JsonRpcClientTest {
                 .returnAsMap(LinkedHashMap.class, Double.class)
                 .execute();
         assertThat(contractSums).isExactlyInstanceOf(LinkedHashMap.class);
-        assertThat(contractSums).isEqualTo(new HashMap<String, Double>(){{
+        assertThat(contractSums).isEqualTo(new HashMap<String, Double>() {{
             put("Backes", 18.0);
             put("Tarasenko", 2.7);
             put("Allen", 1.0);
@@ -224,6 +228,19 @@ public class JsonRpcClientTest {
             put("Bishop", 9.2);
             put("Hedman", 8.0);
         }});
+    }
+
+    @Test
+    public void testOptional() {
+        JsonRpcClient client = initClient("player_is_not_found");
+        Optional<Player> optionalPlayer = client.createRequest()
+                .method("findByInitials")
+                .id(4111L)
+                .param("firstName", "Vladimir")
+                .param("lastName", "Sobotka")
+                .returnAs(new TypeReference<Optional<Player>>() { })
+                .execute();
+        assertThat(optionalPlayer.isPresent()).isFalse();
     }
 
 }
