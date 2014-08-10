@@ -57,8 +57,7 @@ public class JsonRpcClientTest {
                 .method("add")
                 .param("player", new Player("Kevin", "Shattenkirk",
                         new Team("St. Louis Blues", "NHL"), 22, Position.DEFENDER,
-                        ISODateTimeFormat.date().withZone(DateTimeZone.UTC)
-                                .parseDateTime("1989-01-29").toDate(),
+                        ISODateTimeFormat.date().withZone(DateTimeZone.UTC).parseDateTime("1989-01-29").toDate(),
                         4.25))
                 .responseType(Boolean.class)
                 .execute();
