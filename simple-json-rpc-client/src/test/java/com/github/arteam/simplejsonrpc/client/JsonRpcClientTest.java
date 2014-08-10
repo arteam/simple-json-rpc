@@ -8,11 +8,13 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
+import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -238,9 +240,28 @@ public class JsonRpcClientTest {
                 .id(4111L)
                 .param("firstName", "Vladimir")
                 .param("lastName", "Sobotka")
-                .returnAs(new TypeReference<Optional<Player>>() { })
+                .returnAs(new TypeReference<Optional<Player>>() {
+                })
                 .execute();
         assertThat(optionalPlayer.isPresent()).isFalse();
+    }
+
+    @Test
+    public void testJsonRpcError() {
+        JsonRpcClient client = initClient("methodNotFound");
+        try {
+            client.createRequest()
+                    .method("getPlayer")
+                    .id(1001)
+                    .returnAs(Player.class)
+                    .execute();
+            Assert.fail();
+        } catch (JsonRpcException e) {
+            e.printStackTrace();
+            ErrorMessage errorMessage = e.getErrorMessage();
+            assertThat(errorMessage.getCode()).isEqualTo(-32601);
+            assertThat(errorMessage.getMessage()).isEqualTo("Method not found");
+        }
     }
 
 }
