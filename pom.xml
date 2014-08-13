@@ -11,7 +11,6 @@
         <module>simple-json-rpc-client</module>
         <module>simple-json-rpc-server</module>
     </modules>
-    <version>0.2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
