@@ -26,34 +26,73 @@ import java.util.Set;
 /**
  * Date: 8/9/14
  * Time: 9:04 PM
+ * <p/>
+ * Type-safe builder of JSON-RPC requests.
+ * <p/>
+ * It introduces fluent API to build a request, set an expected response type and perform the request.
+ * Builder is immutable: every mutation creates a new object, so it's safe to use in multi-threaded environment.
+ * <p/>
+ * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link Transport}.
  *
  * @author Artem Prigoda
  */
 public class RequestBuilder<T> {
 
-    public static final String VERSION_2_0 = "2.0";
+    // Response fields
+    private static final String VERSION_2_0 = "2.0";
+    private static final String RESULT = "result";
+    private static final String ERROR = "error";
+    private static final String JSONRPC = "jsonrpc";
+    private static final String ID = "id";
 
+    /**
+     * Transport for performing a text request and returning a text response
+     */
     @NotNull
-    private Transport transport;
+    private final Transport transport;
 
+    /**
+     * Jackson mapper for JSON processing
+     */
     @NotNull
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
+    /**
+     * JSON-RPC request method
+     */
     @NotNull
-    private String method;
+    private final String method;
 
+    /**
+     * JSON-RPC request id
+     */
     @NotNull
-    private ValueNode id;
+    private final ValueNode id;
 
+    /**
+     * JSON-RPC request params as a map
+     */
     @NotNull
-    private ObjectNode objectParams;
+    private final ObjectNode objectParams;
 
+    /**
+     * JSON-RPC request params as an array
+     */
     @NotNull
-    private ArrayNode arrayParams;
+    private final ArrayNode arrayParams;
 
+    /**
+     * Generic type for representing expected response type
+     */
     @NotNull
-    private JavaType javaType;
+    private final JavaType javaType;
 
+    /**
+     * Creates a new default request builder without actual parameters
+     *
+     * @param transport transport for request performing
+     * @param mapper    mapper for JSON processing
+     */
     public RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
         this.transport = transport;
         this.mapper = mapper;
@@ -64,6 +103,17 @@ public class RequestBuilder<T> {
         javaType = SimpleType.construct(Object.class);
     }
 
+    /**
+     * Creates new builder as part of a chain of builders to a full-initialized type-safe builder
+     *
+     * @param transport    new transport
+     * @param mapper       new mapper
+     * @param method       new method
+     * @param id           new id
+     * @param objectParams new object params
+     * @param arrayParams  new array params
+     * @param javaType     new response type
+     */
     private RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper, @NotNull String method,
                            @NotNull ValueNode id, @NotNull ObjectNode objectParams, @NotNull ArrayNode arrayParams,
                            @NotNull JavaType javaType) {
@@ -76,26 +126,71 @@ public class RequestBuilder<T> {
         this.javaType = javaType;
     }
 
+    /**
+     * Sets a request id as a long value
+     *
+     * @param id a  request id
+     * @return new builder
+     */
     @NotNull
     public RequestBuilder<T> id(@NotNull Long id) {
         return new RequestBuilder<T>(transport, mapper, method, new LongNode(id), objectParams, arrayParams, javaType);
     }
 
+    /**
+     * Sets a request id as an integer value
+     *
+     * @param id a request id
+     * @return new builder
+     */
     @NotNull
     public RequestBuilder<T> id(@NotNull Integer id) {
         return new RequestBuilder<T>(transport, mapper, method, new IntNode(id), objectParams, arrayParams, javaType);
     }
 
+    /**
+     * Sets a request id as a string value
+     *
+     * @param id a request id
+     * @return new builder
+     */
     @NotNull
     public RequestBuilder<T> id(@NotNull String id) {
         return new RequestBuilder<T>(transport, mapper, method, new TextNode(id), objectParams, arrayParams, javaType);
     }
 
+    /**
+     * Sets a request method
+     *
+     * @param method a request method
+     * @return new builder
+     */
     @NotNull
     public RequestBuilder<T> method(@NotNull String method) {
         return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams, javaType);
     }
 
+    /**
+     * Adds a new parameter to current request parameters.
+     * <p/>
+     * <i>Caution:</i> If you set request parameters this way, you should follow this convention
+     * during all the building process like that:
+     * <pre>
+     * client.createRequest()
+     *       .method("find")
+     *       .id(43121)
+     *       .param("firstName", "Steven")
+     *       .param("lastName", "Stamkos")
+     *       .returnAs(Player.class)
+     *       .execute();
+     * </pre>
+     * <p/>
+     * <b>Calls to <i>params</i> method are not permitted after this method has been invoked</b>.
+     *
+     * @param name  parameter name
+     * @param value parameter value
+     * @return new builder
+     */
     @NotNull
     public RequestBuilder<T> param(@NotNull String name, @NotNull Object value) {
         ObjectNode newObjectParams = objectParams.deepCopy();
@@ -103,6 +198,13 @@ public class RequestBuilder<T> {
         return new RequestBuilder<T>(transport, mapper, method, id, newObjectParams, arrayParams, javaType);
     }
 
+    /**
+     * Sets request parameters to request parameters.
+     * Parameters are interpreted according to its positions.
+     *
+     * @param values array of parameters
+     * @return new builder
+     */
     @NotNull
     public RequestBuilder<T> params(@NotNull Object... values) {
         ArrayNode newArrayParams = mapper.createArrayNode();
@@ -112,24 +214,53 @@ public class RequestBuilder<T> {
         return new RequestBuilder<T>(transport, mapper, method, id, objectParams, newArrayParams, javaType);
     }
 
+    /**
+     * Sets expected return type. This method is suitable for non-generic types
+     *
+     * @param responseType expected return type
+     * @param <NT>         new return type
+     * @return new builder
+     */
     @NotNull
     public <NT> RequestBuilder<NT> returnAs(@NotNull Class<NT> responseType) {
         return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
                 SimpleType.construct(responseType));
     }
 
+    /**
+     * Sets expected return type as a list of objects
+     *
+     * @param elementType type of elements of a list
+     * @param <E>         generic list type
+     * @return new builder
+     */
     @NotNull
     public <E> RequestBuilder<List<E>> returnAsList(@NotNull Class<E> elementType) {
         return new RequestBuilder<List<E>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructCollectionType(List.class, elementType));
     }
 
+    /**
+     * Sets expected return type as a set of objects
+     *
+     * @param elementType type of elements of a set
+     * @param <E>         generic set type
+     * @return new builder
+     */
     @NotNull
     public <E> RequestBuilder<Set<E>> returnAsSet(@NotNull Class<E> elementType) {
         return new RequestBuilder<Set<E>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructCollectionType(Set.class, elementType));
     }
 
+    /**
+     * Sets expected return type as a collection of objects.
+     * This method is suitable for non-standard collections like {@link java.util.Queue}
+     *
+     * @param elementType type of elements of a collection
+     * @param <E>         generic collection type
+     * @return new builder
+     */
     @NotNull
     public <E> RequestBuilder<Collection<E>> returnAsCollection(@NotNull Class<? extends Collection> collectionType,
                                                                 @NotNull Class<E> elementType) {
@@ -137,58 +268,109 @@ public class RequestBuilder<T> {
                 mapper.getTypeFactory().constructCollectionType(collectionType, elementType));
     }
 
+    /**
+     * Sets expected return type as an array
+     *
+     * @param elementType type of elements of an array
+     * @param <E>         generic array type
+     * @return new builder
+     */
     @NotNull
     public <E> RequestBuilder<E[]> returnAsArray(@NotNull Class<E> elementType) {
         return new RequestBuilder<E[]>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructArrayType(elementType));
     }
 
+    /**
+     * Sets expected return type as a map of objects.
+     * Because JSON type system the map should have strings as keys.
+     *
+     * @param mapClass  expected map interface or implementation,
+     *                  e.g. {@link java.util.Map}, {@link java.util.HashMap}.
+     *                  {@link java.util.LinkedHashMap}, {@link java.util.SortedMap}
+     * @param valueType map value type
+     * @param <V>       generic map value type
+     * @return new builder
+     */
     @NotNull
-    public <V> RequestBuilder<Map<String, V>> returnAsMap(@NotNull Class<? extends Map> mapClass, @NotNull Class<V> valueType) {
+    public <V> RequestBuilder<Map<String, V>> returnAsMap(@NotNull Class<? extends Map> mapClass,
+                                                          @NotNull Class<V> valueType) {
         return new RequestBuilder<Map<String, V>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructMapType(mapClass, String.class, valueType));
     }
 
+    /**
+     * Sets expected return type as a generic type, e.g. Guava Optional.
+     * Generic type is set as a type reference like that:
+     * <pre> new TypeReference<Optional<String>>() {} </pre>
+     *
+     * @param tr   type reference
+     * @param <NT> a generic type
+     * @return new builder
+     */
     @NotNull
-    public <NT> RequestBuilder<NT> returnAs(@NotNull TypeReference<NT> tr){
+    public <NT> RequestBuilder<NT> returnAs(@NotNull TypeReference<NT> tr) {
         return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructType(tr.getType()));
     }
 
+    /**
+     * Execute a request through {@link Transport} and convert a response to an expected type
+     *
+     * @return expected response
+     * @throws JsonRpcException in case of JSON-RPC error, returned by the server
+     */
     @Nullable
     @SuppressWarnings("unchecked")
     public T execute() {
         if (method.isEmpty()) {
-            throw new IllegalStateException("Method is not set");
+            throw new IllegalArgumentException("Method is not set");
         }
         Request request = new Request(VERSION_2_0, method, params(), id);
+        String textRequest;
+        String textResponse;
         try {
-            String textRequest = mapper.writeValueAsString(request);
-            String textResponse = transport.pass(textRequest);
+            textRequest = mapper.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Unable convert " + request + " to JSON", e);
+        }
+        try {
+            textResponse = transport.pass(textRequest);
+        } catch (IOException e) {
+            throw new IllegalStateException("I/O error during a request processing", e);
+        }
 
+        try {
             JsonNode responseNode = mapper.readTree(textResponse);
-            JsonNode result = responseNode.get("result");
-            JsonNode error = responseNode.get("error");
-            JsonNode version = responseNode.get("jsonrpc");
-            JsonNode id = responseNode.get("id");
+            JsonNode result = responseNode.get(RESULT);
+            JsonNode error = responseNode.get(ERROR);
+            JsonNode version = responseNode.get(JSONRPC);
+            JsonNode id = responseNode.get(ID);
 
-            if (version == null || !version.asText().equals(VERSION_2_0)) {
-                throw new IllegalStateException("Bad protocol version in response: " + responseNode);
+            if (version == null) {
+                throw new IllegalStateException("Not a JSON-RPC response: " + responseNode);
+            }
+            if (!version.asText().equals(VERSION_2_0)) {
+                throw new IllegalStateException("Bad protocol version in a response: " + responseNode);
             }
             if (id == null) {
-                throw new IllegalStateException("Unspecified id in response: " + responseNode);
+                throw new IllegalStateException("Unspecified id in a response: " + responseNode);
             }
 
-            if (result != null && error == null) {
-                return mapper.convertValue(result, javaType);
+            if (error == null) {
+                if (result != null) {
+                    return mapper.convertValue(result, javaType);
+                } else {
+                    throw new IllegalStateException("Neither result or error is set in a response: " + responseNode);
+                }
             } else {
                 ErrorMessage errorMessage = mapper.treeToValue(error, ErrorMessage.class);
                 throw new JsonRpcException(errorMessage);
             }
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Error in JSON processing", e);
+            throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
         } catch (IOException e) {
-            throw new IllegalStateException("I/O error", e);
+            throw new IllegalStateException("I/O error during a response processing", e);
         }
     }
 
@@ -196,7 +378,7 @@ public class RequestBuilder<T> {
     private JsonNode params() {
         if (objectParams.size() > 0) {
             if (arrayParams.size() > 0) {
-                throw new IllegalStateException("Both object and array params are set");
+                throw new IllegalArgumentException("Both object and array params are set");
             }
             return objectParams;
         }

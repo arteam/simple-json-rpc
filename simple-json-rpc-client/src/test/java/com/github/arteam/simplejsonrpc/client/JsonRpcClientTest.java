@@ -240,8 +240,7 @@ public class JsonRpcClientTest {
                 .id(4111L)
                 .param("firstName", "Vladimir")
                 .param("lastName", "Sobotka")
-                .returnAs(new TypeReference<Optional<Player>>() {
-                })
+                .returnAs(new TypeReference<Optional<Player>>() {})
                 .execute();
         assertThat(optionalPlayer.isPresent()).isFalse();
     }

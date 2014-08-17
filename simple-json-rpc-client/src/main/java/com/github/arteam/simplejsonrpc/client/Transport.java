@@ -15,8 +15,8 @@ import java.io.IOException;
 public interface Transport {
 
     /**
-     * Passes a JSON-RPC request in a text form to a backend
-     * and return a JSON-RPC response in a text form as well
+     * Passes a JSON-RPC request in a text form to a backend and
+     * returns a JSON-RPC response in a text form as well
      *
      * @param request JSON-RPC request as a string
      * @return JSON-RPC response as a string
