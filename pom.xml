@@ -7,9 +7,9 @@
     <version>0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>simple-json-rpc-core</module>
-        <module>simple-json-rpc-client</module>
-        <module>simple-json-rpc-server</module>
+        <module>core</module>
+        <module>client</module>
+        <module>server</module>
     </modules>
 
     <properties>
