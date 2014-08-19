@@ -137,6 +137,9 @@ public class JsonRpcServer {
         JsonNode rootRequest;
         try {
             rootRequest = mapper.readTree(textRequest);
+            if (log.isDebugEnabled()) {
+                log.debug("Request : {}", mapper.writeValueAsString(rootRequest));
+            }
         } catch (IOException e) {
             log.error("Bad json request", e);
             return toJson(new ErrorResponse(PARSE_ERROR));
@@ -208,7 +211,7 @@ public class JsonRpcServer {
         try {
             return handleSingle(request, service);
         } catch (Exception e) {
-            log.error("Internal error", e);
+            log.error("Internal error while processing: " + request, e);
             return handleError(request, e);
         }
     }
@@ -383,7 +386,11 @@ public class JsonRpcServer {
     @NotNull
     private String toJson(@NotNull Object value) {
         try {
-            return mapper.writeValueAsString(value);
+            String response = mapper.writeValueAsString(value);
+            if (log.isDebugEnabled()) {
+                log.debug("Response: {}", response);
+            }
+            return response;
         } catch (JsonProcessingException e) {
             log.error("Unable write json: " + value, e);
             throw new IllegalStateException(e);
