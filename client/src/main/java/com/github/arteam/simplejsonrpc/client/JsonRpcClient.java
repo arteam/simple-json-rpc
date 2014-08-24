@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.client.builder.BatchRequestBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.NotificationRequestBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.RequestBuilder;
+import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Proxy;
 
 /**
  * Date: 8/9/14
@@ -77,6 +80,19 @@ public class JsonRpcClient {
     @NotNull
     public BatchRequestBuilder<?, ?> createBatchRequest() {
         return new BatchRequestBuilder<Object, Object>(transport, mapper);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <T> T onDemand(Class<T> clazz) {
+        return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
+                new ObjectAPIProxyBuilder(transport, mapper));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T onDemand(Class<T> clazz, IdGenerator<?> idGenerator) {
+        return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
+                new ObjectAPIProxyBuilder(transport, mapper, idGenerator));
     }
 
 }
