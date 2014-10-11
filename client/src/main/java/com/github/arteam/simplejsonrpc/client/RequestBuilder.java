@@ -38,12 +38,14 @@ import java.util.Set;
  */
 public class RequestBuilder<T> {
 
-    // Response fields
+    // Protocol constants
     private static final String VERSION_2_0 = "2.0";
     private static final String RESULT = "result";
     private static final String ERROR = "error";
     private static final String JSONRPC = "jsonrpc";
     private static final String ID = "id";
+    private static final String METHOD = "method";
+    private static final String PARAMS = "params";
 
     /**
      * Transport for performing a text request and returning a text response
@@ -323,22 +325,7 @@ public class RequestBuilder<T> {
     @Nullable
     @SuppressWarnings("unchecked")
     public T execute() {
-        if (method.isEmpty()) {
-            throw new IllegalArgumentException("Method is not set");
-        }
-        Request request = new Request(VERSION_2_0, method, params(), id);
-        String textRequest;
-        String textResponse;
-        try {
-            textRequest = mapper.writeValueAsString(request);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Unable convert " + request + " to JSON", e);
-        }
-        try {
-            textResponse = transport.pass(textRequest);
-        } catch (IOException e) {
-            throw new IllegalStateException("I/O error during a request processing", e);
-        }
+        String textResponse = executeRequest();
 
         try {
             JsonNode responseNode = mapper.readTree(textResponse);
@@ -372,6 +359,33 @@ public class RequestBuilder<T> {
         } catch (IOException e) {
             throw new IllegalStateException("I/O error during a response processing", e);
         }
+    }
+
+    String executeRequest() {
+        if (method.isEmpty()) {
+            throw new IllegalArgumentException("Method is not set");
+        }
+        ObjectNode requestNode = mapper.createObjectNode();
+        requestNode.put(JSONRPC, VERSION_2_0)
+                .put(METHOD, method)
+                .set(PARAMS, params());
+        // Check id for null (request maybe a notification)
+        if (!id.isNull()) {
+            requestNode.set(ID, id);
+        }
+        String textRequest;
+        String textResponse;
+        try {
+            textRequest = mapper.writeValueAsString(requestNode);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Unable convert " + requestNode + " to JSON", e);
+        }
+        try {
+            textResponse = transport.pass(textRequest);
+        } catch (IOException e) {
+            throw new IllegalStateException("I/O error during a request processing", e);
+        }
+        return textResponse;
     }
 
     @NotNull
