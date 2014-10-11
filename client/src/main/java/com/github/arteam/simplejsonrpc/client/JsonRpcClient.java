@@ -56,4 +56,14 @@ public class JsonRpcClient {
         return new RequestBuilder<Object>(transport, mapper);
     }
 
+    /**
+     * Creates a builder of a JSON-RPC notification request in initial state
+     *
+     * @return notification request builder
+     */
+    @NotNull
+    public NotificationRequestBuilder createNotification() {
+        return new NotificationRequestBuilder(transport, mapper);
+    }
+
 }
