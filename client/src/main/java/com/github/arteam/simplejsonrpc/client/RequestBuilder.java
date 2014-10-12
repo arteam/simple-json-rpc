@@ -36,28 +36,7 @@ import java.util.Set;
  *
  * @author Artem Prigoda
  */
-public class RequestBuilder<T> {
-
-    // Protocol constants
-    private static final String VERSION_2_0 = "2.0";
-    private static final String RESULT = "result";
-    private static final String ERROR = "error";
-    private static final String JSONRPC = "jsonrpc";
-    private static final String ID = "id";
-    private static final String METHOD = "method";
-    private static final String PARAMS = "params";
-
-    /**
-     * Transport for performing a text request and returning a text response
-     */
-    @NotNull
-    private final Transport transport;
-
-    /**
-     * Jackson mapper for JSON processing
-     */
-    @NotNull
-    private final ObjectMapper mapper;
+public class RequestBuilder<T> extends AbstractBuilder{
 
     /**
      * JSON-RPC request method
@@ -96,8 +75,7 @@ public class RequestBuilder<T> {
      * @param mapper    mapper for JSON processing
      */
     public RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
-        this.transport = transport;
-        this.mapper = mapper;
+        super(transport, mapper);
         id = NullNode.instance;
         objectParams = mapper.createObjectNode();
         arrayParams = mapper.createArrayNode();
@@ -119,8 +97,7 @@ public class RequestBuilder<T> {
     private RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper, @NotNull String method,
                            @NotNull ValueNode id, @NotNull ObjectNode objectParams, @NotNull ArrayNode arrayParams,
                            @NotNull JavaType javaType) {
-        this.transport = transport;
-        this.mapper = mapper;
+        super(transport, mapper);
         this.method = method;
         this.id = id;
         this.objectParams = objectParams;
@@ -209,11 +186,7 @@ public class RequestBuilder<T> {
      */
     @NotNull
     public RequestBuilder<T> params(@NotNull Object... values) {
-        ArrayNode newArrayParams = mapper.createArrayNode();
-        for (Object value : values) {
-            newArrayParams.add(mapper.valueToTree(value));
-        }
-        return new RequestBuilder<T>(transport, mapper, method, id, objectParams, newArrayParams, javaType);
+        return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams(values), javaType);
     }
 
     /**
@@ -362,17 +335,7 @@ public class RequestBuilder<T> {
     }
 
     String executeRequest() {
-        if (method.isEmpty()) {
-            throw new IllegalArgumentException("Method is not set");
-        }
-        ObjectNode requestNode = mapper.createObjectNode();
-        requestNode.put(JSONRPC, VERSION_2_0)
-                .put(METHOD, method)
-                .set(PARAMS, params());
-        // Check id for null (request maybe a notification)
-        if (!id.isNull()) {
-            requestNode.set(ID, id);
-        }
+        ObjectNode requestNode = request(id, method, params());
         String textRequest;
         String textResponse;
         try {
