@@ -153,6 +153,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType,
                 SimpleType.construct(valuesClass));
     }
+
     public <NV> BatchRequestBuilder<K, NV> valuesType(TypeReference<NV> tr) {
         return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType,
                 mapper.constructType(tr.getType()));
@@ -237,7 +238,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     private static void checkKeyType(@NotNull JsonNode node, @NotNull Class<?> keysType) {
         Object key = nodeValue(node);
         if (!keysType.equals(key.getClass())) {
-            throw new IllegalArgumentException("Key: '" + key + "' has wrong type. Should be: '" + keysType + "'");
+            throw new IllegalArgumentException("Key: '" + key + "' has wrong type: '" + key.getClass() + "'. Should be: '" + keysType + "'");
         }
     }
 
