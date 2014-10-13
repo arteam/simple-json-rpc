@@ -66,4 +66,9 @@ public class JsonRpcClient {
         return new NotificationRequestBuilder(transport, mapper);
     }
 
+    @NotNull
+    public BatchRequestBuilder<?, ?> createBatchRequest() {
+        return new BatchRequestBuilder<Object, Object>(transport, mapper);
+    }
+
 }
