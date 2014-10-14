@@ -218,5 +218,74 @@
                 }
             }
         ]
+    },
+    "batch_with_notification": {
+        "request": [
+            {
+                "jsonrpc": "2.0",
+                "method": "findByInitials",
+                "params": {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos"
+                },
+                "id": 1
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "updateCache",
+                "params": []
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "findByInitials",
+                "params": ["Vladimir","Sobotka"],
+                "id": 2
+            }
+        ],
+        "response": [
+            {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "result": {
+                    "firstName": "Steven",
+                    "lastName": "Stamkos",
+                    "team": {
+                        "name": "Tampa Bay Lightning",
+                        "league": "NHL"
+                    },
+                    "number": 91,
+                    "position": "C",
+                    "birthDate": "1990-02-07T00:00:00.000+0000",
+                    "capHit": 7.5
+                }
+            },
+            {
+                "jsonrpc": "2.0",
+                "id": 2,
+                "result": null
+            }
+        ]
+    },
+    "all_notifications": {
+        "request": [
+            {
+                "jsonrpc": "2.0",
+                "method": "isAlive",
+                "params": []
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "updateCache",
+                "params": {
+                    "name" : "assets"
+                }
+            },
+            {
+                "jsonrpc": "2.0",
+                "method": "newSchedule",
+                "params": [0, 2, 0, 0, 0]
+            }
+        ],
+        "response": ""
     }
 }
