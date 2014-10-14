@@ -132,10 +132,8 @@ public class BatchRequestBuilderTest {
         JsonRpcClient client = initClient("different_requests");
         Map<Integer, ?> result = client.createBatchRequest()
                 .add(12000, "isAlive", new HashMap<String, Object>(), Boolean.class)
-                .add(12001, "findByInitials", "Kevin", "Shattenkirk").returnType(12001, Player.class)
-                .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990))
-                .returnType(12002, new TypeReference<List<Player>>() {
-                })
+                .add(12001, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
+                .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {})
                 .keysType(Integer.class)
                 .execute();
         assertThat(result.get(12000)).isExactlyInstanceOf(Boolean.class);
@@ -145,6 +143,30 @@ public class BatchRequestBuilderTest {
         assertThat(((Player) result.get(12001)).getLastName()).isEqualTo("Shattenkirk");
         assertThat(result.get(12002)).isInstanceOf(List.class);
         assertThat((List<Player>) result.get(12002)).hasSize(3);
+    }
 
+    @Test
+    public void testBatchWithNotifications() {
+        JsonRpcClient client = initClient("batch_with_notification");
+        Map<Long, ?> result = client.createBatchRequest()
+                .add(1L, "findByInitials", ImmutableMap.of("firstName", "Steven", "lastName", "Stamkos"), Player.class)
+                .add("updateCache")
+                .add(2L, "findByInitials", new Object[]{"Vladimir", "Sobotka"}, Player.class)
+                .keysType(Long.class)
+                .execute();
+        assertThat(result.get(1L)).isExactlyInstanceOf(Player.class);
+        assertThat(((Player) result.get(1L)).getFirstName()).isEqualTo("Steven");
+        assertThat(((Player) result.get(1L)).getLastName()).isEqualTo("Stamkos");
+        assertThat(result.get(3L)).isNull();
+    }
+
+    @Test
+    public void testAllNotifications() {
+        JsonRpcClient client = initClient("all_notifications");
+        client.createBatchRequest()
+                .add("isAlive")
+                .add("updateCache", ImmutableMap.of("name", "assets"))
+                .add("newSchedule", 0, 2, 0, 0, 0)
+                .execute();
     }
 }
