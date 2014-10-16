@@ -156,79 +156,11 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
                 mapper.constructType(tr.getType()));
     }
 
-    @SuppressWarnings("unchecked")
+    @NotNull
     public Map<K, V> execute() {
         validateRequest();
-
         String textResponse = executeRequest();
-
-        Map<Object, Object> successes = new HashMap<Object, Object>();
-        Map<Object, ErrorMessage> errors = new HashMap<Object, ErrorMessage>();
-        try {
-            JsonNode jsonResponses = mapper.readTree(textResponse);
-            if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() &&
-                    getRequestIds(requests).isEmpty()) {
-                return new HashMap<K, V>();
-            }
-            if (jsonResponses.getNodeType() != JsonNodeType.ARRAY) {
-                throw new IllegalStateException("Expected array but got " + jsonResponses.getNodeType());
-            }
-
-            for (JsonNode responseNode : (ArrayNode) jsonResponses) {
-                JsonNode result = responseNode.get(RESULT);
-                JsonNode error = responseNode.get(ERROR);
-                JsonNode version = responseNode.get(JSONRPC);
-                JsonNode id = responseNode.get(ID);
-
-                if (version == null) {
-                    throw new IllegalStateException("Not a JSON-RPC response: " + responseNode);
-                }
-                if (!version.asText().equals(VERSION_2_0)) {
-                    throw new IllegalStateException("Bad protocol version in a response: " + responseNode);
-                }
-                if (error == null && result == null) {
-                    throw new IllegalStateException("Neither result or error is set in a response: " + responseNode);
-                }
-                if (id == null) {
-                    continue;
-                }
-
-                // Check id and convert if necessary
-                Object idValue = nodeValue(id);
-                if (keysType == Long.class && idValue.getClass() == Integer.class) {
-                    idValue = ((Integer) idValue).longValue();
-                }
-
-                if (error != null) {
-                    errors.put(idValue, mapper.treeToValue(error, ErrorMessage.class));
-                    continue;
-                }
-                JavaType javaType;
-                if (valuesType != null) {
-                    javaType = valuesType;
-                } else {
-                    javaType = returnTypes.get(idValue);
-                    // Maybe long and it was not specified?
-                    if (javaType == null && idValue instanceof Integer) {
-                        idValue = ((Integer) idValue).longValue();
-                        javaType = returnTypes.get(idValue);
-                    }
-                }
-                if (javaType != null) {
-                    successes.put(idValue, mapper.convertValue(result, javaType));
-                } else {
-                    throw new IllegalStateException("Unspecified id: '" + id + "' in response");
-                }
-            }
-            if (!errors.isEmpty()) {
-                throw new BatchRequestException("Errors happened during batch request processing", successes, errors);
-            }
-            return (Map<K, V>) successes;
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
-        } catch (IOException e) {
-            throw new IllegalStateException("I/O error during a response processing", e);
-        }
+        return processBatchResponse(textResponse);
     }
 
     private void validateRequest() {
@@ -255,26 +187,93 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         }
     }
 
-    private void checkIdType(Object id) {
-        if (keysType != null && !keysType.equals(id.getClass())) {
-            throw new IllegalArgumentException("Id: '" + id + "' has wrong type: '" + id.getClass() + "'. Should be: '" + keysType + "'");
+    @NotNull
+    private String executeRequest() {
+        try {
+            return transport.pass(mapper.writeValueAsString(requests));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Unable convert " + requests + " to JSON", e);
+        }catch (IOException e) {
+            throw new IllegalStateException("I/O error during a request processing", e);
         }
     }
 
-    private String executeRequest() {
-        String textRequest;
-        String textResponse;
+    @NotNull
+    @SuppressWarnings("unchecked")
+    private Map<K, V> processBatchResponse(@NotNull String textResponse) {
+        Map<Object, Object> successes = new HashMap<Object, Object>();
+        Map<Object, ErrorMessage> errors = new HashMap<Object, ErrorMessage>();
         try {
-            textRequest = mapper.writeValueAsString(requests);
+            JsonNode jsonResponses = mapper.readTree(textResponse);
+            // If it's an empty response
+            if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() && getRequestIds(requests).isEmpty()) {
+                return new HashMap<K, V>();
+            }
+            // Not an array
+            if (jsonResponses.getNodeType() != JsonNodeType.ARRAY) {
+                throw new IllegalStateException("Expected array but was " + jsonResponses.getNodeType());
+            }
+
+            for (JsonNode responseNode : (ArrayNode) jsonResponses) {
+                processSingleResponse(responseNode, successes, errors);
+            }
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Unable convert " + requests + " to JSON", e);
-        }
-        try {
-            textResponse = transport.pass(textRequest);
+            throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
         } catch (IOException e) {
-            throw new IllegalStateException("I/O error during a request processing", e);
+            throw new IllegalStateException("I/O error during a response processing", e);
         }
-        return textResponse;
+        if (!errors.isEmpty()) {
+            throw new BatchRequestException("Errors happened during batch request processing", successes, errors);
+        }
+        return (Map<K, V>) successes;
+    }
+
+    private void processSingleResponse(@NotNull JsonNode responseNode, @NotNull Map<Object, Object> successes,
+                                       @NotNull Map<Object, ErrorMessage> errors) throws JsonProcessingException {
+        checkVersion(responseNode, responseNode.get(JSONRPC));
+
+        JsonNode result = responseNode.get(RESULT);
+        JsonNode error = responseNode.get(ERROR);
+        if (error == null && result == null) {
+            throw new IllegalStateException("Neither result or error is set in a response: " + responseNode);
+        }
+
+        // Check id and convert it to long if necessary
+        Object idValue = nodeValue(responseNode.get(ID));
+        if (keysType == Long.class && idValue.getClass() == Integer.class) {
+            idValue = ((Integer) idValue).longValue();
+        }
+
+        if (result != null) {
+            // Guess a return type
+            JavaType returnType;
+            if (valuesType != null) {
+                returnType = valuesType;
+            } else {
+                if ((returnType = returnTypes.get(idValue)) == null) {
+                    throw new IllegalStateException("Unspecified id: '" + idValue + "' in response");
+                }
+            }
+            successes.put(idValue, mapper.convertValue(result, returnType));
+        } else {
+            // Process as an error
+            errors.put(idValue, mapper.treeToValue(error, ErrorMessage.class));
+        }
+    }
+
+    private void checkVersion(JsonNode responseNode, JsonNode version) {
+        if (version == null) {
+            throw new IllegalStateException("Not a JSON-RPC response: " + responseNode);
+        }
+        if (!version.asText().equals(VERSION_2_0)) {
+            throw new IllegalStateException("Bad protocol version in a response: " + responseNode);
+        }
+    }
+
+    private void checkIdType(@NotNull Object id) {
+        if (keysType != null && !keysType.equals(id.getClass())) {
+            throw new IllegalArgumentException("Id: '" + id + "' has wrong type: '" + id.getClass() + "'. Should be: '" + keysType + "'");
+        }
     }
 
     @NotNull

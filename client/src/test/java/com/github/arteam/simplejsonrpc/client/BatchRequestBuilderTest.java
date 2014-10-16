@@ -56,16 +56,19 @@ public class BatchRequestBuilderTest {
         }, mapper);
     }
 
-    @Test
-    public void testBatchCommonType() {
-        JsonRpcClient client = initClient("batch");
-        Map<String, Player> result = client.createBatchRequest()
-                .add("43121", "findByInitials", ImmutableMap.of("firstName", "Steven", "lastName", "Stamkos"))
-                .add("43122", "findByInitials", ImmutableMap.of("firstName", "Jack", "lastName", "Allen"))
-                .add("43123", "findByInitials", ImmutableMap.of("firstName", "Vladimir", "lastName", "Sobotka"))
-                .keysType(String.class)
-                .valuesType(Player.class)
-                .execute();
+    private static Map<String, String> stevenStamkos() {
+        return ImmutableMap.of("firstName", "Steven", "lastName", "Stamkos");
+    }
+
+    private static ImmutableMap<String, String> jackAllen() {
+        return ImmutableMap.of("firstName", "Jack", "lastName", "Allen");
+    }
+
+    private static ImmutableMap<String, String> vladimirSobotka() {
+        return ImmutableMap.of("firstName", "Vladimir", "lastName", "Sobotka");
+    }
+
+    private static void checkBatch(Map<String, Player> result) {
         assertThat(result.get("43121").getFirstName()).isEqualTo("Steven");
         assertThat(result.get("43121").getLastName()).isEqualTo("Stamkos");
         assertThat(result.get("43122").getFirstName()).isEqualTo("Jack");
@@ -73,22 +76,53 @@ public class BatchRequestBuilderTest {
         assertThat(result.get("43123")).isNull();
     }
 
+    @SuppressWarnings("unchecked")
+    private static void checkUncheckedBatch(Map<String, ?> result) {
+        assertThat(result.get("43121")).isExactlyInstanceOf(Player.class);
+        assertThat(result.get("43122")).isExactlyInstanceOf(Player.class);
+        checkBatch((Map<String, Player>) result);
+    }
+
+    private static TypeReference<Player> playerTypeReference() {
+        return new TypeReference<Player>() {
+        };
+    }
+
+    @Test
+    public void testBatchCommonType() {
+        JsonRpcClient client = initClient("batch");
+        Map<String, Player> result = client.createBatchRequest()
+                .add("43121", "findByInitials", stevenStamkos())
+                .add("43122", "findByInitials", jackAllen())
+                .add("43123", "findByInitials", vladimirSobotka())
+                .keysType(String.class)
+                .valuesType(Player.class)
+                .execute();
+        checkBatch(result);
+    }
+
     @Test
     public void testBatchDetailedTypes() {
         JsonRpcClient client = initClient("batch");
         Map<String, ?> result = client.createBatchRequest()
-                .add("43121", "findByInitials", ImmutableMap.of("firstName", "Steven", "lastName", "Stamkos"), Player.class)
-                .add("43122", "findByInitials", ImmutableMap.of("firstName", "Jack", "lastName", "Allen"), Player.class)
-                .add("43123", "findByInitials", ImmutableMap.of("firstName", "Vladimir", "lastName", "Sobotka"), Player.class)
+                .add("43121", "findByInitials", stevenStamkos(), Player.class)
+                .add("43122", "findByInitials", jackAllen(), Player.class)
+                .add("43123", "findByInitials", vladimirSobotka(), Player.class)
                 .keysType(String.class)
                 .execute();
-        assertThat(result.get("43121")).isExactlyInstanceOf(Player.class);
-        assertThat(result.get("43122")).isExactlyInstanceOf(Player.class);
-        assertThat(((Player) result.get("43121")).getFirstName()).isEqualTo("Steven");
-        assertThat(((Player) result.get("43121")).getLastName()).isEqualTo("Stamkos");
-        assertThat(((Player) result.get("43122")).getFirstName()).isEqualTo("Jack");
-        assertThat(((Player) result.get("43122")).getLastName()).isEqualTo("Allen");
-        assertThat(result.get("43123")).isNull();
+        checkUncheckedBatch(result);
+    }
+
+    @Test
+    public void testBatchTypeReferences() {
+        JsonRpcClient client = initClient("batch");
+        Map<String, ?> result = client.createBatchRequest()
+                .add("43121", "findByInitials", stevenStamkos(), playerTypeReference())
+                .add("43122", "findByInitials", jackAllen(), playerTypeReference())
+                .add("43123", "findByInitials", vladimirSobotka(), playerTypeReference())
+                .keysType(String.class)
+                .execute();
+        checkUncheckedBatch(result);
     }
 
     @Test
@@ -101,11 +135,7 @@ public class BatchRequestBuilderTest {
                 .keysType(String.class)
                 .valuesType(Player.class)
                 .execute();
-        assertThat(result.get("43121").getFirstName()).isEqualTo("Steven");
-        assertThat(result.get("43121").getLastName()).isEqualTo("Stamkos");
-        assertThat(result.get("43122").getFirstName()).isEqualTo("Jack");
-        assertThat(result.get("43122").getLastName()).isEqualTo("Allen");
-        assertThat(result.get("43123")).isNull();
+        checkBatch(result);
     }
 
     @Test
@@ -117,13 +147,19 @@ public class BatchRequestBuilderTest {
                 .add("43123", "findByInitials", new Object[]{"Vladimir", "Sobotka"}, Player.class)
                 .keysType(String.class)
                 .execute();
-        assertThat(result.get("43121")).isExactlyInstanceOf(Player.class);
-        assertThat(result.get("43122")).isExactlyInstanceOf(Player.class);
-        assertThat(((Player) result.get("43121")).getFirstName()).isEqualTo("Steven");
-        assertThat(((Player) result.get("43121")).getLastName()).isEqualTo("Stamkos");
-        assertThat(((Player) result.get("43122")).getFirstName()).isEqualTo("Jack");
-        assertThat(((Player) result.get("43122")).getLastName()).isEqualTo("Allen");
-        assertThat(result.get("43123")).isNull();
+        checkUncheckedBatch(result);
+    }
+
+    @Test
+    public void testBatchArrayRequestsWithTypeReferences() {
+        JsonRpcClient client = initClient("batch_array");
+        Map<String, ?> result = client.createBatchRequest()
+                .add("43121", "findByInitials", new Object[]{"Steven", "Stamkos"}, playerTypeReference())
+                .add("43122", "findByInitials", new Object[]{"Jack", "Allen"}, playerTypeReference())
+                .add("43123", "findByInitials", new Object[]{"Vladimir", "Sobotka"}, playerTypeReference())
+                .keysType(String.class)
+                .execute();
+        checkUncheckedBatch(result);
     }
 
     @Test
@@ -133,7 +169,7 @@ public class BatchRequestBuilderTest {
         Map<Integer, ?> result = client.createBatchRequest()
                 .add(12000, "isAlive", new HashMap<String, Object>(), Boolean.class)
                 .add(12001, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
-                .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {})
+                .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>(){})
                 .keysType(Integer.class)
                 .execute();
         assertThat(result.get(12000)).isExactlyInstanceOf(Boolean.class);
@@ -146,27 +182,47 @@ public class BatchRequestBuilderTest {
     }
 
     @Test
-    public void testBatchWithNotifications() {
-        JsonRpcClient client = initClient("batch_with_notification");
+    @SuppressWarnings("unchecked")
+    public void testLongIds() {
+        JsonRpcClient client = initClient("different_requests");
         Map<Long, ?> result = client.createBatchRequest()
-                .add(1L, "findByInitials", ImmutableMap.of("firstName", "Steven", "lastName", "Stamkos"), Player.class)
-                .add("updateCache")
-                .add(2L, "findByInitials", new Object[]{"Vladimir", "Sobotka"}, Player.class)
+                .add(12000L, "isAlive", new HashMap<String, Object>(), Boolean.class)
+                .add(12001L, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
+                .add(12002L, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>(){})
                 .keysType(Long.class)
                 .execute();
-        assertThat(result.get(1L)).isExactlyInstanceOf(Player.class);
-        assertThat(((Player) result.get(1L)).getFirstName()).isEqualTo("Steven");
-        assertThat(((Player) result.get(1L)).getLastName()).isEqualTo("Stamkos");
-        assertThat(result.get(3L)).isNull();
+        assertThat(result.get(12000L)).isExactlyInstanceOf(Boolean.class);
+        assertThat((Boolean) result.get(12000L)).isTrue();
+        assertThat(result.get(12001L)).isExactlyInstanceOf(Player.class);
+        assertThat(((Player) result.get(12001L)).getFirstName()).isEqualTo("Kevin");
+        assertThat(((Player) result.get(12001L)).getLastName()).isEqualTo("Shattenkirk");
+        assertThat(result.get(12002L)).isInstanceOf(List.class);
+        assertThat((List<Player>) result.get(12002L)).hasSize(3);
+    }
+
+    @Test
+    public void testBatchWithNotifications() {
+        JsonRpcClient client = initClient("batch_with_notification");
+        Map<Integer, ?> result = client.createBatchRequest()
+                .add(1, "findByInitials", stevenStamkos(), Player.class)
+                .add("updateCache")
+                .add(2, "findByInitials", new Object[]{"Vladimir", "Sobotka"}, playerTypeReference())
+                .keysType(Integer.class)
+                .execute();
+        assertThat(result.get(1)).isExactlyInstanceOf(Player.class);
+        assertThat(((Player) result.get(1)).getFirstName()).isEqualTo("Steven");
+        assertThat(((Player) result.get(1)).getLastName()).isEqualTo("Stamkos");
+        assertThat(result.get(3)).isNull();
     }
 
     @Test
     public void testAllNotifications() {
         JsonRpcClient client = initClient("all_notifications");
-        client.createBatchRequest()
+        Map<?, ?> result = client.createBatchRequest()
                 .add("isAlive")
                 .add("updateCache", ImmutableMap.of("name", "assets"))
                 .add("newSchedule", 0, 2, 0, 0, 0)
                 .execute();
+        assertThat(result).isEmpty();
     }
 }
