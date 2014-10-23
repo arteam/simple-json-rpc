@@ -169,7 +169,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         }
 
         if (valuesType == null) {
-            for (Object id : getRequestIds(requests)) {
+            for (Object id : requestIds()) {
                 if (!returnTypes.containsKey(id)) {
                     throw new IllegalArgumentException("Return type isn't specified for " +
                             "request with id='" + id + "'");
@@ -179,7 +179,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             throw new IllegalArgumentException("Common and detailed configurations of return types shouldn't be mixed");
         }
 
-        for (Object id : getRequestIds(requests)) {
+        for (Object id : requestIds()) {
             checkIdType(id);
         }
         for (Object id : returnTypes.keySet()) {
@@ -193,7 +193,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             return transport.pass(mapper.writeValueAsString(requests));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Unable convert " + requests + " to JSON", e);
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException("I/O error during a request processing", e);
         }
     }
@@ -206,7 +206,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         try {
             JsonNode jsonResponses = mapper.readTree(textResponse);
             // If it's an empty response
-            if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() && getRequestIds(requests).isEmpty()) {
+            if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() && requestIds().isEmpty()) {
                 return new HashMap<K, V>();
             }
             // Not an array
@@ -277,7 +277,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     }
 
     @NotNull
-    private static List<?> getRequestIds(@NotNull List<ObjectNode> requests) {
+    private List<?> requestIds() {
         List<Object> ids = new ArrayList<Object>(requests.size());
         for (ObjectNode request : requests) {
             JsonNode id = request.get(ID);
@@ -286,6 +286,14 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             }
         }
         return ids;
+    }
+
+    /**
+     * For tests
+     */
+    @NotNull
+    List<ObjectNode> getRequests() {
+        return requests;
     }
 
     @NotNull
