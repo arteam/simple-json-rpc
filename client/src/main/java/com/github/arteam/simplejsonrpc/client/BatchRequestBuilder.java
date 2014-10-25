@@ -182,17 +182,12 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         for (Object id : requestIds()) {
             checkIdType(id);
         }
-        for (Object id : returnTypes.keySet()) {
-            checkIdType(id);
-        }
     }
 
     @NotNull
     private String executeRequest() {
         try {
             return transport.pass(mapper.writeValueAsString(requests));
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Unable convert " + requests + " to JSON", e);
         } catch (IOException e) {
             throw new IllegalStateException("I/O error during a request processing", e);
         }
@@ -272,7 +267,8 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
 
     private void checkIdType(@NotNull Object id) {
         if (keysType != null && !keysType.equals(id.getClass())) {
-            throw new IllegalArgumentException("Id: '" + id + "' has wrong type: '" + id.getClass() + "'. Should be: '" + keysType + "'");
+            throw new IllegalArgumentException("Id: '" + id + "' has wrong type: '" + id.getClass().getSimpleName() +
+                    "'. Should be: '" + keysType.getSimpleName() + "'");
         }
     }
 
@@ -288,9 +284,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         return ids;
     }
 
-    /**
-     * For tests
-     */
+    // Visible for tests
     @NotNull
     List<ObjectNode> getRequests() {
         return requests;
