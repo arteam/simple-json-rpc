@@ -185,6 +185,114 @@ public class BatchRequestBuilderErrors {
     }
 
     @Test
+    public void testNoVersion() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage(new StringStartsWith("Not a JSON-RPC response"));
+
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "[{\"test\":\"data\"}]";
+            }
+        });
+        client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
+                .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                .valuesType(Player.class)
+                .execute();
+    }
+
+    @Test
+    public void testBadVersion() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage(new StringStartsWith("Bad protocol version"));
+
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "[{\n" +
+                        "    \"jsonrpc\": \"1.0\",\n" +
+                        "    \"id\": 1,\n" +
+                        "    \"result\": {\n" +
+                        "        \"firstName\": \"Steven\",\n" +
+                        "        \"lastName\": \"Stamkos\",\n" +
+                        "        \"team\": {\n" +
+                        "            \"name\": \"Tampa Bay Lightning\",\n" +
+                        "            \"league\": \"NHL\"\n" +
+                        "        },\n" +
+                        "        \"number\": 91,\n" +
+                        "        \"position\": \"C\",\n" +
+                        "        \"birthDate\": \"1990-02-07T00:00:00.000+0000\",\n" +
+                        "        \"capHit\": 7.5\n" +
+                        "    }\n" +
+                        "}]";
+            }
+        });
+        client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
+                .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                .valuesType(Player.class)
+                .execute();
+    }
+
+    @Test
+    public void testUnexpectedResult() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage(new StringStartsWith("Neither result or error is set in response"));
+
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "[{\n" +
+                        "    \"jsonrpc\": \"2.0\",\n" +
+                        "    \"id\": 1\n" +
+                        "}]";
+            }
+        });
+        client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
+                .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                .valuesType(Player.class)
+                .execute();
+    }
+
+    @Test
+    public void testUnspecifiedId() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Unspecified id: '10' in response");
+
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "[{\n" +
+                        "    \"jsonrpc\": \"2.0\",\n" +
+                        "    \"id\": 10,\n" +
+                        "    \"result\": {\n" +
+                        "        \"firstName\": \"Steven\",\n" +
+                        "        \"lastName\": \"Stamkos\",\n" +
+                        "        \"team\": {\n" +
+                        "            \"name\": \"Tampa Bay Lightning\",\n" +
+                        "            \"league\": \"NHL\"\n" +
+                        "        },\n" +
+                        "        \"number\": 91,\n" +
+                        "        \"position\": \"C\",\n" +
+                        "        \"birthDate\": \"1990-02-07T00:00:00.000+0000\",\n" +
+                        "        \"capHit\": 7.5\n" +
+                        "    }\n" +
+                        "}]";
+            }
+        });
+        client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
+                .valuesType(Player.class)
+                .execute();
+    }
+
+    @Test
     public void testJsonRpcError() {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull

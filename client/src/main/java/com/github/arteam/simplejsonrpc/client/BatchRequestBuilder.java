@@ -168,8 +168,9 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             throw new IllegalArgumentException("Requests are not set");
         }
 
+        List<?> requestIds = requestIds();
         if (valuesType == null) {
-            for (Object id : requestIds()) {
+            for (Object id : requestIds) {
                 if (!returnTypes.containsKey(id)) {
                     throw new IllegalArgumentException("Return type isn't specified for " +
                             "request with id='" + id + "'");
@@ -179,7 +180,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             throw new IllegalArgumentException("Common and detailed configurations of return types shouldn't be mixed");
         }
 
-        for (Object id : requestIds()) {
+        for (Object id : requestIds) {
             checkIdType(id);
         }
     }
@@ -198,10 +199,12 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     private Map<K, V> processBatchResponse(@NotNull String textResponse) {
         Map<Object, Object> successes = new HashMap<Object, Object>();
         Map<Object, ErrorMessage> errors = new HashMap<Object, ErrorMessage>();
+        List<?> requestIds = requestIds();
+
         try {
             JsonNode jsonResponses = mapper.readTree(textResponse);
             // If it's an empty response
-            if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() && requestIds().isEmpty()) {
+            if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() && requestIds.isEmpty()) {
                 return new HashMap<K, V>();
             }
             // Not an array
@@ -210,12 +213,10 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             }
 
             for (JsonNode responseNode : (ArrayNode) jsonResponses) {
-                processSingleResponse(responseNode, successes, errors);
+                processSingleResponse(responseNode, requestIds, successes, errors);
             }
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
         } catch (IOException e) {
-            throw new IllegalStateException("I/O error during a response processing", e);
+            throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
         }
         if (!errors.isEmpty()) {
             throw new JsonRpcBatchException("Errors happened during batch request processing", successes, errors);
@@ -223,14 +224,16 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         return (Map<K, V>) successes;
     }
 
-    private void processSingleResponse(@NotNull JsonNode responseNode, @NotNull Map<Object, Object> successes,
-                                       @NotNull Map<Object, ErrorMessage> errors) throws JsonProcessingException {
+    private void processSingleResponse(@NotNull JsonNode responseNode, @NotNull List<?> requestIds,
+                                       @NotNull Map<Object, Object> successes,
+                                       @NotNull Map<Object, ErrorMessage> errors)
+            throws JsonProcessingException {
         checkVersion(responseNode, responseNode.get(JSONRPC));
 
         JsonNode result = responseNode.get(RESULT);
         JsonNode error = responseNode.get(ERROR);
         if (error == null && result == null) {
-            throw new IllegalStateException("Neither result or error is set in a response: " + responseNode);
+            throw new IllegalStateException("Neither result or error is set in response: " + responseNode);
         }
 
         // Check id and convert it to long if necessary
@@ -239,16 +242,12 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             idValue = ((Integer) idValue).longValue();
         }
 
+        if (!requestIds.contains(idValue)) {
+            throw new IllegalStateException("Unspecified id: '" + idValue + "' in response");
+        }
+
         if (result != null) {
-            // Guess a return type
-            JavaType returnType;
-            if (valuesType != null) {
-                returnType = valuesType;
-            } else {
-                if ((returnType = returnTypes.get(idValue)) == null) {
-                    throw new IllegalStateException("Unspecified id: '" + idValue + "' in response");
-                }
-            }
+            JavaType returnType = valuesType != null ? valuesType : returnTypes.get(idValue);
             successes.put(idValue, mapper.convertValue(result, returnType));
         } else {
             // Process as an error
