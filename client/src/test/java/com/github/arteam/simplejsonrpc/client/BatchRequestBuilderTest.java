@@ -133,7 +133,7 @@ public class BatchRequestBuilderTest {
                 .add("43122", "findByInitials", "Jack", "Allen")
                 .add("43123", "findByInitials", "Vladimir", "Sobotka")
                 .keysType(String.class)
-                .valuesType(Player.class)
+                .valuesType(playerTypeReference())
                 .execute();
         checkBatch(result);
     }
