@@ -4,14 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
+import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.core.StringStartsWith;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Date: 10/23/14
@@ -138,6 +143,97 @@ public class BatchRequestBuilderErrors {
 
         private Name(String value) {
             this.value = value;
+        }
+    }
+
+    @Test
+    public void testNotArrayResponse() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Expected array but was OBJECT");
+
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "{\"test\":\"data\"}";
+            }
+        });
+        client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
+                .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                .valuesType(Player.class)
+                .execute();
+    }
+
+    @Test
+    public void testNotJsonResponse() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage(new StringStartsWith("Unable parse a JSON response"));
+
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "test data";
+            }
+        });
+        client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
+                .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                .valuesType(Player.class)
+                .execute();
+    }
+
+    @Test
+    public void testJsonRpcError() {
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "[{\n" +
+                        "    \"jsonrpc\": \"2.0\",\n" +
+                        "    \"id\": 1,\n" +
+                        "    \"result\": {\n" +
+                        "        \"firstName\": \"Steven\",\n" +
+                        "        \"lastName\": \"Stamkos\",\n" +
+                        "        \"team\": {\n" +
+                        "            \"name\": \"Tampa Bay Lightning\",\n" +
+                        "            \"league\": \"NHL\"\n" +
+                        "        },\n" +
+                        "        \"number\": 91,\n" +
+                        "        \"position\": \"C\",\n" +
+                        "        \"birthDate\": \"1990-02-07T00:00:00.000+0000\",\n" +
+                        "        \"capHit\": 7.5\n" +
+                        "    }\n" +
+                        "}, " +
+                        "{\"jsonrpc\":\"2.0\",\"id\":2, \"error\":{\"code\":-32603,\"message\":\"Internal error\"}}" +
+                        "]";
+            }
+        });
+        try {
+            client.createBatchRequest()
+                    .add(1L, "findPlayer", "Steven", "Stamkos")
+                    .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                    .valuesType(Player.class)
+                    .keysType(Long.class)
+                    .execute();
+            Assert.fail();
+        } catch (JsonRpcBatchException e) {
+            Map<?, ErrorMessage> errors = e.getErrors();
+            Map<?, ?> successes = e.getSuccesses();
+            System.out.println(successes);
+            System.out.println(errors);
+
+            Object result = successes.get(1L);
+            assertThat(result).isNotNull();
+            assertThat(result).isInstanceOf(Player.class);
+            assertThat(((Player) result).getFirstName()).isEqualTo("Steven");
+            assertThat(((Player) result).getLastName()).isEqualTo("Stamkos");
+
+            assertThat(errors).isNotEmpty();
+            ErrorMessage errorMessage = errors.get(2L);
+            assertThat(errorMessage.getCode()).isEqualTo(-32603);
+            assertThat(errorMessage.getMessage()).isEqualTo("Internal error");
         }
     }
 }

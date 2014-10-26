@@ -218,7 +218,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
             throw new IllegalStateException("I/O error during a response processing", e);
         }
         if (!errors.isEmpty()) {
-            throw new BatchRequestException("Errors happened during batch request processing", successes, errors);
+            throw new JsonRpcBatchException("Errors happened during batch request processing", successes, errors);
         }
         return (Map<K, V>) successes;
     }

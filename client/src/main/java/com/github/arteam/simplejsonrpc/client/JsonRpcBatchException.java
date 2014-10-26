@@ -11,27 +11,27 @@ import java.util.Map;
  *
  * @author Artem Prigoda
  */
-public class BatchRequestException extends RuntimeException {
+public class JsonRpcBatchException extends RuntimeException {
 
     @NotNull
-    private Map<Object, Object> successes;
+    private Map<?, ?> successes;
 
     @NotNull
-    private Map<Object, ErrorMessage> errors;
+    private Map<?, ErrorMessage> errors;
 
-    public BatchRequestException(String message, @NotNull Map<Object, Object> successes, @NotNull Map<Object, ErrorMessage> errors) {
+    public JsonRpcBatchException(String message, @NotNull Map<?, ?> successes, @NotNull Map<?, ErrorMessage> errors) {
         super(message);
         this.successes = successes;
         this.errors = errors;
     }
 
     @NotNull
-    public Map<Object, Object> getSuccesses() {
+    public Map<?, ?> getSuccesses() {
         return successes;
     }
 
     @NotNull
-    public Map<Object, ErrorMessage> getErrors() {
+    public Map<?, ErrorMessage> getErrors() {
         return errors;
     }
 }
