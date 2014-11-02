@@ -66,6 +66,11 @@ public class JsonRpcClient {
         return new NotificationRequestBuilder(transport, mapper);
     }
 
+    /**
+     * Creates a builder of a JSON-RPC batch request in initial state
+     *
+     * @return batch request builder
+     */
     @NotNull
     public BatchRequestBuilder<?, ?> createBatchRequest() {
         return new BatchRequestBuilder<Object, Object>(transport, mapper);

@@ -92,11 +92,10 @@ public class BatchRequestBuilderTest {
     public void testBatchCommonType() {
         JsonRpcClient client = initClient("batch");
         Map<String, Player> result = client.createBatchRequest()
-                .add("43121", "findByInitials", stevenStamkos())
-                .add("43122", "findByInitials", jackAllen())
-                .add("43123", "findByInitials", vladimirSobotka())
+                .add("43121", "findByInitials", ImmutableMap.of("firstName", "Steven", "lastName", "Stamkos"))
+                .add("43122", "findByInitials", ImmutableMap.of("firstName", "Jack", "lastName", "Allen"))
                 .keysType(String.class)
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
         checkBatch(result);
     }
@@ -133,7 +132,7 @@ public class BatchRequestBuilderTest {
                 .add("43122", "findByInitials", "Jack", "Allen")
                 .add("43123", "findByInitials", "Vladimir", "Sobotka")
                 .keysType(String.class)
-                .valuesType(playerTypeReference())
+                .returnType(playerTypeReference())
                 .execute();
         checkBatch(result);
     }
