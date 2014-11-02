@@ -1,8 +1,12 @@
-package com.github.arteam.simplejsonrpc.client;
+package com.github.arteam.simplejsonrpc.client.builder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.github.arteam.simplejsonrpc.client.JsonRpcClient;
+import com.github.arteam.simplejsonrpc.client.Transport;
+import com.github.arteam.simplejsonrpc.client.builder.BatchRequestBuilder;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
+import com.github.arteam.simplejsonrpc.client.exception.JsonRpcBatchException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import org.hamcrest.core.StringStartsWith;
 import org.jetbrains.annotations.NotNull;

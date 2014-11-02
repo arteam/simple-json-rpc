@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
+import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

@@ -1,4 +1,4 @@
-package com.github.arteam.simplejsonrpc.client;
+package com.github.arteam.simplejsonrpc.client.exception;
 
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import org.jetbrains.annotations.NotNull;

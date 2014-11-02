@@ -1,6 +1,7 @@
-package com.github.arteam.simplejsonrpc.client;
+package com.github.arteam.simplejsonrpc.client.builder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.arteam.simplejsonrpc.client.Transport;
 import org.jetbrains.annotations.NotNull;
 
 /**

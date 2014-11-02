@@ -1,4 +1,4 @@
-package com.github.arteam.simplejsonrpc.client;
+package com.github.arteam.simplejsonrpc.client.builder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.github.arteam.simplejsonrpc.client.Transport;
+import com.github.arteam.simplejsonrpc.client.exception.JsonRpcBatchException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +31,7 @@ import java.util.Map;
  * Return type is a map of responses (Java objects) by request ids. In cases of errors it throws
  * {@code JsonRpcBatchException} with detailed status of success and failed requests.
  * <p/>
- * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link Transport}.
+ * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
  * <p/>
  * The basic pattern is following:
  * <pre>
