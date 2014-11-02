@@ -2,10 +2,8 @@ package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import org.assertj.core.api.Assertions;
 import org.hamcrest.core.StringStartsWith;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -76,7 +74,7 @@ public class BatchRequestBuilderErrors {
         thrown.expectMessage("Common and detailed configurations of return types shouldn't be mixed");
 
         client.createBatchRequest().add(1L, "findPlayer", new Object[]{"Steven", "Stamkos"}, Player.class)
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -90,7 +88,7 @@ public class BatchRequestBuilderErrors {
         batchRequest.getRequests()
                 .add(batchRequest.request(BooleanNode.TRUE, "findPlayer",
                         new ObjectMapper().createArrayNode().add("Steven").add("Stamkos")));
-        batchRequest.valuesType(Player.class).execute();
+        batchRequest.returnType(Player.class).execute();
     }
 
     @Test
@@ -99,7 +97,7 @@ public class BatchRequestBuilderErrors {
         thrown.expectMessage("Id: '1' has wrong type: 'Long'. Should be: 'String'");
 
         client.createBatchRequest().add(1L, "findPlayer", "Steven", "Stamkos")
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .keysType(String.class)
                 .execute();
     }
@@ -121,7 +119,7 @@ public class BatchRequestBuilderErrors {
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
                 .keysType(Long.class)
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -134,7 +132,7 @@ public class BatchRequestBuilderErrors {
                 .add(1L, "findPlayer", new Name("Steven"), new Name("Stamkos"))
                 .add(2L, "findPlayer", new Name("Vladimir"), new Name("Sobotka"))
                 .keysType(Long.class)
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -161,7 +159,7 @@ public class BatchRequestBuilderErrors {
         client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -180,7 +178,7 @@ public class BatchRequestBuilderErrors {
         client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -199,7 +197,7 @@ public class BatchRequestBuilderErrors {
         client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -233,7 +231,7 @@ public class BatchRequestBuilderErrors {
         client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -255,7 +253,7 @@ public class BatchRequestBuilderErrors {
         client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -288,7 +286,7 @@ public class BatchRequestBuilderErrors {
         });
         client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
-                .valuesType(Player.class)
+                .returnType(Player.class)
                 .execute();
     }
 
@@ -322,7 +320,7 @@ public class BatchRequestBuilderErrors {
             client.createBatchRequest()
                     .add(1L, "findPlayer", "Steven", "Stamkos")
                     .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                    .valuesType(Player.class)
+                    .returnType(Player.class)
                     .keysType(Long.class)
                     .execute();
             Assert.fail();
