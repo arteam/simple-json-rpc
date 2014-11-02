@@ -1,13 +1,16 @@
 package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.arteam.simplejsonrpc.client.builder.BatchRequestBuilder;
+import com.github.arteam.simplejsonrpc.client.builder.NotificationRequestBuilder;
+import com.github.arteam.simplejsonrpc.client.builder.RequestBuilder;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Date: 8/9/14
  * Time: 8:58 PM
  * <p/>
- * JSON-RPC client. Represents a factory for a fluent client API {@link RequestBuilder}.
+ * JSON-RPC client. Represents a factory for a fluent client API {@link com.github.arteam.simplejsonrpc.client.builder.RequestBuilder}.
  * It's parametrized by {@link Transport} and Jackson {@link ObjectMapper}
  *
  * @author Artem Prigoda

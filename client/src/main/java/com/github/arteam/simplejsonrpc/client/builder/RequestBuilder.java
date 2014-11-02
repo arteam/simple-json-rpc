@@ -1,19 +1,15 @@
-package com.github.arteam.simplejsonrpc.client;
+package com.github.arteam.simplejsonrpc.client.builder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import com.fasterxml.jackson.databind.type.CollectionLikeType;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.github.arteam.simplejsonrpc.client.Transport;
+import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import com.github.arteam.simplejsonrpc.core.domain.ErrorResponse;
-import com.github.arteam.simplejsonrpc.core.domain.Request;
-import com.github.arteam.simplejsonrpc.core.domain.SuccessResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +28,7 @@ import java.util.Set;
  * It introduces fluent API to build a request, set an expected response type and perform the request.
  * Builder is immutable: every mutation creates a new object, so it's safe to use in multi-threaded environment.
  * <p/>
- * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link Transport}.
+ * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
  *
  * @author Artem Prigoda
  */
@@ -293,7 +289,7 @@ public class RequestBuilder<T> extends AbstractBuilder{
      * Execute a request through {@link Transport} and convert a response to an expected type
      *
      * @return expected response
-     * @throws JsonRpcException in case of JSON-RPC error, returned by the server
+     * @throws com.github.arteam.simplejsonrpc.client.exception.JsonRpcException in case of JSON-RPC error, returned by the server
      */
     @Nullable
     @SuppressWarnings("unchecked")
