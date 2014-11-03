@@ -118,10 +118,7 @@
             <groupId>com.intellij</groupId>
             <artifactId>annotations</artifactId>
             <version>${intellij.annotations.version}</version>
-            <optional>true</optional>
         </dependency>
-
-
 
         <dependency>
             <groupId>junit</groupId>
