@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.POJONode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.databind.node.*;
 import com.github.arteam.simplejsonrpc.client.builder.AbstractBuilder;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.generator.CurrentTimeIdGenerator;
@@ -16,7 +13,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import com.github.arteam.simplejsonrpc.core.domain.Request;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +20,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 /**
  * Date: 24.08.14
@@ -37,16 +32,21 @@ public class ObjectAPIProxyBuilder extends AbstractBuilder implements Invocation
     private static final String RESULT = "result";
     private static final String ERROR = "error";
 
+    @Nullable
     private IdGenerator userIdGenerator;
 
-    public ObjectAPIProxyBuilder(Transport transport, ObjectMapper mapper, IdGenerator userIdGenerator) {
+    @Nullable
+    private ParamsType userParamsType;
+
+    public ObjectAPIProxyBuilder(Transport transport, ObjectMapper mapper, ParamsType userParamsType, IdGenerator userIdGenerator) {
         super(transport, mapper);
+        this.userParamsType = userParamsType;
         this.userIdGenerator = userIdGenerator;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // Check it's a service
+        // Check that it's a service
         Annotation[] classAnnotations = method.getDeclaringClass().getDeclaredAnnotations();
         JsonRpcService rpcServiceAnn = getAnnotation(classAnnotations, JsonRpcService.class);
         if (rpcServiceAnn == null) {
@@ -60,35 +60,11 @@ public class ObjectAPIProxyBuilder extends AbstractBuilder implements Invocation
             throw new IllegalArgumentException(method + " is not annotated");
         }
 
-        // Get method name (annotation or the actual name)
+
+        // Get method name (annotation or the actual name), params and id generator
         String methodName = !rpcMethodAnn.value().isEmpty() ? rpcMethodAnn.value() : method.getName();
-
-        // Build params as object map
-        // TODO param for constructing array params?
-        ObjectNode params = mapper.createObjectNode();
-        Annotation[][] parametersAnnotations = method.getParameterAnnotations();
-        for (int i = 0; i < parametersAnnotations.length; i++) {
-            // Check that it's a JSON-RPC param
-            JsonRpcParam rpcParamAnn = getAnnotation(parametersAnnotations[i], JsonRpcParam.class);
-            if (rpcParamAnn != null) {
-                // TODO Type check required
-                // TODO Handle optional params
-                params.set(rpcParamAnn.value(), mapper.valueToTree(args[i]));
-            }
-        }
-
-        // Get id generator
-        IdGenerator<?> idGenerator;
-        if (userIdGenerator != null) {
-            idGenerator = userIdGenerator;
-        } else {
-            JsonRpcId jsonRpcIdAnn = getAnnotation(classAnnotations, JsonRpcId.class);
-            // TODO change to AtomicLongIdGenerator as a default choice
-            Class<? extends IdGenerator<?>> idGeneratorClazz = (jsonRpcIdAnn == null) ?
-                    CurrentTimeIdGenerator.class :   jsonRpcIdAnn.value();
-            idGenerator = idGeneratorClazz.newInstance();
-        }
-
+        JsonNode params = getParams(method, args, getParamsType(classAnnotations, methodAnnotations));
+        IdGenerator<?> idGenerator = getIdGenerator(classAnnotations);
 
         //  Construct a request
         ValueNode id = new POJONode(idGenerator.generate());
@@ -105,6 +81,61 @@ public class ObjectAPIProxyBuilder extends AbstractBuilder implements Invocation
             ErrorMessage errorMessage = mapper.treeToValue(error, ErrorMessage.class);
             throw new JsonRpcException(errorMessage);
         }
+    }
+
+    /**
+     * Get actual id generator
+     */
+    private IdGenerator<?> getIdGenerator(Annotation[] classAnnotations) {
+        if (userIdGenerator != null) {
+            return userIdGenerator;
+        }
+
+        JsonRpcId jsonRpcIdAnn = getAnnotation(classAnnotations, JsonRpcId.class);
+        // TODO change to AtomicLongIdGenerator as a default choice
+        Class<? extends IdGenerator<?>> idGeneratorClazz = (jsonRpcIdAnn == null) ?
+                CurrentTimeIdGenerator.class : jsonRpcIdAnn.value();
+        try {
+            return idGeneratorClazz.newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable instantiate id generator: " + idGeneratorClazz);
+        }
+    }
+
+    private ParamsType getParamsType(Annotation[] classAnnotations, Annotation[] methodAnnotations) {
+        if (userParamsType != null) {
+            return userParamsType;
+        }
+        JsonRpcParams rpcParamsAnn = getAnnotation(methodAnnotations, JsonRpcParams.class);
+        if (rpcParamsAnn == null) {
+            rpcParamsAnn = getAnnotation(classAnnotations, JsonRpcParams.class);
+        }
+        return rpcParamsAnn != null ? rpcParamsAnn.value() : ParamsType.MAP;
+
+    }
+
+    /**
+     * Get request params in JSON representation (map or array)
+     */
+    private JsonNode getParams(Method method, Object[] args, ParamsType paramsType) {
+        ObjectNode paramsAsMap = mapper.createObjectNode();
+        ArrayNode paramsAsArray = mapper.createArrayNode();
+        Annotation[][] parametersAnnotations = method.getParameterAnnotations();
+        for (int i = 0; i < parametersAnnotations.length; i++) {
+            // Check that it's a JSON-RPC param
+            JsonRpcParam rpcParamAnn = getAnnotation(parametersAnnotations[i], JsonRpcParam.class);
+            if (rpcParamAnn != null) {
+                // TODO Type check required
+                // TODO Handle optional params
+                JsonNode paramJsonValue = mapper.valueToTree(args[i]);
+                if (paramsType == ParamsType.MAP) {
+                    paramsAsMap.set(rpcParamAnn.value(), paramJsonValue);
+                } else if (paramsType == ParamsType.ARRAY) {
+                    paramsAsArray.add(paramJsonValue);
+                }
+            }
+        }
+        return paramsType == ParamsType.MAP ? paramsAsMap : paramsAsArray;
     }
 
     private String execute(ObjectNode request) {

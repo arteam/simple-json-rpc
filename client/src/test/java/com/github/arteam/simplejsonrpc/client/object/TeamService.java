@@ -1,6 +1,8 @@
 package com.github.arteam.simplejsonrpc.client.object;
 
 import com.github.arteam.simplejsonrpc.client.JsonRpcId;
+import com.github.arteam.simplejsonrpc.client.JsonRpcParams;
+import com.github.arteam.simplejsonrpc.client.ParamsType;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
@@ -24,7 +26,8 @@ import java.util.Map;
  * @author Artem Prigoda
  */
 @JsonRpcService
-@JsonRpcId(value = TestIdGenerator.class)
+@JsonRpcId(TestIdGenerator.class)
+@JsonRpcParams(ParamsType.MAP)
 public interface TeamService {
 
     @JsonRpcMethod
@@ -51,9 +54,11 @@ public interface TeamService {
                              @JsonRpcOptional @JsonRpcParam("capHit") @NotNull Optional<Double> capHit);
 
     @JsonRpcMethod
+    @JsonRpcParams(ParamsType.ARRAY)
     public List<Player> getPlayers();
 
     @JsonRpcMethod
+    @JsonRpcParams(ParamsType.ARRAY)
     public Player getPlayer();
 
     public List<Player> bogusGetPlayers();
