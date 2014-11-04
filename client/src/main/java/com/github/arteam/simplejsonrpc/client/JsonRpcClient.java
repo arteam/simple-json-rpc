@@ -86,7 +86,7 @@ public class JsonRpcClient {
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectAPIProxyBuilder(transport, mapper));
+                new ObjectAPIProxyBuilder(transport, mapper, null));
     }
 
     @SuppressWarnings("unchecked")
