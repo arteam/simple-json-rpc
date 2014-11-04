@@ -3,14 +3,22 @@ package com.github.arteam.simplejsonrpc.client;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
+import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.object.FixedIntegerIdGenerator;
 import com.github.arteam.simplejsonrpc.client.object.FixedStringIdGenerator;
 import com.github.arteam.simplejsonrpc.client.object.TeamService;
+import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
+import com.google.common.base.Optional;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,6 +57,12 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @Test
+    @Ignore
+    public void testFindArray() {
+        // TODO implementing this
+    }
+
+    @Test
     public void testReturnList() {
         JsonRpcClient client = initClient("findByBirthYear");
         List<Player> players = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(5621)).findByBirthYear(1990);
@@ -58,4 +72,69 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         assertThat(players.get(1).getLastName()).isEqualTo("Stamkos");
         assertThat(players.get(2).getLastName()).isEqualTo("Hedman");
     }
+
+    @Test
+    @Ignore
+    public void testNoParams() {
+        // TODO set array params
+        JsonRpcClient client = initClient("getPlayers");
+        List<Player> players = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(1000)).getPlayers();
+        assertThat(players).isNotNull();
+        assertThat(players).hasSize(3);
+        assertThat(players.get(0).getLastName()).isEqualTo("Bishop");
+        assertThat(players.get(1).getLastName()).isEqualTo("Tarasenko");
+        assertThat(players.get(2).getLastName()).isEqualTo("Bouwmeester");
+    }
+
+    @Test
+    public void testMap() {
+        Map<String, Integer> contractLengths = new LinkedHashMap<String, Integer>() {{
+            put("Backes", 4);
+            put("Tarasenko", 3);
+            put("Allen", 2);
+            put("Bouwmeester", 5);
+            put("Stamkos", 8);
+            put("Callahan", 3);
+            put("Bishop", 4);
+            put("Hedman", 2);
+        }};
+        JsonRpcClient client = initClient("getContractSums");
+        Map<String, Double> contractSums = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(97555))
+                .getContractSums(contractLengths);
+        assertThat(contractSums).isExactlyInstanceOf(LinkedHashMap.class);
+        assertThat(contractSums).isEqualTo(new HashMap<String, Double>() {{
+            put("Backes", 18.0);
+            put("Tarasenko", 2.7);
+            put("Allen", 1.0);
+            put("Bouwmeester", 27.0);
+            put("Stamkos", 60.0);
+            put("Callahan", 17.4);
+            put("Bishop", 9.2);
+            put("Hedman", 8.0);
+        }});
+    }
+
+    @Test
+    public void testOptional() {
+        JsonRpcClient client = initClient("player_is_not_found");
+        Optional<Player> optionalPlayer = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(4111))
+                .optionalFindByInitials("Vladimir", "Sobotka");
+        assertThat(optionalPlayer.isPresent()).isFalse();
+    }
+
+    @Test
+    @Ignore
+    public void testJsonRpcError() {
+        JsonRpcClient client = initClient("methodNotFound");
+        try {
+            client.onDemand(TeamService.class, new FixedIntegerIdGenerator(1001)).getPlayer();
+            Assert.fail();
+        } catch (JsonRpcException e) {
+            e.printStackTrace();
+            ErrorMessage errorMessage = e.getErrorMessage();
+            assertThat(errorMessage.getCode()).isEqualTo(-32601);
+            assertThat(errorMessage.getMessage()).isEqualTo("Method not found");
+        }
+    }
+
 }
