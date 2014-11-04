@@ -57,9 +57,13 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @Test
-    @Ignore
     public void testFindArray() {
-        // TODO implementing this
+        JsonRpcClient client = initClient("find_player_array");
+        Player player = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("dsfs1214"))
+                .findByInitials("Ben", "Bishop");
+        assertThat(player).isNotNull();
+        assertThat(player.getFirstName()).isEqualTo("Ben");
+        assertThat(player.getLastName()).isEqualTo("Bishop");
     }
 
     @Test
@@ -74,9 +78,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @Test
-    @Ignore
     public void testNoParams() {
-        // TODO set array params
         JsonRpcClient client = initClient("getPlayers");
         List<Player> players = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(1000)).getPlayers();
         assertThat(players).isNotNull();
@@ -123,7 +125,6 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @Test
-    @Ignore
     public void testJsonRpcError() {
         JsonRpcClient client = initClient("methodNotFound");
         try {
