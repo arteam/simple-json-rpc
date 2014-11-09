@@ -48,17 +48,19 @@ public class ObjectAPIProxyBuilder extends AbstractBuilder implements Invocation
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // Check that it's a service
-        Annotation[] classAnnotations = method.getDeclaringClass().getDeclaredAnnotations();
+        Class<?> declaringClass = method.getDeclaringClass();
+        Annotation[] classAnnotations = declaringClass.getDeclaredAnnotations();
         JsonRpcService rpcServiceAnn = getAnnotation(classAnnotations, JsonRpcService.class);
         if (rpcServiceAnn == null) {
-            throw new IllegalArgumentException("Not a JSON-RPC service");
+            throw new IllegalStateException("Class '" + declaringClass.getCanonicalName() +
+                    "' is not annotated as @JsonRpcService");
         }
 
         // Check that it's a JSON-RPC method
         Annotation[] methodAnnotations = method.getDeclaredAnnotations();
         JsonRpcMethod rpcMethodAnn = getAnnotation(methodAnnotations, JsonRpcMethod.class);
         if (rpcMethodAnn == null) {
-            throw new IllegalArgumentException(method + " is not annotated");
+            throw new IllegalStateException("Method '" + method.getName() + "' is not annotated as @JsonRpcMethod");
         }
 
 
@@ -99,7 +101,7 @@ public class ObjectAPIProxyBuilder extends AbstractBuilder implements Invocation
         try {
             return idGeneratorClazz.newInstance();
         } catch (Exception e) {
-            throw new IllegalStateException("Unable instantiate id generator: " + idGeneratorClazz);
+            throw new IllegalStateException("Unable instantiate id generator: " + idGeneratorClazz, e);
         }
     }
 

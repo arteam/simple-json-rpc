@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BaseClientTest {
 
-    protected static Map<String, RequestResponse> requestsResponses;
+    private static Map<String, RequestResponse> requestsResponses;
 
-    ObjectMapper mapper = new ObjectMapper()
+    private ObjectMapper mapper = new ObjectMapper()
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .registerModule(new GuavaModule());
 
@@ -47,6 +47,16 @@ public class BaseClientTest {
                 String response = mapper.writeValueAsString(requestResponse.response);
                 System.out.println(response);
                 return response;
+            }
+        }, mapper);
+    }
+
+    protected JsonRpcClient fakeClient() {
+        return new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                return "";
             }
         }, mapper);
     }
