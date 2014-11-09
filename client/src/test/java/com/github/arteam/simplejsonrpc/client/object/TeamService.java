@@ -45,49 +45,46 @@ public interface TeamService {
                                             @JsonRpcParam("lastName") String lastName);
 
     @JsonRpcMethod
-    public List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable Position position,
-                             @JsonRpcOptional @JsonRpcParam("number") @Nullable int number,
-                             @JsonRpcOptional @JsonRpcParam("team") @NotNull Optional<Team> team,
-                             @JsonRpcOptional @JsonRpcParam("firstName") @Nullable String firstName,
-                             @JsonRpcOptional @JsonRpcParam("lastName") @Nullable String lastName,
-                             @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable Date birthDate,
-                             @JsonRpcOptional @JsonRpcParam("capHit") @NotNull Optional<Double> capHit);
+    List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable Position position,
+                      @JsonRpcOptional @JsonRpcParam("number") int number,
+                      @JsonRpcOptional @JsonRpcParam("team") @NotNull Optional<Team> team,
+                      @JsonRpcOptional @JsonRpcParam("firstName") @Nullable String firstName,
+                      @JsonRpcOptional @JsonRpcParam("lastName") @Nullable String lastName,
+                      @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable Date birthDate,
+                      @JsonRpcOptional @JsonRpcParam("capHit") @NotNull Optional<Double> capHit);
 
     @JsonRpcMethod
     @JsonRpcParams(ParamsType.ARRAY)
-    public List<Player> getPlayers();
+    List<Player> getPlayers();
 
     @JsonRpcMethod
     @JsonRpcParams(ParamsType.ARRAY)
-    public Player getPlayer();
+    Player getPlayer();
 
-    public List<Player> bogusGetPlayers();
-
-    @JsonRpcMethod
-    public Player bogusFindByInitials(@JsonRpcParam("firstName") String firstName, String lastName);
+    List<Player> bogusGetPlayers();
 
     @JsonRpcMethod
-    public Player findByCapHit(@JsonRpcParam("cap") double capHit);
+    Player bogusFindByInitials(@JsonRpcParam("firstName") String firstName, String lastName);
 
     @JsonRpcMethod
-    public long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
+    Player findByCapHit(@JsonRpcParam("cap") double capHit);
 
     @JsonRpcMethod
-    public long bogusCodeLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
+    long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
 
     @JsonRpcMethod
-    public long bogusMessageLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
+    long bogusLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
 
     @JsonRpcMethod
-    public Player bogusFind(@JsonRpcParam("firstName") String firstName,
-                            @JsonRpcParam("firstName") String lastName,
-                            @JsonRpcParam("age") int age);
+    Player bogusFind(@JsonRpcParam("firstName") String firstName,
+                     @JsonRpcParam("firstName") String lastName,
+                     @JsonRpcParam("age") int age);
 
     @JsonRpcMethod
-    public List<Player> findPlayersByFirstNames(@JsonRpcParam("names") List<String> names);
+    List<Player> findPlayersByFirstNames(@JsonRpcParam("names") List<String> names);
 
     @JsonRpcMethod
-    public List<Player> findPlayersByNumbers(@JsonRpcParam("numbers") int... numbers);
+    List<Player> findPlayersByNumbers(@JsonRpcParam("numbers") int... numbers);
 
     @JsonRpcMethod
     <T> List<Player> genericFindPlayersByNumbers(@JsonRpcParam("numbers") T... numbers);

@@ -93,11 +93,11 @@ public class AbstractBuilder {
         }
         ObjectNode requestNode = mapper.createObjectNode();
         requestNode.put(JSONRPC, VERSION_2_0);
+        requestNode.put(METHOD, method);
+        requestNode.set(PARAMS, params);
         if (!id.isNull()) {
             requestNode.set(ID, id);
         }
-        requestNode.put(METHOD, method);
-        requestNode.set(PARAMS, params);
         return requestNode;
     }
 }

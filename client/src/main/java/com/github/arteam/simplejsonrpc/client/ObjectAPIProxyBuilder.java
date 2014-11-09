@@ -10,6 +10,7 @@ import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.generator.CurrentTimeIdGenerator;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
+import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
@@ -124,14 +125,25 @@ public class ObjectAPIProxyBuilder extends AbstractBuilder implements Invocation
         for (int i = 0; i < parametersAnnotations.length; i++) {
             // Check that it's a JSON-RPC param
             JsonRpcParam rpcParamAnn = getAnnotation(parametersAnnotations[i], JsonRpcParam.class);
-            if (rpcParamAnn != null) {
-                // TODO Type check required
-                // TODO Handle optional params
-                JsonNode paramJsonValue = mapper.valueToTree(args[i]);
+            if (rpcParamAnn == null) {
+                throw new IllegalStateException("Parameter with index=" + i + " of method '" + method.getName() +
+                        "' is not annotated with @JsonRpcParam");
+            }
+            JsonNode jsonArg = mapper.valueToTree(args[i]);
+            if (jsonArg == null || jsonArg == NullNode.instance) {
+                if (getAnnotation(parametersAnnotations[i], JsonRpcOptional.class) != null) {
+                    if (paramsType == ParamsType.ARRAY) {
+                        paramsAsArray.add(NullNode.instance);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Parameter '" + rpcParamAnn.value() +
+                            "' of method '" + method.getName() + "' is mandatory and can't be null");
+                }
+            } else {
                 if (paramsType == ParamsType.MAP) {
-                    paramsAsMap.set(rpcParamAnn.value(), paramJsonValue);
+                    paramsAsMap.set(rpcParamAnn.value(), jsonArg);
                 } else if (paramsType == ParamsType.ARRAY) {
-                    paramsAsArray.add(paramJsonValue);
+                    paramsAsArray.add(jsonArg);
                 }
             }
         }
