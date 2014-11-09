@@ -12,13 +12,12 @@ import com.google.common.base.Optional;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.zip.Checksum;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,6 +28,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artem Prigoda
  */
 public class JsonRpcObjectAPITest extends BaseClientTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testAddPlayer() {
@@ -162,6 +164,38 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
             assertThat(errorMessage.getCode()).isEqualTo(-32601);
             assertThat(errorMessage.getMessage()).isEqualTo("Method not found");
         }
+    }
+
+    @Test
+    public void testParameterIsNotAnnotated() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Parameter with index=0 of method 'bogusLogin' is not annotated with @JsonRpcParam");
+
+        fakeClient().onDemand(TeamService.class).bogusLogin("super", "secret");
+    }
+
+    @Test
+    public void testMethodIsNotAnnotated() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Method 'bogusFind' is not annotated as @JsonRpcMethod");
+
+        fakeClient().onDemand(TeamService.class).bogusFind("Vladimir", "Tarasenko", 91);
+    }
+
+    @Test
+    public void testServiceIsNotInterface() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("java.util.BitSet is not an interface");
+
+        fakeClient().onDemand(BitSet.class).set(2);
+    }
+
+    @Test
+    public void testServiceIsNotAnnotated() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Class 'java.util.zip.Checksum' is not annotated as @JsonRpcService");
+
+        fakeClient().onDemand(Checksum.class).getValue();
     }
 
 }

@@ -73,9 +73,8 @@ public interface TeamService {
     long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
 
     @JsonRpcMethod
-    long bogusLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
+    long bogusLogin(String login, @JsonRpcParam("password") String password);
 
-    @JsonRpcMethod
     Player bogusFind(@JsonRpcParam("firstName") String firstName,
                      @JsonRpcParam("firstName") String lastName,
                      @JsonRpcParam("age") int age);
