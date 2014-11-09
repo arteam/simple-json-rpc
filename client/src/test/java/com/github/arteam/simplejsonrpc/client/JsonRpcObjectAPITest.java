@@ -57,6 +57,32 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @Test
+    public void testOptionalParams() {
+        JsonRpcClient client = initClient("optional_params");
+        List<Player> players = client.onDemand(TeamService.class, new FixedStringIdGenerator("xar331"))
+                .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.<Double>absent());
+        Assert.assertEquals(players.size(), 1);
+        Player player = players.get(0);
+        assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
+        assertThat(player.getNumber()).isEqualTo(91);
+        assertThat(player.getFirstName()).isEqualTo("Vladimir");
+        assertThat(player.getLastName()).isEqualTo("Tarasenko");
+    }
+
+    @Test
+    public void testOptionalArray() {
+        JsonRpcClient client = initClient("find_array_null_params");
+        List<Player> players = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("pasd81"))
+                .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.<Double>absent());
+        Assert.assertEquals(players.size(), 1);
+        Player player = players.get(0);
+        assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
+        assertThat(player.getNumber()).isEqualTo(19);
+        assertThat(player.getFirstName()).isEqualTo("Jay");
+        assertThat(player.getLastName()).isEqualTo("Bouwmeester");
+    }
+
+    @Test
     public void testFindArray() {
         JsonRpcClient client = initClient("find_player_array");
         Player player = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("dsfs1214"))
