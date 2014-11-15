@@ -3,14 +3,15 @@
 Simple JSON-RPC client is a convenient way to access JSON-RPC 2.0 server.
 It exposes fluent-style type-safe API to generate requests and handling responses.
 
-The basic class in API is `JsonRpcClient`. It's a factory for creating request builders.
-You pass to it an implementation of `Transport`, that's actually sends a request through the network
-and converts a response to a text implementation. Other optional argument is Jackson `ObjectMapper`,
-that could be used for customization of JSON serializing and data binding.
+The basic class in API is `JsonRpcClient`. 
 
-After that `JsonRpcClient` is ready to create builders with configured transport and serialization.
-Builders themselves are focused on processing actual requests data.
-Builders are immutable and type-safe. Actual request is built only in the execution phase.
+It's a factory for creating request builders: you pass to it an implementation of `Transport`. Transport actually sends a request through the network and converts a response to a text implementation. 
+
+Other optional argument is Jackson `ObjectMapper` that could be used for customization of JSON serializing and data binding.
+
+After that `JsonRpcClient` is ready for creating builders with configured transport and serialization.
+
+Builders themselves are focused on processing actual requests data. They are immutable and type-safe, so actual request is built only in the execution phase.
 
 ### Basic JSON-RPC request
 ````java
