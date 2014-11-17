@@ -3,6 +3,7 @@ package com.github.arteam.simplejsonrpc.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.client.builder.BatchRequestBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.NotificationRequestBuilder;
+import com.github.arteam.simplejsonrpc.client.builder.ObjectApiBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.RequestBuilder;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
 import org.jetbrains.annotations.NotNull;
@@ -86,25 +87,25 @@ public class JsonRpcClient {
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectAPIProxyBuilder(transport, mapper, null, null));
+                new ObjectApiBuilder(transport, mapper, null, null));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz, IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectAPIProxyBuilder(transport, mapper, null, idGenerator));
+                new ObjectApiBuilder(transport, mapper, null, idGenerator));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz, ParamsType paramsType) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectAPIProxyBuilder(transport, mapper, paramsType, null));
+                new ObjectApiBuilder(transport, mapper, paramsType, null));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz, ParamsType paramsType, IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectAPIProxyBuilder(transport, mapper, paramsType, idGenerator));
+                new ObjectApiBuilder(transport, mapper, paramsType, idGenerator));
     }
 
 }
