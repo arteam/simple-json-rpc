@@ -33,41 +33,44 @@ class Reflections {
 
     @Nullable
     public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
-        Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
-        JsonRpcService rpcServiceAnn = getAnnotation(classAnnotations, JsonRpcService.class);
-        if (rpcServiceAnn == null) {
-            throw new IllegalStateException("Class '" + clazz.getCanonicalName() +
-                        "' is not annotated as @JsonRpcService");
-        }
-
         Map<Method, MethodMetadata> methodsMetadata = new HashMap<Method, MethodMetadata>(32);
-        Method[] methods = clazz.getMethods();
-        for (Method method : methods) {
-            Annotation[] methodAnnotations = method.getDeclaredAnnotations();
-            JsonRpcMethod rpcMethodAnn = getAnnotation(methodAnnotations, JsonRpcMethod.class);
-            if (rpcMethodAnn == null) {
-                // Actually not an error, because every object has standard methods (equals, hashCode, etc...)
-                continue;
+        Class<?> searchClass = clazz;
+        while (searchClass != null) {
+            JsonRpcService rpcServiceAnn = getAnnotation(searchClass.getAnnotations(), JsonRpcService.class);
+            if (rpcServiceAnn == null) {
+                throw new IllegalStateException("Class '" + clazz.getCanonicalName() +
+                        "' is not annotated as @JsonRpcService");
             }
-            Map<String, ParameterMetadata> paramsMetadata = new HashMap<String, ParameterMetadata>(8);
-            Annotation[][] parametersAnnotations = method.getParameterAnnotations();
-            for (int i = 0; i < parametersAnnotations.length; i++) {
-                Annotation[] parametersAnnotation = parametersAnnotations[i];
-                // Check that it's a JSON-RPC param
-                JsonRpcParam rpcParamAnn = getAnnotation(parametersAnnotation, JsonRpcParam.class);
-                if (rpcParamAnn == null) {
-                    throw new IllegalStateException("Parameter with index=" + i + " of method '" + method.getName() +
-                            "' is not annotated with @JsonRpcParam");
+            Method[] methods = searchClass.getMethods();
+            for (Method method : methods) {
+                Annotation[] methodAnnotations = method.getDeclaredAnnotations();
+                JsonRpcMethod rpcMethodAnn = getAnnotation(methodAnnotations, JsonRpcMethod.class);
+                if (rpcMethodAnn == null) {
+                    // Actually not an error, because every object has standard methods (equals, hashCode, etc...)
+                    continue;
                 }
-                // Check that's a param could be an optional
-                JsonRpcOptional optionalAnn = getAnnotation(parametersAnnotation, JsonRpcOptional.class);
-                paramsMetadata.put(rpcParamAnn.value(), new ParameterMetadata(i, optionalAnn != null));
+                Map<String, ParameterMetadata> paramsMetadata = new HashMap<String, ParameterMetadata>(8);
+                Annotation[][] parametersAnnotations = method.getParameterAnnotations();
+                for (int i = 0; i < parametersAnnotations.length; i++) {
+                    Annotation[] parametersAnnotation = parametersAnnotations[i];
+                    // Check that it's a JSON-RPC param
+                    JsonRpcParam rpcParamAnn = getAnnotation(parametersAnnotation, JsonRpcParam.class);
+                    if (rpcParamAnn == null) {
+                        throw new IllegalStateException("Parameter with index=" + i + " of method '" + method.getName() +
+                                "' is not annotated with @JsonRpcParam");
+                    }
+                    // Check that's a param could be an optional
+                    JsonRpcOptional optionalAnn = getAnnotation(parametersAnnotation, JsonRpcOptional.class);
+                    paramsMetadata.put(rpcParamAnn.value(), new ParameterMetadata(i, optionalAnn != null));
+                }
+                String name = !rpcMethodAnn.value().isEmpty() ? rpcMethodAnn.value() : method.getName();
+                ParamsType paramsType = getParamsType(methodAnnotations);
+                methodsMetadata.put(method, new MethodMetadata(name, paramsType, paramsMetadata));
             }
-            String name = !rpcMethodAnn.value().isEmpty() ? rpcMethodAnn.value() : method.getName();
-            ParamsType paramsType = getParamsType(methodAnnotations);
-            methodsMetadata.put(method, new MethodMetadata(name, paramsType, paramsMetadata));
+            searchClass = searchClass.getSuperclass();
         }
 
+        Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
         IdGenerator<?> idGenerator = getIdGenerator(classAnnotations);
         ParamsType paramsType = getParamsType(classAnnotations);
         return new ClassMetadata(paramsType, idGenerator, methodsMetadata);
