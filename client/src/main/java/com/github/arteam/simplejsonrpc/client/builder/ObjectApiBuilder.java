@@ -55,7 +55,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
         // Check that it's a JSON-RPC method
         MethodMetadata methodMetadata = classMetadata.getMethods().get(method);
         if (methodMetadata == null) {
-            throw new IllegalStateException("Method '" + method.getName() + "' is not annotated as @JsonRpcMethod");
+            throw new IllegalStateException("Method '" + method.getName() + "' is not JSON-RPC available");
         }
 
         // Get method name (annotation or the actual name), params and id generator

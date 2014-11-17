@@ -31,7 +31,7 @@ class Reflections {
     private Reflections() {
     }
 
-    @Nullable
+    @NotNull
     public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
         Map<Method, MethodMetadata> methodsMetadata = new HashMap<Method, MethodMetadata>(32);
         Class<?> searchClass = clazz;
@@ -46,9 +46,9 @@ class Reflections {
                 Annotation[] methodAnnotations = method.getDeclaredAnnotations();
                 JsonRpcMethod rpcMethodAnn = getAnnotation(methodAnnotations, JsonRpcMethod.class);
                 if (rpcMethodAnn == null) {
-                    // Actually not an error, because every object has standard methods (equals, hashCode, etc...)
-                    continue;
+                    throw new IllegalStateException("Method '" + method.getName() + "' is not annotated as @JsonRpcMethod");
                 }
+
                 Map<String, ParameterMetadata> paramsMetadata = new HashMap<String, ParameterMetadata>(8);
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
                 for (int i = 0; i < parametersAnnotations.length; i++) {
