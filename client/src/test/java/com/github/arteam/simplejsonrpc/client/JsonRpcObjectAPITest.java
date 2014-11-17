@@ -189,11 +189,25 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @Test
-    public void testMethodIsNotAnnotated() {
+    public void testNotJsonRpcMethod() {
         thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Method 'equals' is not annotated as @JsonRpcMethod");
+        thrown.expectMessage("Method 'equals' is not JSON-RPC available");
 
         fakeClient().onDemand(TeamService.class).equals("Test");
+    }
+
+    @JsonRpcService
+    public static interface MethodIsNotAnnotatedService {
+
+        boolean find(@JsonRpcParam("name") String name);
+    }
+
+    @Test
+    public void testMethodIsNotAnnotated() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Method 'find' is not annotated as @JsonRpcMethod");
+
+        fakeClient().onDemand(MethodIsNotAnnotatedService.class).find("Logan");
     }
 
     @Test
