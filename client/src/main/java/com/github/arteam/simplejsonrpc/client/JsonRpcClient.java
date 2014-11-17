@@ -87,25 +87,25 @@ public class JsonRpcClient {
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(transport, mapper, null, null));
+                new ObjectApiBuilder(clazz, transport, mapper, null, null));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz, IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(transport, mapper, null, idGenerator));
+                new ObjectApiBuilder(clazz, transport, mapper, null, idGenerator));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz, ParamsType paramsType) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(transport, mapper, paramsType, null));
+                new ObjectApiBuilder(clazz, transport, mapper, paramsType, null));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T onDemand(Class<T> clazz, ParamsType paramsType, IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(transport, mapper, paramsType, idGenerator));
+                new ObjectApiBuilder(clazz, transport, mapper, paramsType, idGenerator));
     }
 
 }
