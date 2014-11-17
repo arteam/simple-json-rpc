@@ -28,7 +28,7 @@ import java.util.Map;
 @JsonRpcService
 @JsonRpcId(TestIdGenerator.class)
 @JsonRpcParams(ParamsType.MAP)
-public interface TeamService {
+public interface TeamService extends BaseService {
 
     @JsonRpcMethod
     boolean add(@JsonRpcParam("player") Player s);
@@ -54,18 +54,7 @@ public interface TeamService {
                       @JsonRpcOptional @JsonRpcParam("capHit") @NotNull Optional<Double> capHit);
 
     @JsonRpcMethod
-    @JsonRpcParams(ParamsType.ARRAY)
-    List<Player> getPlayers();
-
-    @JsonRpcMethod
-    @JsonRpcParams(ParamsType.ARRAY)
-    Player getPlayer();
-
-    @JsonRpcMethod
     Player findByCapHit(@JsonRpcParam("cap") double capHit);
-
-    @JsonRpcMethod
-    long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
 
     @JsonRpcMethod
     List<Player> findPlayersByFirstNames(@JsonRpcParam("names") List<String> names);

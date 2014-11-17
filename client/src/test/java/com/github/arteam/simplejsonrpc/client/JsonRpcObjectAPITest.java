@@ -7,6 +7,9 @@ import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.object.FixedIntegerIdGenerator;
 import com.github.arteam.simplejsonrpc.client.object.FixedStringIdGenerator;
 import com.github.arteam.simplejsonrpc.client.object.TeamService;
+import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
+import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
+import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import com.google.common.base.Optional;
 import org.joda.time.DateTimeZone;
@@ -17,7 +20,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.Checksum;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -167,13 +173,19 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         }
     }
 
+    @JsonRpcService
+    static interface BogusTeamService {
+
+        @JsonRpcMethod
+        void bogusLogin(String username, @JsonRpcParam("password") String password);
+    }
+
     @Test
-    @Ignore
     public void testParameterIsNotAnnotated() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("Parameter with index=0 of method 'bogusLogin' is not annotated with @JsonRpcParam");
 
-        //fakeClient().onDemand(TeamService.class).bogusLogin("super", "secret");
+        fakeClient().onDemand(BogusTeamService.class).bogusLogin("super", "secret");
     }
 
     @Test
