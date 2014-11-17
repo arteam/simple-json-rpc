@@ -5,23 +5,18 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import com.github.arteam.simplejsonrpc.client.JsonRpcId;
-import com.github.arteam.simplejsonrpc.client.JsonRpcParams;
 import com.github.arteam.simplejsonrpc.client.ParamsType;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
-import com.github.arteam.simplejsonrpc.client.generator.CurrentTimeIdGenerator;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
+import com.github.arteam.simplejsonrpc.client.metadata.ClassMetadata;
+import com.github.arteam.simplejsonrpc.client.metadata.MethodMetadata;
+import com.github.arteam.simplejsonrpc.client.metadata.ParameterMetadata;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -37,41 +32,36 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     private static final String ERROR = "error";
 
     @Nullable
-    private IdGenerator userIdGenerator;
-
-    @Nullable
     private ParamsType userParamsType;
 
-    public ObjectApiBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper,
+    @Nullable
+    private IdGenerator userIdGenerator;
+
+    @NotNull
+    private ClassMetadata classMetadata;
+
+    public ObjectApiBuilder(@NotNull Class<?> clazz, @NotNull Transport transport, @NotNull ObjectMapper mapper,
                             @Nullable ParamsType userParamsType, @Nullable IdGenerator userIdGenerator) {
         super(transport, mapper);
+        // Check that it's a service
+        ClassMetadata classMetadata = Reflections.getClassMetadata(clazz);
+        this.classMetadata = classMetadata;
         this.userParamsType = userParamsType;
         this.userIdGenerator = userIdGenerator;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // Check that it's a service
-        Class<?> declaringClass = method.getDeclaringClass();
-        Annotation[] classAnnotations = declaringClass.getDeclaredAnnotations();
-        JsonRpcService rpcServiceAnn = getAnnotation(classAnnotations, JsonRpcService.class);
-        if (rpcServiceAnn == null) {
-            throw new IllegalStateException("Class '" + declaringClass.getCanonicalName() +
-                    "' is not annotated as @JsonRpcService");
-        }
-
         // Check that it's a JSON-RPC method
-        Annotation[] methodAnnotations = method.getDeclaredAnnotations();
-        JsonRpcMethod rpcMethodAnn = getAnnotation(methodAnnotations, JsonRpcMethod.class);
-        if (rpcMethodAnn == null) {
+        MethodMetadata methodMetadata = classMetadata.getMethods().get(method);
+        if (methodMetadata == null) {
             throw new IllegalStateException("Method '" + method.getName() + "' is not annotated as @JsonRpcMethod");
         }
 
-
         // Get method name (annotation or the actual name), params and id generator
-        String methodName = !rpcMethodAnn.value().isEmpty() ? rpcMethodAnn.value() : method.getName();
-        JsonNode params = getParams(method, args, getParamsType(classAnnotations, methodAnnotations));
-        IdGenerator<?> idGenerator = getIdGenerator(classAnnotations);
+        String methodName = methodMetadata.getName();
+        JsonNode params = getParams(methodMetadata, args, getParamsType(classMetadata, methodMetadata));
+        IdGenerator<?> idGenerator = userIdGenerator != null ? userIdGenerator : classMetadata.getIdGenerator();
 
         //  Construct a request
         ValueNode id = new POJONode(idGenerator.generate());
@@ -91,70 +81,31 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     }
 
     /**
-     * Get actual id generator
-     */
-    @NotNull
-    private IdGenerator<?> getIdGenerator(@NotNull Annotation[] classAnnotations) {
-        if (userIdGenerator != null) {
-            return userIdGenerator;
-        }
-
-        JsonRpcId jsonRpcIdAnn = getAnnotation(classAnnotations, JsonRpcId.class);
-        // TODO change to AtomicLongIdGenerator as a default choice
-        Class<? extends IdGenerator<?>> idGeneratorClazz = (jsonRpcIdAnn == null) ?
-                CurrentTimeIdGenerator.class : jsonRpcIdAnn.value();
-        try {
-            return idGeneratorClazz.newInstance();
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable instantiate id generator: " + idGeneratorClazz, e);
-        }
-    }
-
-    @NotNull
-    private ParamsType getParamsType(@NotNull Annotation[] classAnnotations,
-                                     @NotNull Annotation[] methodAnnotations) {
-        if (userParamsType != null) {
-            return userParamsType;
-        }
-        JsonRpcParams rpcParamsAnn = getAnnotation(methodAnnotations, JsonRpcParams.class);
-        if (rpcParamsAnn == null) {
-            rpcParamsAnn = getAnnotation(classAnnotations, JsonRpcParams.class);
-        }
-        return rpcParamsAnn != null ? rpcParamsAnn.value() : ParamsType.MAP;
-
-    }
-
-    /**
      * Get request params in JSON representation (map or array)
      */
     @NotNull
-    private JsonNode getParams(@NotNull Method method, @NotNull Object[] args,
+    private JsonNode getParams(@NotNull MethodMetadata method, @NotNull Object[] args,
                                @NotNull ParamsType paramsType) {
         ObjectNode paramsAsMap = mapper.createObjectNode();
         ArrayNode paramsAsArray = mapper.createArrayNode();
-        Annotation[][] parametersAnnotations = method.getParameterAnnotations();
-        for (int i = 0; i < parametersAnnotations.length; i++) {
-            // Check that it's a JSON-RPC param
-            JsonRpcParam rpcParamAnn = getAnnotation(parametersAnnotations[i], JsonRpcParam.class);
-            if (rpcParamAnn == null) {
-                throw new IllegalStateException("Parameter with index=" + i + " of method '" + method.getName() +
-                        "' is not annotated with @JsonRpcParam");
-            }
-            JsonNode jsonArg = mapper.valueToTree(args[i]);
+        for (String paramName : method.getParams().keySet()) {
+            ParameterMetadata parameterMetadata = method.getParams().get(paramName);
+            int index = parameterMetadata.getIndex();
+            JsonNode jsonArg = mapper.valueToTree(args[index]);
             if (jsonArg == null || jsonArg == NullNode.instance) {
-                if (getAnnotation(parametersAnnotations[i], JsonRpcOptional.class) != null) {
+                if (parameterMetadata.isOptional()) {
                     if (paramsType == ParamsType.ARRAY) {
                         paramsAsArray.add(NullNode.instance);
                     }
                 } else {
-                    throw new IllegalArgumentException("Parameter '" + rpcParamAnn.value() +
+                    throw new IllegalArgumentException("Parameter '" + paramName +
                             "' of method '" + method.getName() + "' is mandatory and can't be null");
                 }
             } else {
                 if (paramsType == ParamsType.MAP) {
-                    paramsAsMap.set(rpcParamAnn.value(), jsonArg);
+                    paramsAsMap.set(paramName, jsonArg);
                 } else if (paramsType == ParamsType.ARRAY) {
-                    paramsAsArray.add(jsonArg);
+                    paramsAsArray.insert(index, jsonArg);
                 }
             }
         }
@@ -172,17 +123,16 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Nullable
-    private static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations,
-                                                          @NotNull Class<T> clazz) {
-        if (annotations != null) {
-            for (Annotation annotation : annotations) {
-                if (annotation.annotationType().equals(clazz)) {
-                    return (T) annotation;
-                }
-            }
+    @NotNull
+    private ParamsType getParamsType(@NotNull ClassMetadata classMetadata, @NotNull MethodMetadata methodMetadata) {
+        if (userParamsType != null) {
+            return userParamsType;
+        } else if (methodMetadata.getParamsType() != null) {
+            return methodMetadata.getParamsType();
+        } else if (classMetadata.getParamsType() != null) {
+            return classMetadata.getParamsType();
         }
-        return null;
+        return ParamsType.MAP;
     }
+
 }

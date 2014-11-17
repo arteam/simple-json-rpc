@@ -61,23 +61,11 @@ public interface TeamService {
     @JsonRpcParams(ParamsType.ARRAY)
     Player getPlayer();
 
-    List<Player> bogusGetPlayers();
-
-    @JsonRpcMethod
-    Player bogusFindByInitials(@JsonRpcParam("firstName") String firstName, String lastName);
-
     @JsonRpcMethod
     Player findByCapHit(@JsonRpcParam("cap") double capHit);
 
     @JsonRpcMethod
     long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
-
-    @JsonRpcMethod
-    long bogusLogin(String login, @JsonRpcParam("password") String password);
-
-    Player bogusFind(@JsonRpcParam("firstName") String firstName,
-                     @JsonRpcParam("firstName") String lastName,
-                     @JsonRpcParam("age") int age);
 
     @JsonRpcMethod
     List<Player> findPlayersByFirstNames(@JsonRpcParam("names") List<String> names);
