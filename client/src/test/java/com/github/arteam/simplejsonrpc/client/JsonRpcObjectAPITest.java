@@ -204,4 +204,19 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         fakeClient().onDemand(Checksum.class).getValue();
     }
 
+    @JsonRpcService
+    static interface DuplicateParametersService {
+
+        @JsonRpcMethod
+        boolean find(@JsonRpcParam("code") String username, @JsonRpcParam("code") String code, @JsonRpcParam("number") int number);
+    }
+
+    @Test
+    public void testDuplicatedParameterNames() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Two parameters of method 'find' have the same name 'code'");
+
+        fakeClient().onDemand(DuplicateParametersService.class).find("Joe", "12", 21);
+    }
+
 }

@@ -61,7 +61,12 @@ class Reflections {
                     }
                     // Check that's a param could be an optional
                     JsonRpcOptional optionalAnn = getAnnotation(parametersAnnotation, JsonRpcOptional.class);
-                    paramsMetadata.put(rpcParamAnn.value(), new ParameterMetadata(i, optionalAnn != null));
+                    ParameterMetadata parameterMetadata = new ParameterMetadata(i, optionalAnn != null);
+                    if (paramsMetadata.put(rpcParamAnn.value(), parameterMetadata) != null) {
+                        throw new IllegalStateException("Two parameters of method '" + method.getName() + "' have the " +
+                                "same name '" + rpcParamAnn.value() + "'");
+                    }
+
                 }
                 String name = !rpcMethodAnn.value().isEmpty() ? rpcMethodAnn.value() : method.getName();
                 ParamsType paramsType = getParamsType(methodAnnotations);
