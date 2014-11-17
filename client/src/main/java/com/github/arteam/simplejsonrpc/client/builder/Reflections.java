@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -49,7 +50,7 @@ class Reflections {
                     throw new IllegalStateException("Method '" + method.getName() + "' is not annotated as @JsonRpcMethod");
                 }
 
-                Map<String, ParameterMetadata> paramsMetadata = new HashMap<String, ParameterMetadata>(8);
+                Map<String, ParameterMetadata> paramsMetadata = new LinkedHashMap<String, ParameterMetadata>(8);
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
                 for (int i = 0; i < parametersAnnotations.length; i++) {
                     Annotation[] parametersAnnotation = parametersAnnotations[i];
