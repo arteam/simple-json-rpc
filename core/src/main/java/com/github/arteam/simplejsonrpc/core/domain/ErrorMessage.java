@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
