@@ -1,9 +1,7 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,18 +15,16 @@ import org.jetbrains.annotations.NotNull;
 public class ErrorResponse extends Response {
 
     @NotNull
-    @JsonProperty("error")
     private final ErrorMessage error;
 
-    @JsonCreator
-    public ErrorResponse(@JsonProperty("id") @NotNull ValueNode id,
-                         @JsonProperty("error") @NotNull ErrorMessage error) {
+    public ErrorResponse(@NotNull JsonElement id,
+                         @NotNull ErrorMessage error) {
         super(id);
         this.error = error;
     }
 
     public ErrorResponse(@NotNull ErrorMessage error) {
-        super(NullNode.getInstance());
+        super(JsonNull.INSTANCE);
         this.error = error;
     }
 

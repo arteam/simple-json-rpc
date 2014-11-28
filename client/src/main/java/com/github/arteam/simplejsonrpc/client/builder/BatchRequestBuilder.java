@@ -1,19 +1,15 @@
 package com.github.arteam.simplejsonrpc.client.builder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.*;
-import com.fasterxml.jackson.databind.type.SimpleType;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcBatchException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +27,7 @@ import java.util.Map;
  * Return type is a map of responses (Java objects) by request ids. In cases of errors it throws
  * {@code JsonRpcBatchException} with detailed status of success and failed requests.
  * <p/>
- * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
+ * It delegates JSON processing to Jackson {@link Gson} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
  * <p/>
  * The basic pattern is following:
  * <pre>
@@ -42,6 +38,7 @@ import java.util.Map;
  *      .returnType(Player.class)
  *      .execute();
  * </pre>
+ *
  * @author Artem Prigoda
  */
 public class BatchRequestBuilder<K, V> extends AbstractBuilder {
@@ -50,13 +47,13 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * List of requests
      */
     @NotNull
-    private final List<ObjectNode> requests;
+    private final List<JsonObject> requests;
 
     /**
      * Map of expected return types by request ids
      */
     @NotNull
-    private final Map<Object, JavaType> returnTypes;
+    private final Map<Object, Type> returnTypes;
 
     /**
      * Type of request ids
@@ -70,7 +67,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * This property works exclusively with {@code returnTypes}. Only one of them should be set.
      */
     @Nullable
-    private final JavaType returnType;
+    private final Type returnType;
 
     /**
      * Creates a new batch request builder in an initial state
@@ -78,8 +75,8 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @param transport transport for request performing
      * @param mapper    mapper for JSON processing
      */
-    public BatchRequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
-        this(transport, mapper, new ArrayList<ObjectNode>(), new HashMap<Object, JavaType>(), null, null);
+    public BatchRequestBuilder(@NotNull Transport transport, @NotNull Gson mapper) {
+        this(transport, mapper, new ArrayList<JsonObject>(), new HashMap<Object, Type>(), null, null);
     }
 
     /**
@@ -92,9 +89,9 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @param keysType    new key type
      * @param returnType  new values type
      */
-    public BatchRequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper,
-                               @NotNull List<ObjectNode> requests, @NotNull Map<Object, JavaType> returnTypes,
-                               @Nullable Class<K> keysType, @Nullable JavaType returnType) {
+    public BatchRequestBuilder(@NotNull Transport transport, @NotNull Gson mapper,
+                               @NotNull List<JsonObject> requests, @NotNull Map<Object, Type> returnTypes,
+                               @Nullable Class<K> keysType, @Nullable Type returnType) {
         super(transport, mapper);
         this.requests = requests;
         this.returnTypes = returnTypes;
@@ -112,7 +109,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(long id, @NotNull String method, @NotNull Object... params) {
-        requests.add(request(new LongNode(id), method, arrayParams(params)));
+        requests.add(request(new JsonPrimitive(id), method, arrayParams(params)));
         return this;
     }
 
@@ -126,7 +123,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(int id, @NotNull String method, @NotNull Object... params) {
-        requests.add(request(new IntNode(id), method, arrayParams(params)));
+        requests.add(request(new JsonPrimitive(id), method, arrayParams(params)));
         return this;
     }
 
@@ -140,7 +137,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(String id, @NotNull String method, @NotNull Object... params) {
-        requests.add(request(new TextNode(id), method, arrayParams(params)));
+        requests.add(request(new JsonPrimitive(id), method, arrayParams(params)));
         return this;
     }
 
@@ -153,7 +150,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(@NotNull String method, @NotNull Object... params) {
-        requests.add(request(NullNode.instance, method, arrayParams(params)));
+        requests.add(request(JsonNull.INSTANCE, method, arrayParams(params)));
         return this;
     }
 
@@ -167,7 +164,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(long id, @NotNull String method, @NotNull Map<String, ?> params) {
-        requests.add(request(new LongNode(id), method, objectParams(params)));
+        requests.add(request(new JsonPrimitive(id), method, objectParams(params)));
         return this;
     }
 
@@ -181,7 +178,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(int id, @NotNull String method, @NotNull Map<String, ?> params) {
-        requests.add(request(new IntNode(id), method, objectParams(params)));
+        requests.add(request(new JsonPrimitive(id), method, objectParams(params)));
         return this;
     }
 
@@ -195,7 +192,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(String id, @NotNull String method, @NotNull Map<String, ?> params) {
-        requests.add(request(new TextNode(id), method, objectParams(params)));
+        requests.add(request(new JsonPrimitive(id), method, objectParams(params)));
         return this;
     }
 
@@ -208,7 +205,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(@NotNull String method, @NotNull Map<String, ?> params) {
-        requests.add(request(NullNode.instance, method, objectParams(params)));
+        requests.add(request(JsonNull.INSTANCE, method, objectParams(params)));
         return this;
     }
 
@@ -313,7 +310,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(long id, @NotNull String method, @NotNull Object[] params,
-                                         @NotNull TypeReference<?> typeReference) {
+                                         @NotNull TypeToken<?> typeReference) {
         return add(id, method, params).returnType(id, typeReference);
     }
 
@@ -328,7 +325,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(int id, @NotNull String method, @NotNull Object[] params,
-                                         @NotNull TypeReference<?> typeReference) {
+                                         @NotNull TypeToken<?> typeReference) {
         return add(id, method, params).returnType(id, typeReference);
     }
 
@@ -343,7 +340,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(String id, @NotNull String method, @NotNull Object[] params,
-                                         @NotNull TypeReference<?> typeReference) {
+                                         @NotNull TypeToken<?> typeReference) {
         return add(id, method, params).returnType(id, typeReference);
     }
 
@@ -358,7 +355,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(long id, @NotNull String method, @NotNull Map<String, ?> params,
-                                         @NotNull TypeReference<?> typeReference) {
+                                         @NotNull TypeToken<?> typeReference) {
         return add(id, method, params).returnType(id, typeReference);
     }
 
@@ -373,7 +370,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(int id, @NotNull String method, @NotNull Map<String, ?> params,
-                                         @NotNull TypeReference<?> typeReference) {
+                                         @NotNull TypeToken<?> typeReference) {
         return add(id, method, params).returnType(id, typeReference);
     }
 
@@ -388,7 +385,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @NotNull
     public BatchRequestBuilder<K, V> add(String id, @NotNull String method, @NotNull Map<String, ?> params,
-                                         @NotNull TypeReference<?> typeReference) {
+                                         @NotNull TypeToken<?> typeReference) {
         return add(id, method, params).returnType(id, typeReference);
     }
 
@@ -399,20 +396,44 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @param responseType expected response type
      * @return a new builder
      */
-    private BatchRequestBuilder<K, V> returnType(Object id, @NotNull Class<?> responseType) {
-        returnTypes.put(id, SimpleType.construct(responseType));
+    private BatchRequestBuilder<K, V> returnType(String id, @NotNull Class<?> responseType) {
+        returnTypes.put(id, responseType);
+        return this;
+    }
+
+    /**
+     * Sets an expected return type for a request
+     *
+     * @param id           request id
+     * @param responseType expected response type
+     * @return a new builder
+     */
+    private BatchRequestBuilder<K, V> returnType(long id, @NotNull Class<?> responseType) {
+        returnTypes.put(id, responseType);
+        return this;
+    }
+
+    /**
+     * Sets an expected return type for a request
+     *
+     * @param id           request id
+     * @param responseType expected response type
+     * @return a new builder
+     */
+    private BatchRequestBuilder<K, V> returnType(int id, @NotNull Class<?> responseType) {
+        returnTypes.put(id, responseType);
         return this;
     }
 
     /**
      * Sets an expected return type as a complex type for a request
      *
-     * @param id            request id
+     * @param id            request id as a text value
      * @param typeReference expected response type as a complex type
      * @return a new builder
      */
-    private BatchRequestBuilder<K, V> returnType(Object id, @NotNull TypeReference<?> typeReference) {
-        returnTypes.put(id, mapper.getTypeFactory().constructType(typeReference.getType()));
+    private BatchRequestBuilder<K, V> returnType(Object id, @NotNull TypeToken<?> typeReference) {
+        returnTypes.put(id, typeReference.getType());
         return this;
     }
 
@@ -437,8 +458,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @return a new builder
      */
     public <NV> BatchRequestBuilder<K, NV> returnType(@NotNull Class<NV> valuesClass) {
-        return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType,
-                SimpleType.construct(valuesClass));
+        return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType, valuesClass);
     }
 
     /**
@@ -448,9 +468,8 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @param <NV> expected requests return type
      * @return a new builder
      */
-    public <NV> BatchRequestBuilder<K, NV> returnType(@NotNull TypeReference<NV> tr) {
-        return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType,
-                mapper.constructType(tr.getType()));
+    public <NV> BatchRequestBuilder<K, NV> returnType(@NotNull TypeToken<NV> tr) {
+        return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType, tr.getType());
     }
 
     /**
@@ -498,7 +517,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     @NotNull
     private String executeRequest() {
         try {
-            return transport.pass(mapper.writeValueAsString(requests));
+            return transport.pass(mapper.toJson(requests));
         } catch (IOException e) {
             throw new IllegalStateException("I/O error during a request processing", e);
         }
@@ -517,22 +536,23 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         Map<Object, ErrorMessage> errors = new HashMap<Object, ErrorMessage>();
         List<?> requestIds = requestIds();
 
+        JsonElement jsonResponses;
         try {
-            JsonNode jsonResponses = mapper.readTree(textResponse);
-            // If it's an empty response
-            if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() && requestIds.isEmpty()) {
-                return new HashMap<K, V>();
-            }
-            // Not an array
-            if (jsonResponses.getNodeType() != JsonNodeType.ARRAY) {
-                throw new IllegalStateException("Expected array but was " + jsonResponses.getNodeType());
-            }
-
-            for (JsonNode responseNode : (ArrayNode) jsonResponses) {
-                processSingleResponse(responseNode, requestIds, successes, errors);
-            }
-        } catch (IOException e) {
+            jsonResponses = mapper.fromJson(textResponse, JsonElement.class);
+        } catch (Exception e) {
             throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
+        }
+        // If it's an empty response
+        if (jsonResponses.isJsonPrimitive() && jsonResponses.getAsString().isEmpty() && requestIds.isEmpty()) {
+            return new HashMap<K, V>();
+        }
+        // Not an array
+        if (!jsonResponses.isJsonArray()) {
+            throw new IllegalStateException("Expected array but was " + jsonResponses.getClass().getSimpleName());
+        }
+
+        for (JsonElement responseNode : jsonResponses.getAsJsonArray()) {
+            processSingleResponse(responseNode.getAsJsonObject(), requestIds, successes, errors);
         }
         if (!errors.isEmpty()) {
             throw new JsonRpcBatchException("Errors happened during batch request processing", successes, errors);
@@ -540,42 +560,37 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
         return (Map<K, V>) successes;
     }
 
-    private void processSingleResponse(@NotNull JsonNode responseNode, @NotNull List<?> requestIds,
+    private void processSingleResponse(@NotNull JsonObject responseNode, @NotNull List<?> requestIds,
                                        @NotNull Map<Object, Object> successes,
-                                       @NotNull Map<Object, ErrorMessage> errors)
-            throws JsonProcessingException {
+                                       @NotNull Map<Object, ErrorMessage> errors) {
         checkVersion(responseNode, responseNode.get(JSONRPC));
 
-        JsonNode result = responseNode.get(RESULT);
-        JsonNode error = responseNode.get(ERROR);
+        JsonElement result = responseNode.get(RESULT);
+        JsonElement error = responseNode.get(ERROR);
         if (error == null && result == null) {
             throw new IllegalStateException("Neither result or error is set in response: " + responseNode);
         }
 
         // Check id and convert it to long if necessary
         Object idValue = nodeValue(responseNode.get(ID));
-        if (keysType == Long.class && idValue.getClass() == Integer.class) {
-            idValue = ((Integer) idValue).longValue();
-        }
-
         if (!requestIds.contains(idValue)) {
             throw new IllegalStateException("Unspecified id: '" + idValue + "' in response");
         }
 
         if (result != null) {
-            JavaType actualReturnType = returnType != null ? returnType : returnTypes.get(idValue);
-            successes.put(idValue, mapper.convertValue(result, actualReturnType));
+            Type actualReturnType = returnType != null ? returnType : returnTypes.get(idValue);
+            successes.put(idValue, mapper.fromJson(result, actualReturnType));
         } else {
             // Process as an error
-            errors.put(idValue, mapper.treeToValue(error, ErrorMessage.class));
+            errors.put(idValue, mapper.fromJson(error, ErrorMessage.class));
         }
     }
 
-    private void checkVersion(JsonNode responseNode, JsonNode version) {
+    private void checkVersion(JsonElement responseNode, JsonElement version) {
         if (version == null) {
             throw new IllegalStateException("Not a JSON-RPC response: " + responseNode);
         }
-        if (!version.asText().equals(VERSION_2_0)) {
+        if (!version.getAsString().equals(VERSION_2_0)) {
             throw new IllegalStateException("Bad protocol version in a response: " + responseNode);
         }
     }
@@ -590,8 +605,8 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     @NotNull
     private List<?> requestIds() {
         List<Object> ids = new ArrayList<Object>(requests.size());
-        for (ObjectNode request : requests) {
-            JsonNode id = request.get(ID);
+        for (JsonObject request : requests) {
+            JsonElement id = request.get(ID);
             if (id != null) {
                 ids.add(nodeValue(id));
             }
@@ -601,18 +616,21 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
 
     // Visible for tests
     @NotNull
-    List<ObjectNode> getRequests() {
+    List<JsonObject> getRequests() {
         return requests;
     }
 
     @NotNull
-    private static Object nodeValue(@NotNull JsonNode id) {
-        if (id.isLong()) {
-            return id.longValue();
-        } else if (id.isInt()) {
-            return id.intValue();
-        } else if (id.isTextual()) {
-            return id.textValue();
+    private Object nodeValue(@NotNull JsonElement id) {
+        JsonPrimitive pid = id.getAsJsonPrimitive();
+        if (pid.isNumber()) {
+            if (keysType == Integer.class || keysType == int.class) {
+                return id.getAsInt();
+            } else {
+                return id.getAsLong();
+            }
+        } else if (pid.isString()) {
+            return id.getAsString();
         }
         throw new IllegalArgumentException("Wrong id=" + id);
     }

@@ -1,17 +1,14 @@
 package com.github.arteam.simplejsonrpc.client.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 public class Team {
 
-    @JsonProperty
     private final String name;
 
-    @JsonProperty
     private final String league;
 
-    public Team(@JsonProperty("name") String name, @JsonProperty("league") String league) {
+    public Team(String name, String league) {
         this.name = name;
         this.league = league;
     }

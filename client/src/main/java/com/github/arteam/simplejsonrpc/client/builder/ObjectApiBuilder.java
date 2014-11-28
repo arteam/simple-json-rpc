@@ -1,10 +1,5 @@
 package com.github.arteam.simplejsonrpc.client.builder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.*;
 import com.github.arteam.simplejsonrpc.client.ParamsType;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
@@ -13,10 +8,10 @@ import com.github.arteam.simplejsonrpc.client.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.ParameterMetadata;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
+import com.google.gson.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -47,7 +42,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * @param userParamsType  custom type of request params
      * @param userIdGenerator custom id generator
      */
-    public ObjectApiBuilder(@NotNull Class<?> clazz, @NotNull Transport transport, @NotNull ObjectMapper mapper,
+    public ObjectApiBuilder(@NotNull Class<?> clazz, @NotNull Transport transport, @NotNull Gson mapper,
                             @Nullable ParamsType userParamsType, @Nullable IdGenerator userIdGenerator) {
         super(transport, mapper);
         this.classMetadata = Reflections.getClassMetadata(clazz);
@@ -65,23 +60,33 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
 
         // Get method name (annotation or the actual name), params and id generator
         String methodName = methodMetadata.getName();
-        JsonNode params = getParams(methodMetadata, args, getParamsType(classMetadata, methodMetadata));
+        JsonElement params = getParams(methodMetadata, args, getParamsType(classMetadata, methodMetadata));
         IdGenerator<?> idGenerator = userIdGenerator != null ? userIdGenerator : classMetadata.getIdGenerator();
 
         //  Construct a request
-        ValueNode id = new POJONode(idGenerator.generate());
+        JsonPrimitive id = createJsonPrimitive(idGenerator.generate());
         String textResponse = execute(request(id, methodName, params));
 
         // Parse a response
-        JsonNode responseNode = mapper.readTree(textResponse);
-        JsonNode result = responseNode.get(RESULT);
-        JsonNode error = responseNode.get(ERROR);
+        JsonObject responseNode = mapper.fromJson(textResponse, JsonObject.class);
+        JsonElement result = responseNode.get(RESULT);
+        JsonElement error = responseNode.get(ERROR);
         if (result != null) {
-            JavaType returnType = mapper.getTypeFactory().constructType(method.getGenericReturnType());
-            return mapper.convertValue(result, returnType);
+            return mapper.fromJson(result, method.getGenericReturnType());
         } else {
-            ErrorMessage errorMessage = mapper.treeToValue(error, ErrorMessage.class);
+            ErrorMessage errorMessage = mapper.fromJson(error, ErrorMessage.class);
             throw new JsonRpcException(errorMessage);
+        }
+    }
+
+    @NotNull
+    private JsonPrimitive createJsonPrimitive(@NotNull Object obj) {
+        if (obj instanceof Number) {
+            return new JsonPrimitive((Number) obj);
+        } else if (obj instanceof String) {
+            return new JsonPrimitive((String) obj);
+        } else {
+            throw new IllegalArgumentException(obj + " isn't number or string");
         }
     }
 
@@ -89,18 +94,18 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * Get request params in a JSON representation (map or array)
      */
     @NotNull
-    private JsonNode getParams(@NotNull MethodMetadata method, @NotNull Object[] args,
-                               @NotNull ParamsType paramsType) {
-        ObjectNode paramsAsMap = mapper.createObjectNode();
-        ArrayNode paramsAsArray = mapper.createArrayNode();
+    private JsonElement getParams(@NotNull MethodMetadata method, @NotNull Object[] args,
+                                  @NotNull ParamsType paramsType) {
+        JsonObject paramsAsMap = new JsonObject();
+        JsonArray paramsAsArray = new JsonArray();
         for (String paramName : method.getParams().keySet()) {
             ParameterMetadata parameterMetadata = method.getParams().get(paramName);
             int index = parameterMetadata.getIndex();
-            JsonNode jsonArg = mapper.valueToTree(args[index]);
-            if (jsonArg == null || jsonArg == NullNode.instance) {
+            JsonElement jsonArg = mapper.toJsonTree(args[index], parameterMetadata.getType());
+            if (jsonArg == null || jsonArg.isJsonNull()) {
                 if (parameterMetadata.isOptional()) {
                     if (paramsType == ParamsType.ARRAY) {
-                        paramsAsArray.add(NullNode.instance);
+                        paramsAsArray.add(JsonNull.INSTANCE);
                     }
                 } else {
                     throw new IllegalArgumentException("Parameter '" + paramName +
@@ -108,8 +113,9 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
                 }
             } else {
                 if (paramsType == ParamsType.MAP) {
-                    paramsAsMap.set(paramName, jsonArg);
+                    paramsAsMap.add(paramName, jsonArg);
                 } else if (paramsType == ParamsType.ARRAY) {
+                    // We preserve order during initialization
                     paramsAsArray.add(jsonArg);
                 }
             }
@@ -124,12 +130,10 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * @return service response as a string
      */
     @NotNull
-    private String execute(@NotNull ObjectNode request) {
+    private String execute(@NotNull JsonObject request) {
         try {
-            return transport.pass(mapper.writeValueAsString(request));
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Unable convert " + request + " to JSON", e);
-        } catch (IOException e) {
+            return transport.pass(mapper.toJson(request));
+        } catch (Exception e) {
             throw new IllegalStateException("I/O error during request processing", e);
         }
     }

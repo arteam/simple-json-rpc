@@ -1,18 +1,24 @@
 package com.github.arteam.simplejsonrpc.server.simple;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.SimpleType;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
+import com.github.arteam.simplejsonrpc.server.simple.domain.Position;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
 import com.github.arteam.simplejsonrpc.server.simple.util.RequestResponse;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.io.Resources;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import org.joda.time.format.DateTimeFormat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,21 +32,51 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcServiceTest {
 
-    private static ObjectMapper userMapper = new ObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    private static Gson userMapper = new GsonBuilder()
+            .serializeNulls()
+            .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
+                @Override
+                public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+                    return new JsonPrimitive(DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                            .withZoneUTC()
+                            .print(src.getTime()));
+                }
+            })
+            .registerTypeAdapter(Position.class, new TypeAdapter<Position>() {
+                @Override
+                public void write(JsonWriter out, Position value) throws IOException {
+                    out.value(value.getCode());
+                }
+
+                @Override
+                public Position read(JsonReader in) throws IOException {
+                    return Position.byCode(in.nextString());
+                }
+            })
+            .registerTypeAdapter(Optional.class, new JsonDeserializer<Optional<?>>() {
+                @Override
+                public Optional<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    if (json == null || json.isJsonNull()) {
+                        return Optional.absent();
+                    }
+                    Type actualType = ((ParameterizedType) typeOfT).getActualTypeArguments()[0];
+                    return Optional.of(context.deserialize(json, actualType));
+                }
+            })
+            .create();
+    //.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static Map<String, RequestResponse> testData;
 
-    private static JsonRpcServer rpcServer = JsonRpcServer.withMapper(userMapper);
+    private static JsonRpcServer rpcServer = JsonRpcServer.withGson(userMapper);
     private static TeamService teamService = new TeamService();
 
     @BeforeClass
     public static void init() throws Exception {
-        userMapper.registerModule(new GuavaModule());
-        testData = new ObjectMapper().readValue(
+        //userMapper.registerModule(new GuavaModule());
+        testData = userMapper.fromJson(
                 Resources.toString(JsonRpcServiceTest.class.getResource("/test_data.json"), Charsets.UTF_8),
-                MapType.construct(Map.class,
-                        SimpleType.construct(String.class),
-                        SimpleType.construct(RequestResponse.class)));
+                new TypeToken<Map<String, RequestResponse>>() {
+                }.getType());
     }
 
     /**
@@ -136,35 +172,35 @@ public class JsonRpcServiceTest {
      * Tests passing list as a parameter
      */
     @Test
-    public void testFindPlayersByNames(){
-       test("findPlayersByFirstNames");
+    public void testFindPlayersByNames() {
+        test("findPlayersByFirstNames");
     }
 
     @Test
-    public void testFindPlayersByNumbers(){
-       test("findPlayersByNumbers");
+    public void testFindPlayersByNumbers() {
+        test("findPlayersByNumbers");
     }
 
     @Test
-    public void testGetContractSums(){
-       test("getContractSums");
+    public void testGetContractSums() {
+        test("getContractSums");
     }
 
     @Test
-    public void testGenericFindPlayersByNumbers(){
-       test("genericFindPlayersByNumbers");
+    public void testGenericFindPlayersByNumbers() {
+        test("genericFindPlayersByNumbers");
     }
 
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);
-            String textRequest = userMapper.writeValueAsString(requestResponse.request);
+            String textRequest = userMapper.toJson(requestResponse.request);
 
             String actual = rpcServer.handle(textRequest, teamService);
             if (!actual.isEmpty()) {
-                assertThat(userMapper.readTree(actual)).isEqualTo(requestResponse.response);
+                assertThat(userMapper.fromJson(actual, JsonElement.class)).isEqualTo(requestResponse.response);
             } else {
-                assertThat(actual).isEqualTo(requestResponse.response.asText());
+                assertThat(actual).isEqualTo(requestResponse.response.getAsString());
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);

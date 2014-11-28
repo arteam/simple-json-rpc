@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.client;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonElement;
 
 /**
  * Date: 8/9/14
@@ -11,9 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 class RequestResponse {
 
-    @JsonProperty
-    public JsonNode request;
+    public JsonElement request;
 
-    @JsonProperty
-    public JsonNode response;
+    public JsonElement response;
 }

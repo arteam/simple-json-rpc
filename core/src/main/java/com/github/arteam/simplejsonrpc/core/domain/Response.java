@@ -1,7 +1,7 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,19 +17,17 @@ public class Response {
     private static final String VERSION = "2.0";
 
     @NotNull
-    @JsonProperty("jsonrpc")
     private final String jsonrpc;
 
     @NotNull
-    @JsonProperty("id")
-    private final ValueNode id;
+    private final JsonElement id;
 
-    public Response(@NotNull ValueNode id) {
+    public Response(@NotNull JsonElement id) {
         this.id = id;
         jsonrpc = VERSION;
     }
 
-    public Response(@NotNull ValueNode id, @NotNull String jsonrpc) {
+    public Response(@NotNull JsonPrimitive id, @NotNull String jsonrpc) {
         this.id = id;
         this.jsonrpc = jsonrpc;
     }
@@ -40,7 +38,7 @@ public class Response {
     }
 
     @NotNull
-    public ValueNode getId() {
+    public JsonElement getId() {
         return id;
     }
 }

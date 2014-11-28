@@ -1,38 +1,27 @@
 package com.github.arteam.simplejsonrpc.client.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 import java.util.Date;
 
 public class Player {
 
-    @JsonProperty
     private String firstName;
 
-    @JsonProperty
     private String lastName;
 
-    @JsonProperty
     private Team team;
 
-    @JsonProperty
     private int number;
 
-    @JsonProperty
     private Position position;
 
-    @JsonProperty
     private Date birthDate;
 
-    @JsonProperty
     private double capHit;
 
-    @JsonCreator
-    public Player(@JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName,
-                  @JsonProperty("team") Team team, @JsonProperty("number") int number, @JsonProperty("position") Position position,
-                  @JsonProperty("birthDate") Date birthDate, @JsonProperty("capHit") double capHit) {
+    public Player(String firstName, String lastName, Team team, int number, Position position,
+                  Date birthDate, double capHit) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.number = number;

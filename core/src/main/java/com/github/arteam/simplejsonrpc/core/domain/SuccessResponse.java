@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,11 +14,10 @@ import org.jetbrains.annotations.Nullable;
 public class SuccessResponse extends Response {
 
     @Nullable
-    @JsonProperty("result")
     private final Object result;
 
-    public SuccessResponse(@JsonProperty("id") @NotNull ValueNode id,
-                           @JsonProperty("result") @Nullable Object result) {
+    public SuccessResponse(@NotNull JsonElement id,
+                           @Nullable Object result) {
         super(id);
         this.result = result;
     }

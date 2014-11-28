@@ -14,8 +14,7 @@ The basic class in API is `JsonRpcClient`.
 It's a factory for creating request builders: you pass to it an implementation of `Transport`.
 Transport actually sends a request through the network and converts a response to a text implementation. 
 
-Other optional argument is Jackson `ObjectMapper` that could be used for customization
-of JSON serializing and data binding.
+Other optional argument is Jackson `Gson` that could be used for customization of JSON serializing and data binding.
 
 After that `JsonRpcClient` is ready for creating builders and proxies with configured transport and serialization.
 

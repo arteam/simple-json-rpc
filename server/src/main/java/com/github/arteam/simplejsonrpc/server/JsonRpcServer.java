@@ -1,14 +1,5 @@
 package com.github.arteam.simplejsonrpc.server;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ContainerNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcError;
 import com.github.arteam.simplejsonrpc.core.domain.*;
 import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
@@ -23,12 +14,12 @@ import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Range;
+import com.google.gson.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 
 /**
@@ -65,7 +56,7 @@ public class JsonRpcServer {
     private static final String VERSION = "2.0";
 
     @NotNull
-    private ObjectMapper mapper;
+    private Gson gson;
 
     /**
      * Default Cache params specification
@@ -80,11 +71,11 @@ public class JsonRpcServer {
     /**
      * Init JSON-RPC server
      *
-     * @param mapper           used-defined JSON mapper
+     * @param gson             used-defined JSON gson
      * @param cacheBuilderSpec classes metadata cache specification
      */
-    public JsonRpcServer(@NotNull ObjectMapper mapper, @NotNull CacheBuilderSpec cacheBuilderSpec) {
-        this.mapper = mapper;
+    public JsonRpcServer(@NotNull Gson gson, @NotNull CacheBuilderSpec cacheBuilderSpec) {
+        this.gson = gson;
         classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
                 new CacheLoader<Class<?>, ClassMetadata>() {
                     @Override
@@ -98,17 +89,17 @@ public class JsonRpcServer {
      * Init JSON-RPC server with default parameters
      */
     public JsonRpcServer() {
-        this(new ObjectMapper(), DEFAULT_SPEC);
+        this(new Gson(), DEFAULT_SPEC);
     }
 
     /**
-     * Factory for creating a JSON-RPC server with a specific JSON mapper
+     * Factory for creating a JSON-RPC server with a specific JSON gson
      *
-     * @param mapper user-defined JSON mapper
+     * @param gson user-defined JSON gson
      * @return new JSON-RPC server
      */
-    public static JsonRpcServer withMapper(@NotNull ObjectMapper mapper) {
-        return new JsonRpcServer(mapper, DEFAULT_SPEC);
+    public static JsonRpcServer withGson(@NotNull Gson gson) {
+        return new JsonRpcServer(gson, DEFAULT_SPEC);
     }
 
     /**
@@ -118,7 +109,7 @@ public class JsonRpcServer {
      * @return new JSON-RPC server
      */
     public static JsonRpcServer withCacheSpec(@NotNull CacheBuilderSpec cacheSpec) {
-        return new JsonRpcServer(new ObjectMapper(), cacheSpec);
+        return new JsonRpcServer(new GsonBuilder().serializeNulls().create(), cacheSpec);
     }
 
     /**
@@ -131,27 +122,27 @@ public class JsonRpcServer {
      */
     @NotNull
     public String handle(@NotNull String textRequest, @NotNull Object service) {
-        JsonNode rootRequest;
+        JsonElement rootRequest;
         try {
-            rootRequest = mapper.readTree(textRequest);
+            rootRequest = gson.fromJson(textRequest, JsonElement.class);
             if (log.isDebugEnabled()) {
-                log.debug("Request : {}", mapper.writeValueAsString(rootRequest));
+                log.debug("Request : {}", gson.toJson(rootRequest));
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Bad json request", e);
             return toJson(new ErrorResponse(PARSE_ERROR));
         }
 
         // Check if a single request or a batch
-        if (rootRequest.isObject()) {
+        if (rootRequest.isJsonObject()) {
             Response response = handleWrapper(rootRequest, service);
-            return isNotification(rootRequest, response) ? "" : toJson(response);
-        } else if (rootRequest.isArray() && rootRequest.size() > 0) {
-            ArrayNode responses = mapper.createArrayNode();
-            for (JsonNode request : (ArrayNode) rootRequest) {
+            return isNotification(rootRequest.getAsJsonObject(), response) ? "" : toJson(response);
+        } else if (rootRequest.isJsonArray() && rootRequest.getAsJsonArray().size() > 0) {
+            JsonArray responses = new JsonArray();
+            for (JsonElement request : rootRequest.getAsJsonArray()) {
                 Response response = handleWrapper(request, service);
-                if (!isNotification(request, response)) {
-                    responses.add(mapper.convertValue(response, ObjectNode.class));
+                if (!request.isJsonObject() || !isNotification(request.getAsJsonObject(), response)) {
+                    responses.add(gson.toJsonTree(response));
                 }
             }
 
@@ -169,7 +160,7 @@ public class JsonRpcServer {
      * @param response    a response in a Java object format
      * @return {@code true} if a request is a "notification request"
      */
-    private boolean isNotification(@NotNull JsonNode requestNode, @NotNull Response response) {
+    private boolean isNotification(@NotNull JsonObject requestNode, @NotNull Response response) {
         // Notification request doesn't have "id" field
         if (requestNode.get("id") == null) {
             if (response instanceof SuccessResponse) {
@@ -196,10 +187,13 @@ public class JsonRpcServer {
      * @return JSON-RPC response as a Java object
      */
     @NotNull
-    private Response handleWrapper(@NotNull JsonNode requestNode, @NotNull Object service) {
+    private Response handleWrapper(@NotNull JsonElement requestNode, @NotNull Object service) {
         Request request;
         try {
-            request = mapper.convertValue(requestNode, Request.class);
+            request = gson.fromJson(requestNode, Request.class);
+            if (!request.getId().isJsonNull() && !request.getId().isJsonPrimitive()) {
+                throw new IllegalStateException("Id should be null or primitive");
+            }
         } catch (Exception e) {
             log.error("Invalid JSON-RPC request: " + requestNode, e);
             return new ErrorResponse(INVALID_REQUEST);
@@ -261,7 +255,7 @@ public class JsonRpcServer {
         // Check mandatory fields and correct protocol version
         String requestMethod = request.getMethod();
         String jsonrpc = request.getJsonrpc();
-        ValueNode id = request.getId();
+        JsonElement id = request.getId();
         if (jsonrpc == null || requestMethod == null) {
             log.error("Not a JSON-RPC request: " + request);
             return new ErrorResponse(id, INVALID_REQUEST);
@@ -272,8 +266,8 @@ public class JsonRpcServer {
             return new ErrorResponse(id, INVALID_REQUEST);
         }
 
-        JsonNode params = request.getParams();
-        if (!params.isObject() && !params.isArray() && !params.isNull()) {
+        JsonElement params = request.getParams();
+        if (params.isJsonPrimitive()) {
             log.error("Params of request: '" + request + "' should be an object, an array or null");
             return new ErrorResponse(id, INVALID_REQUEST);
         }
@@ -290,8 +284,7 @@ public class JsonRpcServer {
             return new ErrorResponse(id, METHOD_NOT_FOUND);
         }
 
-        ContainerNode<?> notNullParams = !params.isNull() ?
-                (ContainerNode<?>) params : mapper.createObjectNode();
+        JsonElement notNullParams = !params.isJsonNull() ? params : new JsonObject();
         Object[] methodParams;
         try {
             methodParams = convertToMethodParams(notNullParams, method);
@@ -312,10 +305,11 @@ public class JsonRpcServer {
      * @return array of java objects for passing to the method
      */
     @NotNull
-    private Object[] convertToMethodParams(@NotNull ContainerNode<?> params,
+    private Object[] convertToMethodParams(@NotNull JsonElement params,
                                            @NotNull MethodMetadata method) {
         int methodParamsSize = method.getParams().size();
-        int jsonParamsSize = params.size();
+        int jsonParamsSize = params.isJsonObject() ? params.getAsJsonObject().entrySet().size() :
+                params.getAsJsonArray().size();
         // Check amount arguments
         if (jsonParamsSize > methodParamsSize) {
             throw new IllegalArgumentException("Wrong amount arguments: " + jsonParamsSize +
@@ -328,12 +322,13 @@ public class JsonRpcServer {
             Class<?> parameterType = param.getType();
             int index = param.getIndex();
             String name = param.getName();
-            JsonNode jsonNode = params.isObject() ? params.get(name) : params.get(index);
+            JsonElement jsonElement = params.isJsonObject() ? params.getAsJsonObject().get(name) :
+                    params.getAsJsonArray().get(index);
             // Handle omitted value
-            if (jsonNode == null || jsonNode.isNull()) {
+            if (jsonElement == null || jsonElement.isJsonNull()) {
                 if (param.isOptional()) {
                     methodParams[index] = getDefaultValue(parameterType);
-                    if (jsonNode != null) {
+                    if (jsonElement != null) {
                         processed++;
                     }
                     continue;
@@ -345,12 +340,10 @@ public class JsonRpcServer {
 
             // Convert JSON object to an actual Java object
             try {
-                JsonParser jsonParser = mapper.treeAsTokens(jsonNode);
-                JavaType javaType = mapper.getTypeFactory().constructType(param.getGenericType());
-                methodParams[index] = mapper.readValue(jsonParser, javaType);
+                methodParams[index] = gson.fromJson(jsonElement, param.getGenericType());
                 processed++;
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Wrong param: " + jsonNode + ". Expected type: '" + param, e);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Wrong param: " + jsonElement + ". Expected type: '" + param, e);
             }
         }
 
@@ -384,12 +377,12 @@ public class JsonRpcServer {
     @NotNull
     private String toJson(@NotNull Object value) {
         try {
-            String response = mapper.writeValueAsString(value);
+            String response = gson.toJson(value);
             if (log.isDebugEnabled()) {
                 log.debug("Response: {}", response);
             }
             return response;
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             log.error("Unable write json: " + value, e);
             throw new IllegalStateException(e);
         }

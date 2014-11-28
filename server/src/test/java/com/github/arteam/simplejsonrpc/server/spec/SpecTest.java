@@ -1,9 +1,9 @@
 package com.github.arteam.simplejsonrpc.server.spec;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.google.common.cache.CacheBuilderSpec;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class SpecTest {
     CalculatorService calculatorService = new CalculatorService();
     // Just test factory method
     JsonRpcServer rpcServer =  JsonRpcServer.withCacheSpec(CacheBuilderSpec.disableCaching());
-    ObjectMapper mapper = new ObjectMapper();
+    Gson mapper = new Gson();
 
     private void test(String testName) {
         try {
@@ -32,13 +32,13 @@ public class SpecTest {
             stream.close();
 
             String textRequest = testProps.getProperty("request");
-            JsonNode response = mapper.readTree(testProps.getProperty("response"));
+            JsonElement response = mapper.fromJson(testProps.getProperty("response"), JsonElement.class);
 
             String actual = rpcServer.handle(textRequest, calculatorService);
             if (!actual.isEmpty()) {
-                assertThat(mapper.readTree(actual)).isEqualTo(response);
+                assertThat(mapper.fromJson(actual, JsonElement.class)).isEqualTo(response);
             } else {
-                assertThat(actual).isEqualTo(response.asText());
+                assertThat(actual).isEqualTo(response.getAsString());
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);

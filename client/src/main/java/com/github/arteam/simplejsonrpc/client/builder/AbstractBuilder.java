@@ -1,15 +1,12 @@
 package com.github.arteam.simplejsonrpc.client.builder;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.simplejsonrpc.client.Transport;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,9 +37,9 @@ public class AbstractBuilder {
      * Jackson mapper for JSON processing
      */
     @NotNull
-    protected final ObjectMapper mapper;
+    protected final Gson mapper;
 
-    public AbstractBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
+    public AbstractBuilder(@NotNull Transport transport, @NotNull Gson mapper) {
         this.transport = transport;
         this.mapper = mapper;
     }
@@ -54,10 +51,10 @@ public class AbstractBuilder {
      * @return a new JSON array
      */
     @NotNull
-    protected ArrayNode arrayParams(@NotNull Object[] values) {
-        ArrayNode newArrayParams = mapper.createArrayNode();
+    protected JsonArray arrayParams(@NotNull Object[] values) {
+        JsonArray newArrayParams = new JsonArray();
         for (Object value : values) {
-            newArrayParams.add(mapper.valueToTree(value));
+            newArrayParams.add(mapper.toJsonTree(value));
         }
         return newArrayParams;
     }
@@ -69,10 +66,10 @@ public class AbstractBuilder {
      * @return a new JSON object
      */
     @NotNull
-    protected ObjectNode objectParams(@NotNull Map<String, ?> params) {
-        ObjectNode objectNode = mapper.createObjectNode();
+    protected JsonObject objectParams(@NotNull Map<String, ?> params) {
+        JsonObject objectNode = new JsonObject();
         for (String key : params.keySet()) {
-            objectNode.set(key, mapper.valueToTree(params.get(key)));
+            objectNode.add(key, mapper.toJsonTree(params.get(key)));
         }
         return objectNode;
     }
@@ -86,17 +83,17 @@ public class AbstractBuilder {
      * @return a new request as a JSON object
      */
     @NotNull
-    protected ObjectNode request(@NotNull ValueNode id, @NotNull String method,
-                                 @NotNull JsonNode params) {
+    protected JsonObject request(@NotNull JsonElement id, @NotNull String method,
+                                 @NotNull JsonElement params) {
         if (method.isEmpty()) {
             throw new IllegalArgumentException("Method is not set");
         }
-        ObjectNode requestNode = mapper.createObjectNode();
-        requestNode.put(JSONRPC, VERSION_2_0);
-        requestNode.put(METHOD, method);
-        requestNode.set(PARAMS, params);
-        if (!id.isNull()) {
-            requestNode.set(ID, id);
+        JsonObject requestNode = new JsonObject();
+        requestNode.addProperty(JSONRPC, VERSION_2_0);
+        requestNode.addProperty(METHOD, method);
+        requestNode.add(PARAMS, params);
+        if (!id.isJsonNull()) {
+            requestNode.add(ID, id);
         }
         return requestNode;
     }

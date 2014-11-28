@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,6 +61,7 @@ class Reflections {
                 // LinkedHashMap is needed to support method parameter ordering
                 Map<String, ParameterMetadata> paramsMetadata = new LinkedHashMap<String, ParameterMetadata>(8);
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
+                Type[] parameterTypes = method.getGenericParameterTypes();
                 for (int i = 0; i < parametersAnnotations.length; i++) {
                     Annotation[] parametersAnnotation = parametersAnnotations[i];
                     // Check that it's a JSON-RPC param
@@ -70,7 +72,8 @@ class Reflections {
                     }
                     // Check that's a param could be an optional
                     JsonRpcOptional optionalAnn = getAnnotation(parametersAnnotation, JsonRpcOptional.class);
-                    ParameterMetadata parameterMetadata = new ParameterMetadata(i, optionalAnn != null);
+                    ParameterMetadata parameterMetadata = new ParameterMetadata(i, optionalAnn != null,
+                            parameterTypes[i]);
                     if (paramsMetadata.put(rpcParamAnn.value(), parameterMetadata) != null) {
                         throw new IllegalStateException("Two parameters of method '" + method.getName() + "' have the " +
                                 "same name '" + rpcParamAnn.value() + "'");

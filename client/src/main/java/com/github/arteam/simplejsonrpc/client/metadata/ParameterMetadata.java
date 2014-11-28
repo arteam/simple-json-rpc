@@ -1,5 +1,7 @@
 package com.github.arteam.simplejsonrpc.client.metadata;
 
+import java.lang.reflect.Type;
+
 /**
  * Date: 8/1/14
  * Time: 7:44 PM
@@ -19,9 +21,15 @@ public class ParameterMetadata {
      */
     private final boolean optional;
 
-    public ParameterMetadata(int index, boolean optional) {
+    /**
+     * Parameter type
+     */
+    private final Type type;
+
+    public ParameterMetadata(int index, boolean optional, Type type) {
         this.index = index;
         this.optional = optional;
+        this.type = type;
     }
 
     public int getIndex() {
@@ -32,11 +40,15 @@ public class ParameterMetadata {
         return optional;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return "ParameterMetadata{" +
                 "index=" + index +
                 ", optional=" + optional +
-                '}';
+                ", type=" + type +  "}";
     }
 }

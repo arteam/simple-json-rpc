@@ -1,14 +1,15 @@
 package com.github.arteam.simplejsonrpc.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,16 +24,14 @@ public class BaseClientTest {
 
     private static Map<String, RequestResponse> requestsResponses;
 
-    private ObjectMapper mapper = new ObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .registerModule(new GuavaModule());
-
+    private static Gson gson = GsonProvider.get();
 
     @BeforeClass
     public static void load() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        requestsResponses = mapper.readValue(BaseClientTest.class.getResource("/client_test_data.json"),
-                mapper.getTypeFactory().constructMapType(HashMap.class, String.class, RequestResponse.class));
+        requestsResponses = new Gson().fromJson(
+                Resources.toString(BaseClientTest.class.getResource("/client_test_data.json"), Charsets.UTF_8),
+                new TypeToken<Map<String, RequestResponse>>() {
+                }.getType());
     }
 
     protected JsonRpcClient initClient(String testName) {
@@ -42,13 +41,14 @@ public class BaseClientTest {
             @Override
             public String pass(@NotNull String request) throws IOException {
                 System.out.println(request);
-                JsonNode requestNode = mapper.readTree(request);
+                Gson mapper = new GsonBuilder().serializeNulls().create();
+                JsonElement requestNode = mapper.fromJson(request, JsonElement.class);
                 assertThat(requestNode).isEqualTo(requestResponse.request);
-                String response = mapper.writeValueAsString(requestResponse.response);
+                String response = gson.toJson(requestResponse.response);
                 System.out.println(response);
                 return response;
             }
-        }, mapper);
+        }, gson);
     }
 
     protected JsonRpcClient fakeClient() {
@@ -58,7 +58,6 @@ public class BaseClientTest {
             public String pass(@NotNull String request) throws IOException {
                 return "";
             }
-        }, mapper);
+        }, gson);
     }
-
 }

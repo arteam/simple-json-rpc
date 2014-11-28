@@ -1,11 +1,11 @@
 package com.github.arteam.simplejsonrpc.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.client.builder.BatchRequestBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.NotificationRequestBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.ObjectApiBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.RequestBuilder;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
+import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
@@ -15,7 +15,7 @@ import java.lang.reflect.Proxy;
  * Time: 8:58 PM
  * <p/>
  * JSON-RPC client. Represents a factory for a fluent client API {@link com.github.arteam.simplejsonrpc.client.builder.RequestBuilder}.
- * It's parametrized by {@link Transport} and Jackson {@link ObjectMapper}
+ * It's parametrized by {@link Transport} and Jackson {@link Gson}
  *
  * @author Artem Prigoda
  */
@@ -31,7 +31,7 @@ public class JsonRpcClient {
      * JSON mapper for conversion between JSON and Java types
      */
     @NotNull
-    private ObjectMapper mapper;
+    private Gson mapper;
 
     /**
      * Constructs a new JSON-RPC client with a specified transport
@@ -39,7 +39,7 @@ public class JsonRpcClient {
      * @param transport transport implementation
      */
     public JsonRpcClient(@NotNull Transport transport) {
-        this(transport, new ObjectMapper());
+        this(transport, new Gson());
     }
 
     /**
@@ -48,7 +48,7 @@ public class JsonRpcClient {
      * @param transport transport implementation
      * @param mapper    JSON mapper
      */
-    public JsonRpcClient(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
+    public JsonRpcClient(@NotNull Transport transport, @NotNull Gson mapper) {
         this.transport = transport;
         this.mapper = mapper;
     }
