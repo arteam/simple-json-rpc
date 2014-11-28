@@ -1,10 +1,5 @@
 package com.github.arteam.simplejsonrpc.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
@@ -12,14 +7,12 @@ import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.jetbrains.annotations.NotNull;
+import com.google.gson.reflect.TypeToken;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -187,7 +180,7 @@ public class JsonRpcClientTest extends BaseClientTest {
         Map<String, Double> contractSums = client.createRequest()
                 .method("getContractSums")
                 .id(97555)
-                .param("contractLengths", contractLengths)
+                .param("contractLengths", contractLengths, new TypeToken<Map<String, Integer>>(){}.getType())
                 .returnAsMap(LinkedHashMap.class, Double.class)
                 .execute();
         assertThat(contractSums).isExactlyInstanceOf(LinkedHashMap.class);
@@ -211,7 +204,7 @@ public class JsonRpcClientTest extends BaseClientTest {
                 .id(4111L)
                 .param("firstName", "Vladimir")
                 .param("lastName", "Sobotka")
-                .returnAs(new TypeReference<Optional<Player>>() {})
+                .returnAs(new TypeToken<Optional<Player>>() {})
                 .execute();
         assertThat(optionalPlayer.isPresent()).isFalse();
     }

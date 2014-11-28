@@ -1,7 +1,7 @@
 package com.github.arteam.simplejsonrpc.client.builder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.client.Transport;
+import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,7 +28,7 @@ public class NotificationRequestBuilder {
      * @param transport transport for request performing
      * @param mapper    mapper for JSON processing
      */
-    public NotificationRequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
+    public NotificationRequestBuilder(@NotNull Transport transport, @NotNull Gson mapper) {
         requestBuilder = new RequestBuilder<Void>(transport, mapper);
     }
 

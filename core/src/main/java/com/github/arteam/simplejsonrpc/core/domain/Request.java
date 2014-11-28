@@ -1,8 +1,7 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,16 +22,14 @@ public class Request {
     @Nullable
     private final String method;
 
-    @NotNull
-    private final JsonNode params;
+    @Nullable
+    private final JsonElement params;
 
-    @NotNull
-    private final ValueNode id;
+    @Nullable
+    private final JsonElement id;
 
-    public Request(@JsonProperty("jsonrpc") @Nullable String jsonrpc,
-                   @JsonProperty("method") @Nullable String method,
-                   @JsonProperty("params") @NotNull JsonNode params,
-                   @JsonProperty("id") @NotNull ValueNode id) {
+    public Request(@Nullable String jsonrpc, @Nullable String method,
+                   @Nullable JsonElement params, @Nullable JsonElement id) {
         this.jsonrpc = jsonrpc;
         this.method = method;
         this.id = id;
@@ -50,13 +47,13 @@ public class Request {
     }
 
     @NotNull
-    public ValueNode getId() {
-        return id;
+    public JsonElement getId() {
+        return id != null ? id : JsonNull.INSTANCE;
     }
 
     @NotNull
-    public JsonNode getParams() {
-        return params;
+    public JsonElement getParams() {
+        return params != null ? params : JsonNull.INSTANCE;
     }
 
     @Override

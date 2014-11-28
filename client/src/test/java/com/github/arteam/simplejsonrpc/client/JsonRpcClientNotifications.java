@@ -1,7 +1,10 @@
 package com.github.arteam.simplejsonrpc.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.core.domain.Request;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -24,12 +27,14 @@ public class JsonRpcClientNotifications {
             @Override
             public String pass(@NotNull String text) throws IOException {
                 System.out.println(text);
-                ObjectMapper mapper = new ObjectMapper();
-                Request request = mapper.readValue(text, Request.class);
+                Gson mapper = new Gson();
+                Request request = mapper.fromJson(text, Request.class);
                 assertThat(request.getJsonrpc()).isEqualTo("2.0");
                 assertThat(request.getMethod()).isEqualTo("update");
-                assertThat(request.getParams()).isEqualTo(mapper.createObjectNode().put("cacheName", "profiles"));
-                assertThat(request.getId().isMissingNode());
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("cacheName", "profiles");
+                assertThat(request.getParams()).isEqualTo(jsonObject);
+                assertThat(request.getId().isJsonNull());
                 return "";
             }
         });
@@ -47,12 +52,15 @@ public class JsonRpcClientNotifications {
             @Override
             public String pass(@NotNull String text) throws IOException {
                 System.out.println(text);
-                ObjectMapper mapper = new ObjectMapper();
-                Request request = mapper.readValue(text, Request.class);
+                Gson mapper = new Gson();
+                Request request = mapper.fromJson(text, Request.class);
                 assertThat(request.getJsonrpc()).isEqualTo("2.0");
                 assertThat(request.getMethod()).isEqualTo("setExpirationTime");
-                assertThat(request.getParams()).isEqualTo(mapper.createArrayNode().add("profiles").add(20));
-                assertThat(request.getId().isMissingNode());
+                JsonArray jsonArray = new JsonArray();
+                jsonArray.add(new JsonPrimitive("profiles"));
+                jsonArray.add(new JsonPrimitive(20));
+                assertThat(request.getParams()).isEqualTo(jsonArray);
+                assertThat(request.getId().isJsonNull());
                 return "";
             }
         });

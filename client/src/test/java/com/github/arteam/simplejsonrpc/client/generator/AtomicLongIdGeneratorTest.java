@@ -1,10 +1,12 @@
 package com.github.arteam.simplejsonrpc.client.generator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.client.JsonRpcClient;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.object.TeamService;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,23 +21,24 @@ public class AtomicLongIdGeneratorTest {
 
     @Test
     public void test() throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
+        final Gson mapper = new Gson();
         final BitSet numbers = new BitSet(100);
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
             public String pass(@NotNull String request) throws IOException {
                 System.out.println(request);
-                JsonNode jsonNode = mapper.readTree(request);
-                long id = jsonNode.get("id").asLong();
+                JsonObject jsonNode = mapper.fromJson(request, JsonObject.class);
+                long id = jsonNode.get("id").getAsLong();
                 System.out.println("id=" + id);
                 synchronized (numbers) {
                     numbers.set((int) id, true);
                 }
-                return mapper.writeValueAsString(mapper.createObjectNode()
-                        .put("jsonrpc", "2.0")
-                        .putNull("result")
-                        .put("id", id));
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("jsonrpc", "2.0");
+                jsonObject.add("result", JsonNull.INSTANCE);
+                jsonObject.addProperty("id", id);
+                return mapper.toJson(jsonObject);
             }
         });
         final TeamService teamService = client.onDemand(TeamService.class, new AtomicLongIdGenerator());

@@ -1,19 +1,16 @@
 package com.github.arteam.simplejsonrpc.client.builder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.*;
-import com.fasterxml.jackson.databind.type.SimpleType;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
+import com.google.gson.*;
+import com.google.gson.internal.$Gson$Types;
+import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +25,7 @@ import java.util.Set;
  * It introduces fluent API to build a request, set an expected response type and perform the request.
  * Builder is immutable: every mutation creates a new object, so it's safe to use in multi-threaded environment.
  * <p/>
- * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
+ * It delegates JSON processing to Jackson {@link Gson} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
  *
  * @author Artem Prigoda
  */
@@ -44,25 +41,25 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * JSON-RPC request id
      */
     @NotNull
-    private final ValueNode id;
+    private final JsonElement id;
 
     /**
      * JSON-RPC request params as a map
      */
     @NotNull
-    private final ObjectNode objectParams;
+    private final JsonObject objectParams;
 
     /**
      * JSON-RPC request params as an array
      */
     @NotNull
-    private final ArrayNode arrayParams;
+    private final JsonArray arrayParams;
 
     /**
      * Generic type for representing expected response type
      */
     @NotNull
-    private final JavaType javaType;
+    private final Type javaType;
 
     /**
      * Creates a new default request builder without actual parameters
@@ -70,13 +67,13 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param transport transport for request performing
      * @param mapper    mapper for JSON processing
      */
-    public RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
+    public RequestBuilder(@NotNull Transport transport, @NotNull Gson mapper) {
         super(transport, mapper);
-        id = NullNode.instance;
-        objectParams = mapper.createObjectNode();
-        arrayParams = mapper.createArrayNode();
+        id = JsonNull.INSTANCE;
+        objectParams = new JsonObject();
+        arrayParams = new JsonArray();
         method = "";
-        javaType = SimpleType.construct(Object.class);
+        javaType = Object.class;
     }
 
     /**
@@ -90,9 +87,9 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param arrayParams  new array params
      * @param javaType     new response type
      */
-    private RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper, @NotNull String method,
-                           @NotNull ValueNode id, @NotNull ObjectNode objectParams, @NotNull ArrayNode arrayParams,
-                           @NotNull JavaType javaType) {
+    private RequestBuilder(@NotNull Transport transport, @NotNull Gson mapper, @NotNull String method,
+                           @NotNull JsonElement id, @NotNull JsonObject objectParams, @NotNull JsonArray arrayParams,
+                           @NotNull Type javaType) {
         super(transport, mapper);
         this.method = method;
         this.id = id;
@@ -109,7 +106,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     @NotNull
     public RequestBuilder<T> id(@NotNull Long id) {
-        return new RequestBuilder<T>(transport, mapper, method, new LongNode(id), objectParams, arrayParams, javaType);
+        return new RequestBuilder<T>(transport, mapper, method, new JsonPrimitive(id), objectParams, arrayParams, javaType);
     }
 
     /**
@@ -120,7 +117,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     @NotNull
     public RequestBuilder<T> id(@NotNull Integer id) {
-        return new RequestBuilder<T>(transport, mapper, method, new IntNode(id), objectParams, arrayParams, javaType);
+        return new RequestBuilder<T>(transport, mapper, method, new JsonPrimitive(id), objectParams, arrayParams, javaType);
     }
 
     /**
@@ -131,7 +128,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     @NotNull
     public RequestBuilder<T> id(@NotNull String id) {
-        return new RequestBuilder<T>(transport, mapper, method, new TextNode(id), objectParams, arrayParams, javaType);
+        return new RequestBuilder<T>(transport, mapper, method, new JsonPrimitive(id), objectParams, arrayParams, javaType);
     }
 
     /**
@@ -168,9 +165,22 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     @NotNull
     public RequestBuilder<T> param(@NotNull String name, @NotNull Object value) {
-        ObjectNode newObjectParams = objectParams.deepCopy();
-        newObjectParams.set(name, mapper.valueToTree(value));
-        return new RequestBuilder<T>(transport, mapper, method, id, newObjectParams, arrayParams, javaType);
+        return param(name, value, value.getClass());
+    }
+
+    /**
+     * Adds a new complex parameter (e.g. parametrized) to current request parameters.
+     *
+     * @param name  parameter name
+     * @param value parameter value
+     * @param type  parameter type
+     * @return new builder
+     */
+    public RequestBuilder<T> param(@NotNull String name, @NotNull Object value, @NotNull Type type) {
+        // I think there no much sense of making a defence copy
+        JsonElement element = mapper.toJsonTree(value, type);
+        objectParams.add(name, element);
+        return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams, javaType);
     }
 
     /**
@@ -195,7 +205,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     @NotNull
     public <NT> RequestBuilder<NT> returnAs(@NotNull Class<NT> responseType) {
         return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
-                SimpleType.construct(responseType));
+                responseType);
     }
 
     /**
@@ -208,7 +218,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     @NotNull
     public <E> RequestBuilder<List<E>> returnAsList(@NotNull Class<E> elementType) {
         return new RequestBuilder<List<E>>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructCollectionType(List.class, elementType));
+                $Gson$Types.newParameterizedTypeWithOwner(null, List.class, elementType));
     }
 
     /**
@@ -221,7 +231,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     @NotNull
     public <E> RequestBuilder<Set<E>> returnAsSet(@NotNull Class<E> elementType) {
         return new RequestBuilder<Set<E>>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructCollectionType(Set.class, elementType));
+                $Gson$Types.newParameterizedTypeWithOwner(null, Set.class, elementType));
     }
 
     /**
@@ -236,7 +246,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     public <E> RequestBuilder<Collection<E>> returnAsCollection(@NotNull Class<? extends Collection> collectionType,
                                                                 @NotNull Class<E> elementType) {
         return new RequestBuilder<Collection<E>>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructCollectionType(collectionType, elementType));
+                $Gson$Types.newParameterizedTypeWithOwner(null, collectionType, elementType));
     }
 
     /**
@@ -249,7 +259,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     @NotNull
     public <E> RequestBuilder<E[]> returnAsArray(@NotNull Class<E> elementType) {
         return new RequestBuilder<E[]>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructArrayType(elementType));
+                $Gson$Types.arrayOf(elementType));
     }
 
     /**
@@ -267,7 +277,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     public <V> RequestBuilder<Map<String, V>> returnAsMap(@NotNull Class<? extends Map> mapClass,
                                                           @NotNull Class<V> valueType) {
         return new RequestBuilder<Map<String, V>>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructMapType(mapClass, String.class, valueType));
+                $Gson$Types.newParameterizedTypeWithOwner(null, mapClass, String.class, valueType));
     }
 
     /**
@@ -280,9 +290,8 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @return new builder
      */
     @NotNull
-    public <NT> RequestBuilder<NT> returnAs(@NotNull TypeReference<NT> tr) {
-        return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructType(tr.getType()));
+    public <NT> RequestBuilder<NT> returnAs(@NotNull TypeToken<NT> tr) {
+        return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams, tr.getType());
     }
 
     /**
@@ -312,52 +321,56 @@ public class RequestBuilder<T> extends AbstractBuilder {
         return executeAndConvert();
     }
 
+    /**
+     * Execute a request through {@link Transport} and convert a response to an expected type
+     *
+     * @return expected response
+     * @throws JsonRpcException in case of JSON-RPC error, returned by the server
+     */
     @Nullable
     @SuppressWarnings("unchecked")
-    private T executeAndConvert() {
+    public T executeAndConvert() {
         String textResponse = executeRequest();
 
-        try {
-            JsonNode responseNode = mapper.readTree(textResponse);
-            JsonNode result = responseNode.get(RESULT);
-            JsonNode error = responseNode.get(ERROR);
-            JsonNode version = responseNode.get(JSONRPC);
-            JsonNode id = responseNode.get(ID);
+        JsonElement responseJsonElement = mapper.fromJson(textResponse, JsonElement.class);
+        if (!responseJsonElement.isJsonObject()) {
+            throw new IllegalStateException("Not a JSON object: " + responseJsonElement);
+        }
+        JsonObject responseNode = responseJsonElement.getAsJsonObject();
+        JsonElement result = responseNode.get(RESULT);
+        JsonElement error = responseNode.get(ERROR);
+        JsonElement version = responseNode.get(JSONRPC);
+        JsonElement id = responseNode.get(ID);
 
-            if (version == null) {
-                throw new IllegalStateException("Not a JSON-RPC response: " + responseNode);
-            }
-            if (!version.asText().equals(VERSION_2_0)) {
-                throw new IllegalStateException("Bad protocol version in a response: " + responseNode);
-            }
-            if (id == null) {
-                throw new IllegalStateException("Unspecified id in a response: " + responseNode);
-            }
+        if (version == null) {
+            throw new IllegalStateException("Not a JSON-RPC response: " + responseNode);
+        }
+        if (!version.getAsString().equals(VERSION_2_0)) {
+            throw new IllegalStateException("Bad protocol version in a response: " + responseNode);
+        }
+        if (id == null) {
+            throw new IllegalStateException("Unspecified id in a response: " + responseNode);
+        }
 
-            if (error == null) {
-                if (result != null) {
-                    return mapper.convertValue(result, javaType);
-                } else {
-                    throw new IllegalStateException("Neither result or error is set in a response: " + responseNode);
-                }
+        if (error == null) {
+            if (result != null) {
+                return mapper.fromJson(result, javaType);
             } else {
-                ErrorMessage errorMessage = mapper.treeToValue(error, ErrorMessage.class);
-                throw new JsonRpcException(errorMessage);
+                throw new IllegalStateException("Neither result or error is set in a response: " + responseNode);
             }
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
-        } catch (IOException e) {
-            throw new IllegalStateException("I/O error during a response processing", e);
+        } else {
+            ErrorMessage errorMessage = mapper.fromJson(error, ErrorMessage.class);
+            throw new JsonRpcException(errorMessage);
         }
     }
 
     String executeRequest() {
-        ObjectNode requestNode = request(id, method, params());
+        JsonObject requestNode = request(id, method, params());
         String textRequest;
         String textResponse;
         try {
-            textRequest = mapper.writeValueAsString(requestNode);
-        } catch (JsonProcessingException e) {
+            textRequest = mapper.toJson(requestNode);
+        } catch (Exception e) {
             throw new IllegalArgumentException("Unable convert " + requestNode + " to JSON", e);
         }
         try {
@@ -369,8 +382,8 @@ public class RequestBuilder<T> extends AbstractBuilder {
     }
 
     @NotNull
-    private JsonNode params() {
-        if (objectParams.size() > 0) {
+    private JsonElement params() {
+        if (objectParams.entrySet().size() > 0) {
             if (arrayParams.size() > 0) {
                 throw new IllegalArgumentException("Both object and array params are set");
             }

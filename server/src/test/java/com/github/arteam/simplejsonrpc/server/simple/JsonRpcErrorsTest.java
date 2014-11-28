@@ -1,16 +1,23 @@
 package com.github.arteam.simplejsonrpc.server.simple;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
+import com.github.arteam.simplejsonrpc.server.simple.domain.Position;
 import com.github.arteam.simplejsonrpc.server.simple.service.BaseService;
 import com.github.arteam.simplejsonrpc.server.simple.service.BogusService;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.io.Resources;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import org.joda.time.format.DateTimeFormat;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,10 +30,41 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcErrorsTest {
 
-    private static JsonRpcServer rpcController = new JsonRpcServer();
-    private static TeamService teamService = new TeamService();
+    private static Gson gson = new GsonBuilder()
+            .serializeNulls()
+            .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
+                @Override
+                public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+                    return new JsonPrimitive(DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                            .withZoneUTC()
+                            .print(src.getTime()));
+                }
+            })
+            .registerTypeAdapter(Position.class, new TypeAdapter<Position>() {
+                @Override
+                public void write(JsonWriter out, Position value) throws IOException {
+                    out.value(value.getCode());
+                }
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+                @Override
+                public Position read(JsonReader in) throws IOException {
+                    return Position.byCode(in.nextString());
+                }
+            })
+            .registerTypeAdapter(Optional.class, new JsonDeserializer<Optional<?>>() {
+                @Override
+                public Optional<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    if (json == null || json.isJsonNull()) {
+                        return Optional.absent();
+                    }
+                    Type actualType = ((ParameterizedType) typeOfT).getActualTypeArguments()[0];
+                    return Optional.of(context.deserialize(json, actualType));
+                }
+            })
+            .create();
+
+    private static JsonRpcServer rpcController = JsonRpcServer.withGson(gson);
+    private static TeamService teamService = new TeamService();
 
     private static String requestFile(String name) {
         try {
@@ -45,12 +83,8 @@ public class JsonRpcErrorsTest {
     }
 
 
-    private static JsonNode json(String text) {
-        try {
-            return objectMapper.readTree(text);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+    private static JsonElement json(String text) {
+        return gson.fromJson(text, JsonElement.class);
     }
 
     @Test
@@ -247,7 +281,7 @@ public class JsonRpcErrorsTest {
 
 
     @Test
-    public void testMandatoryParameterExplicitlyNull(){
+    public void testMandatoryParameterExplicitlyNull() {
         String response = rpcController.handle(requestFile("mandatory_parameter_explicitly_null.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
     }
