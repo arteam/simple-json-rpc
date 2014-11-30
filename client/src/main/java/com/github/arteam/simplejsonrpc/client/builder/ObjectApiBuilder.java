@@ -29,9 +29,6 @@ import java.lang.reflect.Method;
  */
 public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandler {
 
-    private static final String RESULT = "result";
-    private static final String ERROR = "error";
-
     @Nullable
     private ParamsType userParamsType;
 
