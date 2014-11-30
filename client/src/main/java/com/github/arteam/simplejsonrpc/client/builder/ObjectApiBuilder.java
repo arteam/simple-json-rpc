@@ -113,7 +113,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
                 if (paramsType == ParamsType.MAP) {
                     paramsAsMap.set(paramName, jsonArg);
                 } else if (paramsType == ParamsType.ARRAY) {
-                    paramsAsArray.insert(index, jsonArg);
+                    paramsAsArray.add(jsonArg);
                 }
             }
         }
