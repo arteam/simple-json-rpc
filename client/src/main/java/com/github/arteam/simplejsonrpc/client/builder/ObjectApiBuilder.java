@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 /**
  * Date: 24.08.14
  * Time: 17:33
+ * Proxy for accessing a remote JSON-RPC service trough an interface.
  *
  * @author Artem Prigoda
  */
@@ -40,12 +41,19 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     @NotNull
     private ClassMetadata classMetadata;
 
+    /**
+     * Crate a new proxy for an interface
+     *
+     * @param clazz           service interface
+     * @param transport       transport abstraction
+     * @param mapper          json mapper
+     * @param userParamsType  custom type of request params
+     * @param userIdGenerator custom id generator
+     */
     public ObjectApiBuilder(@NotNull Class<?> clazz, @NotNull Transport transport, @NotNull ObjectMapper mapper,
                             @Nullable ParamsType userParamsType, @Nullable IdGenerator userIdGenerator) {
         super(transport, mapper);
-        // Check that it's a service
-        ClassMetadata classMetadata = Reflections.getClassMetadata(clazz);
-        this.classMetadata = classMetadata;
+        this.classMetadata = Reflections.getClassMetadata(clazz);
         this.userParamsType = userParamsType;
         this.userIdGenerator = userIdGenerator;
     }
@@ -81,7 +89,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     }
 
     /**
-     * Get request params in JSON representation (map or array)
+     * Get request params in a JSON representation (map or array)
      */
     @NotNull
     private JsonNode getParams(@NotNull MethodMetadata method, @NotNull Object[] args,
@@ -112,6 +120,12 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
         return paramsType == ParamsType.MAP ? paramsAsMap : paramsAsArray;
     }
 
+    /**
+     * Execute a request on a remote service and return a textual representation of a response
+     *
+     * @param request json representation of a request
+     * @return service response as a string
+     */
     @NotNull
     private String execute(@NotNull ObjectNode request) {
         try {
@@ -123,6 +137,14 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
         }
     }
 
+    /**
+     * Get style of params for a request.
+     * It could be either on a method, class or user level. MAP is a fallback choice as default.
+     *
+     * @param classMetadata  metadata of a service interface
+     * @param methodMetadata metadata of a method
+     * @return type of params
+     */
     @NotNull
     private ParamsType getParamsType(@NotNull ClassMetadata classMetadata, @NotNull MethodMetadata methodMetadata) {
         if (userParamsType != null) {
