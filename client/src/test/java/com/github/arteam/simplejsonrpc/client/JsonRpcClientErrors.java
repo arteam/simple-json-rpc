@@ -97,7 +97,7 @@ public class JsonRpcClientErrors {
             @NotNull
             @Override
             public String pass(@NotNull String request) throws IOException {
-                return "{\"jsonrpc\": \"2.0\"";
+                return "{\"jsonrpc\": \"2.0\"}";
             }
         });
         client.createRequest()
