@@ -24,6 +24,7 @@ import java.util.Map;
 /**
  * Date: 11/17/14
  * Time: 8:04 PM
+ * Utility class for gathering meta-information about client proxies through reflection
  *
  * @author Artem Prigoda
  */
@@ -32,6 +33,12 @@ class Reflections {
     private Reflections() {
     }
 
+    /**
+     * Gets remote service interface metadata
+     *
+     * @param clazz an interface for representing a remote service
+     * @return class metadata
+     */
     @NotNull
     public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
         Map<Method, MethodMetadata> methodsMetadata = new HashMap<Method, MethodMetadata>(32);
@@ -50,6 +57,7 @@ class Reflections {
                     throw new IllegalStateException("Method '" + method.getName() + "' is not annotated as @JsonRpcMethod");
                 }
 
+                // LinkedHashMap is needed to support method parameter ordering
                 Map<String, ParameterMetadata> paramsMetadata = new LinkedHashMap<String, ParameterMetadata>(8);
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
                 for (int i = 0; i < parametersAnnotations.length; i++) {
@@ -84,7 +92,7 @@ class Reflections {
 
 
     /**
-     * Get actual id generator
+     * Get an actual id generator
      */
     @NotNull
     private static IdGenerator<?> getIdGenerator(@NotNull Annotation[] classAnnotations) {

@@ -83,27 +83,68 @@ public class JsonRpcClient {
         return new BatchRequestBuilder<Object, Object>(transport, mapper);
     }
 
-
+    /**
+     * Creates a new proxy for accessing a remote JSON-RPC service through an interface
+     *
+     * @param clazz interface metadata
+     * @param <T>   interface type
+     * @return a new proxy
+     */
     @SuppressWarnings("unchecked")
-    public <T> T onDemand(Class<T> clazz) {
+    @NotNull
+    public <T> T onDemand(@NotNull Class<T> clazz) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, null, null));
     }
 
+    /**
+     * Creates a new proxy for accessing a remote JSON-RPC service through an interface
+     * with a custom id generator that overrides the interface generator.
+     *
+     * @param clazz       interface metadata
+     * @param idGenerator custom id generator
+     * @param <T>         interface type
+     * @return a new proxy
+     */
     @SuppressWarnings("unchecked")
-    public <T> T onDemand(Class<T> clazz, IdGenerator<?> idGenerator) {
+    @NotNull
+    public <T> T onDemand(@NotNull Class<T> clazz, @NotNull IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, null, idGenerator));
     }
 
+    /**
+     * Creates a new proxy for accessing a remote JSON-RPC service through an interface
+     * with a custom type of request params.
+     * It applies for all methods and overrides interface and method level settings.
+     *
+     * @param clazz      interface metadata
+     * @param paramsType custom type of request params
+     * @param <T>        interface type
+     * @return a new proxy
+     */
     @SuppressWarnings("unchecked")
-    public <T> T onDemand(Class<T> clazz, ParamsType paramsType) {
+    @NotNull
+    public <T> T onDemand(@NotNull Class<T> clazz, @NotNull ParamsType paramsType) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, paramsType, null));
     }
 
+    /**
+     * Creates a new proxy for accessing a remote JSON-RPC service through an interface
+     * with a custom id generator and custom type of request params.
+     * The generator overrides the interface generator.
+     * The type applies for all methods and overrides interface and method level settings.
+     *
+     * @param clazz      interface metadata
+     * @param idGenerator custom id generator
+     * @param paramsType custom type of request params
+     * @param <T>        interface type
+     * @return a new proxy
+     */
     @SuppressWarnings("unchecked")
-    public <T> T onDemand(Class<T> clazz, ParamsType paramsType, IdGenerator<?> idGenerator) {
+    @NotNull
+    public <T> T onDemand(Class<T> clazz, @NotNull ParamsType paramsType, @NotNull IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, paramsType, idGenerator));
     }
