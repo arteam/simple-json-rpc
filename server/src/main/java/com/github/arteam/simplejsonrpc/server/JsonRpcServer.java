@@ -59,7 +59,8 @@ public class JsonRpcServer {
     private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid params");
     private static final ErrorMessage INTERNAL_ERROR = new ErrorMessage(-32603, "Internal error");
 
-    private static final Range<Integer> SERVER_ERRORS_RANGE = Range.closed(-32099, -32000);
+    private static final int MIN_SERVER_ERROR_CODE = -32099;
+    private static final int MAX_SERVER_ERROR_CODE = -32000;
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
     private static final String VERSION = "2.0";
 
@@ -231,8 +232,8 @@ public class JsonRpcServer {
             do {
                 int code = jsonRpcErrorAnnotation.code();
                 String message = jsonRpcErrorAnnotation.message();
-                if (!SERVER_ERRORS_RANGE.contains(code)) {
-                    log.warn("Error code=" + code + " not in a range [-32000 -32099]");
+                if (code < MIN_SERVER_ERROR_CODE || code > MAX_SERVER_ERROR_CODE) {
+                    log.warn("Error code=" + code + " not in a range [-32099;-32000]");
                     break;
                 }
                 if (Strings.isNullOrEmpty(message)) {
