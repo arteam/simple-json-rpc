@@ -234,7 +234,7 @@ public class JsonRpcServer {
             do {
                 int code = jsonRpcErrorAnnotation.code();
                 String message = Strings.isNullOrEmpty(jsonRpcErrorAnnotation.message()) ?
-                        e.getMessage() : jsonRpcErrorAnnotation.message();
+                        rootCause.getMessage() : jsonRpcErrorAnnotation.message();
                 if (code < MIN_SERVER_ERROR_CODE || code > MAX_SERVER_ERROR_CODE) {
                     log.warn("Error code=" + code + " not in a range [-32099;-32000]");
                     break;
