@@ -17,14 +17,15 @@ import java.lang.annotation.Target;
 public @interface JsonRpcError {
 
     /**
-     * JSON-RPC error code (should be in a range [-32000 -32099])
+     * JSON-RPC error code (should be in a range [-32099, -32000])
      *
      * @return error code
      */
     int code() default 0;
 
     /**
-     * JSON-RPC error message
+     * JSON-RPC error message.
+     * If empty then the exception message will be used
      *
      * @return error message
      */
