@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Date: 07.06.14
@@ -208,7 +209,8 @@ public class JsonRpcServer {
         try {
             return handleSingle(request, service);
         } catch (Exception e) {
-            log.error("Internal error while processing: " + request, e);
+            Throwable realException = e instanceof InvocationTargetException ? e.getCause() : e;
+            log.error("Error while processing: " + request, realException);
             return handleError(request, e);
         }
     }
