@@ -13,10 +13,10 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class AtomicLongIdGenerator implements IdGenerator<Long> {
 
-    private AtomicLong id = new AtomicLong(0L);
+    private final AtomicLong counter = new AtomicLong(0L);
 
     @Override
     public Long generate() {
-        return id.incrementAndGet();
+        return counter.incrementAndGet();
     }
 }
