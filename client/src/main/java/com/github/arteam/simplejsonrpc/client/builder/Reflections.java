@@ -3,7 +3,7 @@ package com.github.arteam.simplejsonrpc.client.builder;
 import com.github.arteam.simplejsonrpc.client.JsonRpcId;
 import com.github.arteam.simplejsonrpc.client.JsonRpcParams;
 import com.github.arteam.simplejsonrpc.client.ParamsType;
-import com.github.arteam.simplejsonrpc.client.generator.CurrentTimeIdGenerator;
+import com.github.arteam.simplejsonrpc.client.generator.AtomicLongIdGenerator;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
 import com.github.arteam.simplejsonrpc.client.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.MethodMetadata;
@@ -97,9 +97,8 @@ class Reflections {
     @NotNull
     private static IdGenerator<?> getIdGenerator(@NotNull Annotation[] classAnnotations) {
         JsonRpcId jsonRpcIdAnn = getAnnotation(classAnnotations, JsonRpcId.class);
-        // TODO change to AtomicLongIdGenerator as a default choice
         Class<? extends IdGenerator<?>> idGeneratorClazz = (jsonRpcIdAnn == null) ?
-                CurrentTimeIdGenerator.class : jsonRpcIdAnn.value();
+                AtomicLongIdGenerator.class : jsonRpcIdAnn.value();
         try {
             return idGeneratorClazz.newInstance();
         } catch (Exception e) {
