@@ -1,16 +1,17 @@
-## JSON-RPC 2.0 service
+## JSON-RPC 2.0 server
 
-Annotate you service class with `@JsonRpcService`, `@JsonRpcMethod` and `@JsonRpcParam` annotations.
+If you want to expose your service to the web through JSON-RPC protocol you need to model it as a JSON-RPC service.
+For this you need `@JsonRpcService`, `@JsonRpcMethod` and `@JsonRpcParam` annotations.
 
-* `@JsonRpcService` marks a class a JSON-RPC service.
+* `@JsonRpcService` marks a class as a JSON-RPC service.
 
 * `@JsonRpcMethod` marks a method as eligible for calling from the web.
 
-* `@JsonRpcParam` is a mandatory annotation for the method parameter and should contain parameter name (this is forced requirement because Java compiler doesn't retain information about parameter names in a class file and therefore this information is not available in runtime).
+* `@JsonRpcParam` is a mandatory annotation for a method parameter and should contain the parameter name (this is forced requirement because Java compiler doesn't retain information about parameter names in a class file and therefore this information is not available in runtime).
 
 Additional annotations:
 
-* `@JsonRpcOptional` is used for marking method parameter as an optional, so the caller is able to ignore it when invokes the method.
+* `@JsonRpcOptional` is used for marking a method parameter as an optional, so the caller is able to ignore it when invokes the method.
 * `@JsonRpcError` is used for marking an exception as a JSON-RPC error.
 
 ```java
@@ -75,7 +76,7 @@ public class TeamServiceException extends Exception {
 }
 ```
 
-Invoke the service through *JsonRpcServer*
+After you modeled your service yon can safely publish it through *JsonRpcServer*
 
 ```java
 TeamService teamService = new TeamService();
