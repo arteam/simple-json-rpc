@@ -12,7 +12,7 @@ import java.security.SecureRandom;
  *
  * @author Artem Prigoda
  */
-public abstract class SecureRandomIdGenerator<T> implements IdGenerator<T> {
+abstract class SecureRandomIdGenerator<T> implements IdGenerator<T> {
 
     private static final String SHA_1_PRNG = "SHA1PRNG";
 
