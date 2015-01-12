@@ -2,9 +2,6 @@ package com.github.arteam.simplejsonrpc.client.generator;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-
 /**
  * Date: 12/30/14
  * Time: 11:45 PM
@@ -12,31 +9,17 @@ import java.security.SecureRandom;
  *
  * @author Artem Prigoda
  */
-public class SecureRandomStringIdGenerator implements IdGenerator<String> {
+public class SecureRandomStringIdGenerator extends SecureRandomIdGenerator<String> {
 
     private static final char[] ALPHABET = "0123456789abcdef".toCharArray();
-    private static final String SHA_1_PRNG = "SHA1PRNG";
     private static final int DEFAULT_CHUNK_SIZE = 20;
 
-    private final SecureRandom secureRandom;
     private final int chunkSize;
-
-    @NotNull
-    private static SecureRandom initSecureRandom() {
-        try {
-            SecureRandom secureRandom = SecureRandom.getInstance(SHA_1_PRNG);
-            secureRandom.nextBytes(new byte[]{}); // Important to seed immediately after creation
-            return secureRandom;
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Create a default generator
      */
     public SecureRandomStringIdGenerator() {
-        secureRandom = initSecureRandom();
         chunkSize = DEFAULT_CHUNK_SIZE;
     }
 
@@ -49,7 +32,6 @@ public class SecureRandomStringIdGenerator implements IdGenerator<String> {
         if (idLength < 2) {
             throw new IllegalArgumentException("Bad message length: '" + idLength + "'. It should be >= 2");
         }
-        secureRandom = initSecureRandom();
         this.chunkSize = idLength / 2;
     }
 
