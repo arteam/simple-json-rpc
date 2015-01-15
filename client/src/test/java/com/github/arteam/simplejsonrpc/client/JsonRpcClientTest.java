@@ -72,7 +72,7 @@ public class JsonRpcClientTest extends BaseClientTest {
                 .param("firstName", "Vladimir")
                 .param("lastName", "Sobotka")
                 .returnAs(Player.class)
-                .execute();
+                .executeNullable();
         assertThat(player).isNull();
     }
 

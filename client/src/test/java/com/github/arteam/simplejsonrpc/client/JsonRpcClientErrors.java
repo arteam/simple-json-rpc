@@ -1,5 +1,6 @@
 package com.github.arteam.simplejsonrpc.client;
 
+import com.github.arteam.simplejsonrpc.client.domain.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -131,6 +132,23 @@ public class JsonRpcClientErrors {
                 .params(1, 2)
                 .param("test", "param")
                 .returnAs(String.class)
+                .execute();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testExpectedNotNull() {
+        JsonRpcClient client = new JsonRpcClient(new Transport() {
+            @NotNull
+            @Override
+            public String pass(@NotNull String request) throws IOException {
+                System.out.println(request);
+                return "{\"jsonrpc\": \"2.0\", \"result\" : null, \"id\": 1001}";
+            }
+        });
+        client.createRequest()
+                .method("getPlayer")
+                .id(1001)
+                .returnAs(Player.class)
                 .execute();
     }
 }
