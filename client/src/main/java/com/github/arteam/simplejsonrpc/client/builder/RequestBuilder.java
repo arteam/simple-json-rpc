@@ -32,7 +32,7 @@ import java.util.Set;
  *
  * @author Artem Prigoda
  */
-public class RequestBuilder<T> extends AbstractBuilder{
+public class RequestBuilder<T> extends AbstractBuilder {
 
     /**
      * JSON-RPC request method
@@ -286,14 +286,35 @@ public class RequestBuilder<T> extends AbstractBuilder{
     }
 
     /**
-     * Execute a request through {@link Transport} and convert a response to an expected type
+     * Execute a request through {@link Transport} and convert a not null response to an expected type
+     *
+     * @return expected not null response
+     * @throws JsonRpcException      in case of JSON-RPC error, returned by the server
+     * @throws IllegalStateException if the response is null
+     */
+    @NotNull
+    public T execute() {
+        T result = executeAndConvert();
+        if (result == null) {
+            throw new IllegalStateException("Response is null. Use 'executeNullable' if this is acceptable");
+        }
+        return result;
+    }
+
+    /**
+     * Execute a request through {@link Transport} and convert a nullable response to an expected type
      *
      * @return expected response
-     * @throws com.github.arteam.simplejsonrpc.client.exception.JsonRpcException in case of JSON-RPC error, returned by the server
+     * @throws JsonRpcException in case of JSON-RPC error,  returned by the server
      */
     @Nullable
+    public T executeNullable() {
+        return executeAndConvert();
+    }
+
+    @Nullable
     @SuppressWarnings("unchecked")
-    public T execute() {
+    private T executeAndConvert() {
         String textResponse = executeRequest();
 
         try {
