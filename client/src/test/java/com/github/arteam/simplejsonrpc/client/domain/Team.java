@@ -1,6 +1,7 @@
 package com.github.arteam.simplejsonrpc.client.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class Team {
@@ -33,7 +34,7 @@ public class Team {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("league", league)
                 .toString();
