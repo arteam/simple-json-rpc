@@ -1,6 +1,6 @@
 package com.github.arteam.simplejsonrpc.server.metadata;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -76,7 +76,7 @@ public class ParameterMetadata {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("type", type)
                 .add("genericType", genericType)

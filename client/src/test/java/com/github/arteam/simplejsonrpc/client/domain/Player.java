@@ -2,6 +2,7 @@ package com.github.arteam.simplejsonrpc.client.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.Date;
@@ -72,7 +73,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("firstName", firstName)
                 .add("lastName", lastName)
                 .add("team", team)
