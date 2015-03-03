@@ -4,7 +4,7 @@
 
     <groupId>com.github.arteam</groupId>
     <artifactId>simple-json-rpc</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.5</version>
     <packaging>pom</packaging>
     <modules>
         <module>core</module>
@@ -29,7 +29,7 @@
     <scm>
         <developerConnection>scm:git:git@github.com:arteam/simple-json-rpc.git</developerConnection>
         <url>https://github.com/arteam/simple-json-rpc</url>
-        <tag>HEAD</tag>
+        <tag>0.5</tag>
     </scm>
 
     <licenses>
