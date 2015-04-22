@@ -174,5 +174,5 @@ JDK 1.6 and higher
 
 ## Dependencies
 
-* [Jackson](https://github.com/FasterXML/jackson) 2.4.1
+* [Jackson](https://github.com/FasterXML/jackson) 2.5.0
 * [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
