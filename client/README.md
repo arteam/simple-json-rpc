@@ -168,6 +168,16 @@ Maven:
 ```
 Artifacts are available in [jCenter](https://bintray.com/bintray/jcenter) repository.
 
+```xml
+<repositories>
+    <repository>
+        <id>central</id>
+        <name>bintray</name>
+        <url>http://jcenter.bintray.com</url>
+    </repository>
+</repositories>
+```
+
 ## Requirements
 
 JDK 1.6 and higher
