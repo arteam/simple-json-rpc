@@ -3,18 +3,17 @@ Simple JSON-RPC [![Build Status](https://travis-ci.org/arteam/simple-json-rpc.pn
 
 Library for a simple integration [JSON-RPC 2.0](http://www.jsonrpc.org/specification) protocol into a Java application.
 
-The motivation of this library is to provide a simple, fast, but reliable way to integrate JSON-RPC protocol into your application in the both server and client side. 
+The motivation of this library is to provide a simple, fast and reliable way to integrate JSON-RPC protocol into your application in the server and client sides. 
 
-You just need to configure `JsonRpcClient` or `JsonRpcServer` and implement a transport. 
+You just need to configure `JsonRpcClient` or `JsonRpcServer` and implement transport. 
 
 That's it - the library takes care for the rest. 
 
-No manual JSON transformation, reflection code, error handling, etc. A user just need to declare a service interface with annotations. Even this is not requriement - there is fluent API in the client side, if the user doesn't want 
-to declare an interface.
+No manual JSON transformation, reflection code, error handling, etc. You just need to declare a service interface with annotations. Even this is not a requriement - there is a fluent API in the client side, if you don't wantto declare an interface.
 
-The library is a complete JSON-RPC protocol implementation, so it should cover all types of JSON-RPC requests (legal or mailformed).
+The library is a complete JSON-RPC protocol implementation, so it should cover all the types of JSON-RPC requests (legal or mailformed).
 
-The library doesn't depend on any transport protocol (HTTP, TCP or UDP), application server or DI library. 
+The library doesn't depend on any transport protocol (HTTP, TCP or UDP), an application server or a DI library. 
 
 The dependencies are: 
 
