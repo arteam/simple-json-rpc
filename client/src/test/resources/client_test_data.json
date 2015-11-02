@@ -338,5 +338,20 @@
                 "message": "Method not found"
             }
         }
+    },
+    "logout": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "logout",
+            "params": {
+                "token": "fgt612"
+            },
+            "id": 29314
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 29314,
+            "result": null
+        }
     }
 }

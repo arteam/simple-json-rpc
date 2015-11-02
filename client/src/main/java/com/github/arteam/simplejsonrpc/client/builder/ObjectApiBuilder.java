@@ -78,6 +78,9 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
         JsonNode error = responseNode.get(ERROR);
         if (result != null) {
             JavaType returnType = mapper.getTypeFactory().constructType(method.getGenericReturnType());
+            if (returnType.getRawClass() == void.class) {
+                return null;
+            }
             return mapper.convertValue(result, returnType);
         } else {
             ErrorMessage errorMessage = mapper.treeToValue(error, ErrorMessage.class);

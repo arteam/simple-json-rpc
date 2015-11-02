@@ -28,4 +28,7 @@ public interface BaseService {
 
     @JsonRpcMethod
     long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password);
+
+    @JsonRpcMethod
+    void logout(@JsonRpcParam("token") String token);
 }

@@ -124,6 +124,12 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @Test
+    public void testReturnVoid() {
+        JsonRpcClient client = initClient("logout");
+        client.onDemand(TeamService.class, new FixedIntegerIdGenerator(29314)).logout("fgt612");
+    }
+
+    @Test
     public void testMap() {
         Map<String, Integer> contractLengths = new LinkedHashMap<String, Integer>() {{
             put("Backes", 4);
