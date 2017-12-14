@@ -7,6 +7,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>simple-json-rpc-core</name>
+    <description>Core classes of simple-json-rpc</description>
+
     <artifactId>simple-json-rpc-core</artifactId>
 
 

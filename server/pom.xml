@@ -7,6 +7,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>simple-json-rpc-server</name>
+    <description>Server implementation of JSON-RPC 2.0</description>
     <artifactId>simple-json-rpc-server</artifactId>
 
     <build>
