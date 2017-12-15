@@ -17,6 +17,6 @@ The dependencies are:
 Submodules
 -----------
 
-* [Client] (https://github.com/arteam/simple-json-rpc/tree/master/client)
+* [Client](https://github.com/arteam/simple-json-rpc/tree/master/client)
 
-* [Server] (https://github.com/arteam/simple-json-rpc/tree/master/server)
+* [Server](https://github.com/arteam/simple-json-rpc/tree/master/server)
