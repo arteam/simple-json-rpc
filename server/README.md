@@ -102,16 +102,6 @@ Maven:
    <version>0.5</version>
 </dependency>
 ```
-Artifacts are available in [jCenter](https://bintray.com/bintray/jcenter) repository.
-```xml
-<repositories>
-    <repository>
-        <id>central</id>
-        <name>bintray</name>
-        <url>http://jcenter.bintray.com</url>
-    </repository>
-</repositories>
-```
 
 
 ## Requirements
@@ -120,7 +110,7 @@ JDK 1.6 and higher
 
 ## Dependencies
 
-* [Jackson](https://github.com/FasterXML/jackson) 2.5.0
-* [Guava](http://code.google.com/p/guava-libraries/) 18.0
-* [SLF4J](http://www.slf4j.org/) 1.7.10
+* [Jackson](https://github.com/FasterXML/jackson) 2.7.5
+* [Guava](http://code.google.com/p/guava-libraries/) 19.0
+* [SLF4J](http://www.slf4j.org/) 1.7.21
 * [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
