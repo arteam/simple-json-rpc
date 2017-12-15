@@ -48,7 +48,7 @@ Player player = client.createRequest()
         .returnAs(Player.class)
         .execute();
 ```
-See more examples for using API [here] (https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/JsonRpcClientTest.java)
+See more examples for using API [here](https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/JsonRpcClientTest.java)
 
 #### Notification JSON-RPC request
 ```java
@@ -58,7 +58,7 @@ client.createNotification()
       .execute();
 ```
 
-More examples for using the API [here] (https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/JsonRpcClientNotifications.java)
+More examples for using the API [here](https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/JsonRpcClientNotifications.java)
 
 #### Batch JSON-RPC request
 ```java
@@ -70,7 +70,7 @@ Map<String, Player> result = client.createBatchRequest()
      .execute();
 ```
 
-More examples for using the API [here] (https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/BatchRequestBuilderTest.java)
+More examples for using the API [here](https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/BatchRequestBuilderTest.java)
 
 ## Object style API
 
@@ -140,19 +140,8 @@ Maven:
 <dependency>
    <groupId>com.github.arteam</groupId>
    <artifactId>simple-json-rpc-client</artifactId>
-   <version>0.5</version>
+   <version>0.7</version>
 </dependency>
-```
-Artifacts are available in the [jCenter](https://bintray.com/bintray/jcenter) repository.
-
-```xml
-<repositories>
-    <repository>
-        <id>central</id>
-        <name>bintray</name>
-        <url>http://jcenter.bintray.com</url>
-    </repository>
-</repositories>
 ```
 
 ## Requirements
@@ -161,5 +150,5 @@ JDK 1.6 and higher
 
 ## Dependencies
 
-* [Jackson](https://github.com/FasterXML/jackson) 2.5.0
+* [Jackson](https://github.com/FasterXML/jackson) 2.7.3
 * [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
