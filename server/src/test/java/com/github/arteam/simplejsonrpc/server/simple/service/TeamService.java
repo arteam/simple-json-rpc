@@ -7,7 +7,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Player;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Position;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Team;
-import com.github.arteam.simplejsonrpc.server.simple.exception.BadCodeTeamServiceException;
 import com.github.arteam.simplejsonrpc.server.simple.exception.EmptyMessageTeamServiceException;
 import com.github.arteam.simplejsonrpc.server.simple.exception.TeamServiceAuthException;
 import com.google.common.base.Optional;
@@ -128,14 +127,6 @@ public class TeamService extends BaseService {
     public long login(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
         if (!login.equals("CAFE") && !password.equals("BABE")) {
             throw new TeamServiceAuthException("Not authorized");
-        }
-        return 0xCAFEBABE;
-    }
-
-    @JsonRpcMethod
-    public long bogusCodeLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
-        if (!login.equals("CAFE") && !password.equals("BABE")) {
-            throw new BadCodeTeamServiceException("Not authorized");
         }
         return 0xCAFEBABE;
     }
