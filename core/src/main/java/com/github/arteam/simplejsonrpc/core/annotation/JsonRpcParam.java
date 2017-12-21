@@ -29,14 +29,4 @@ public @interface JsonRpcParam {
      * @return parameter name
      */
     public String value();
-
-    /**
-     * Whether parameter is required
-     *
-     * If {@code false}, it means that a client isn't forced to pass this parameter to the method.
-     * If the client doesn't provide the parameter, {@code null} value is used for complex types
-     * and an appropriate default value for primitives.
-     * @return whether parameter is required
-     */
-    public boolean required() default true;
 }
