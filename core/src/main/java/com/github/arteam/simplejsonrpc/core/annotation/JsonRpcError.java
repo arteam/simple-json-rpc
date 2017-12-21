@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 public @interface JsonRpcError {
 
     /**
-     * JSON-RPC error code (should be in a range [-32099, -32000])
+     * JSON-RPC error code
      *
      * @return error code
      */
