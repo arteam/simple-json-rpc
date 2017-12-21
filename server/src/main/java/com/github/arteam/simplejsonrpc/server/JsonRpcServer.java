@@ -60,8 +60,6 @@ public class JsonRpcServer {
     private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid params");
     private static final ErrorMessage INTERNAL_ERROR = new ErrorMessage(-32603, "Internal error");
 
-    private static final int MIN_SERVER_ERROR_CODE = -32099;
-    private static final int MAX_SERVER_ERROR_CODE = -32000;
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
     private static final String VERSION = "2.0";
 
@@ -230,24 +228,17 @@ public class JsonRpcServer {
         Annotation[] annotations = rootCause.getClass().getAnnotations();
         JsonRpcError jsonRpcErrorAnnotation =
                 Reflections.getAnnotation(annotations, JsonRpcError.class);
-        if (jsonRpcErrorAnnotation != null) {
-            do {
-                int code = jsonRpcErrorAnnotation.code();
-                String message = Strings.isNullOrEmpty(jsonRpcErrorAnnotation.message()) ?
-                        rootCause.getMessage() : jsonRpcErrorAnnotation.message();
-                if (code < MIN_SERVER_ERROR_CODE || code > MAX_SERVER_ERROR_CODE) {
-                    log.warn("Error code=" + code + " not in a range [-32099;-32000]");
-                    break;
-                }
-                if (Strings.isNullOrEmpty(message)) {
-                    log.warn("Error message should not be empty");
-                    break;
-                }
-                return new ErrorResponse(request.getId(), new ErrorMessage(code, message));
-            } while (false);
-
+        if (jsonRpcErrorAnnotation == null) {
+            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
         }
-        return new ErrorResponse(request.getId(), INTERNAL_ERROR);
+        int code = jsonRpcErrorAnnotation.code();
+        String message = Strings.isNullOrEmpty(jsonRpcErrorAnnotation.message()) ?
+                rootCause.getMessage() : jsonRpcErrorAnnotation.message();
+        if (Strings.isNullOrEmpty(message)) {
+            log.warn("Error message should not be empty");
+            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
+        }
+        return new ErrorResponse(request.getId(), new ErrorMessage(code, message));
     }
 
     /**
