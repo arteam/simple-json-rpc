@@ -192,12 +192,6 @@ public class JsonRpcErrorsTest {
     }
 
     @Test
-    public void testUserAuthBadErrorCode() {
-        String response = rpcController.handle(requestFile("bad_code_user_exception.json"), teamService);
-        assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
-    }
-
-    @Test
     public void testUserSpecifiedErrorMessage() {
         String response = rpcController.handle(requestFile("user_specified_error_message.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("user_specified_error_message.json")));
