@@ -6,6 +6,10 @@
     <artifactId>simple-json-rpc</artifactId>
     <version>0.9-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <name>simple-json-rpc</name>
+    <description>Base module for simple-json-rpc modules</description>
+
     <modules>
         <module>core</module>
         <module>client</module>
