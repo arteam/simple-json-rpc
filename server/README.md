@@ -99,7 +99,7 @@ Maven:
 <dependency>
    <groupId>com.github.arteam</groupId>
    <artifactId>simple-json-rpc-server</artifactId>
-   <version>0.5</version>
+   <version>0.9</version>
 </dependency>
 ```
 
