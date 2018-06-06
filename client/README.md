@@ -140,7 +140,7 @@ Maven:
 <dependency>
    <groupId>com.github.arteam</groupId>
    <artifactId>simple-json-rpc-client</artifactId>
-   <version>0.7</version>
+   <version>0.9</version>
 </dependency>
 ```
 
