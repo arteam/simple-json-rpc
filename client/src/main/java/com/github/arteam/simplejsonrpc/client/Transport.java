@@ -9,8 +9,6 @@ import java.io.IOException;
  * Time: 8:52 PM
  * <p/>
  * Abstract transport for JSON-RPC communication
- *
- * @author Artem Prigoda
  */
 public interface Transport {
 

@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Date: 7/28/14
  * Time: 11:26 PM
- *
- * @author Artem Prigoda
  */
 public class RequestResponse {
 

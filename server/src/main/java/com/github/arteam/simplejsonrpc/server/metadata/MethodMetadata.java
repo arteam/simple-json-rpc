@@ -10,8 +10,6 @@ import java.lang.reflect.Method;
  * Date: 8/1/14
  * Time: 7:42 PM
  * Metadata about a Java method
- *
- * @author Artem Prigoda
  */
 public class MethodMetadata {
 

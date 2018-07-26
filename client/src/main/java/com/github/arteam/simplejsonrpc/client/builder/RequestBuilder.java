@@ -29,8 +29,6 @@ import java.util.Set;
  * Builder is immutable: every mutation creates a new object, so it's safe to use in multi-threaded environment.
  * <p/>
  * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
- *
- * @author Artem Prigoda
  */
 public class RequestBuilder<T> extends AbstractBuilder {
 

@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 8/17/14
  * Time: 11:54 PM
- *
- * @author Artem Prigoda
  */
 public class JsonRpcClientNotifications {
 

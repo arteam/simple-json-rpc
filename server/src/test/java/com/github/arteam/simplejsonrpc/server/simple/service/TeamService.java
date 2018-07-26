@@ -29,8 +29,6 @@ import java.util.Map;
 /**
  * Date: 7/27/14
  * Time: 8:46 PM
- *
- * @author Artem Prigoda
  */
 @JsonRpcService
 public class TeamService extends BaseService {

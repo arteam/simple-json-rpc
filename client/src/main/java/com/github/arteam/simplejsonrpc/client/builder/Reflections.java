@@ -25,8 +25,6 @@ import java.util.Map;
  * Date: 11/17/14
  * Time: 8:04 PM
  * Utility class for gathering meta-information about client proxies through reflection
- *
- * @author Artem Prigoda
  */
 class Reflections {
 

@@ -14,14 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 7/31/14
  * Time: 8:51 PM
- *
- * @author Artem Prigoda
  */
 public class SpecTest {
 
     CalculatorService calculatorService = new CalculatorService();
     // Just test factory method
-    JsonRpcServer rpcServer =  JsonRpcServer.withCacheSpec(CacheBuilderSpec.disableCaching());
+    JsonRpcServer rpcServer = JsonRpcServer.withCacheSpec(CacheBuilderSpec.disableCaching());
     ObjectMapper mapper = new ObjectMapper();
 
     private void test(String testName) {

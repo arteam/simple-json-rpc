@@ -5,8 +5,6 @@ import java.lang.annotation.*;
 /**
  * Date: 11/4/14
  * Time: 10:45 PM
- *
- * @author Artem Prigoda
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})

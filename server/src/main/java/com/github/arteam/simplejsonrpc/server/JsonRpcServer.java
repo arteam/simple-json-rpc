@@ -48,8 +48,6 @@ import java.lang.reflect.InvocationTargetException;
  * <li>Prepares a JSON-tree response and convert it to text representation</li>
  * <li>In case of a error return appropriate returns an error message according to the standard</li>
  * </ol>
- *
- * @author Artem Prigoda
  */
 public class JsonRpcServer {
 

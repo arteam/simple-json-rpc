@@ -11,8 +11,6 @@ import java.lang.annotation.Target;
  * <p/>
  * Annotation for marking a method as eligible for calling from the web.
  * Makes sense only for public non-static methods.
- *
- * @author Artem Prigoda
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

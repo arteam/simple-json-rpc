@@ -28,8 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 8/9/14
  * Time: 10:55 PM
- *
- * @author Artem Prigoda
  */
 public class JsonRpcClientTest extends BaseClientTest {
 
@@ -211,7 +209,8 @@ public class JsonRpcClientTest extends BaseClientTest {
                 .id(4111L)
                 .param("firstName", "Vladimir")
                 .param("lastName", "Sobotka")
-                .returnAs(new TypeReference<Optional<Player>>() {})
+                .returnAs(new TypeReference<Optional<Player>>() {
+                })
                 .execute();
         assertThat(optionalPlayer.isPresent()).isFalse();
     }

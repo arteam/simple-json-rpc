@@ -12,8 +12,6 @@ import java.util.Map;
  * Date: 8/1/14
  * Time: 7:42 PM
  * Metadata about a Java class
- *
- * @author Artem Prigoda
  */
 public class ClassMetadata {
 

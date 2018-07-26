@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
  * Time: 12:34
  * <p/>
  * Base representation of a JSON-RPC response (success or error)
- *
- * @author Artem Prigoda
  */
 public class Response {
 

@@ -12,8 +12,6 @@ import java.util.List;
 /**
  * Date: 11/17/14
  * Time: 9:59 PM
- *
- * @author Artem Prigoda
  */
 @JsonRpcService
 public interface BaseService {

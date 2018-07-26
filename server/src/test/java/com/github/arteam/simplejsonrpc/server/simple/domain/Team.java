@@ -8,8 +8,6 @@ import com.google.common.base.Objects;
 /**
  * Date: 7/29/14
  * Time: 2:07 PM
- *
- * @author Artem Prigoda
  */
 public class Team {
 

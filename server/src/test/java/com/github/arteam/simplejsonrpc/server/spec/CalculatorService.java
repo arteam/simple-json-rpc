@@ -7,8 +7,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 /**
  * Date: 7/31/14
  * Time: 8:42 PM
- *
- * @author Artem Prigoda
  */
 @JsonRpcService
 public class CalculatorService {

@@ -5,8 +5,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcError;
 /**
  * Date: 7/31/14
  * Time: 6:23 PM
- *
- * @author Artem Prigoda
  */
 @JsonRpcError(code = -32000)
 public class EmptyMessageTeamServiceException extends RuntimeException {
