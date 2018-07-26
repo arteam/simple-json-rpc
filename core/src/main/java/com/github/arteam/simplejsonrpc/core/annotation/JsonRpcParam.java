@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
  * <p/>
  * Otherwise {@link IllegalArgumentException} will be generated in runtime and
  * an error message will be returned to a client.
- *
- * @author Artem Prigoda
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

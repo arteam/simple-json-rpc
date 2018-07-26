@@ -16,8 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 24.08.14
  * Time: 18:25
- *
- * @author Artem Prigoda
  */
 public class BaseClientTest {
 

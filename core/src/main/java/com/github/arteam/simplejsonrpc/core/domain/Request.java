@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
  * Time: 12:24
  * <p/>
  * Representation of a JSON-RPC request
- *
- * @author Artem Prigoda
  */
 public class Request {
 

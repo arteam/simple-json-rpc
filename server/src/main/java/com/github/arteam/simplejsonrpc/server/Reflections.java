@@ -21,8 +21,6 @@ import java.lang.reflect.*;
  * Time: 14:42
  * <p/>
  * Reflection utils for scanning service metadata
- *
- * @author Artem Prigoda
  */
 class Reflections {
 

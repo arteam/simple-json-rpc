@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 /**
  * Date: 24.08.14
  * Time: 18:14
- *
- * @author Artem Prigoda
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

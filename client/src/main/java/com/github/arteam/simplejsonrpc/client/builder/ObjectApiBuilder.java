@@ -24,8 +24,6 @@ import java.lang.reflect.Method;
  * Date: 24.08.14
  * Time: 17:33
  * Proxy for accessing a remote JSON-RPC service trough an interface.
- *
- * @author Artem Prigoda
  */
 public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandler {
 

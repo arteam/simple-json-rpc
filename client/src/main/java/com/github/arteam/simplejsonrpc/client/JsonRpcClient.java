@@ -16,8 +16,6 @@ import java.lang.reflect.Proxy;
  * <p/>
  * JSON-RPC client. Represents a factory for a fluent client API {@link com.github.arteam.simplejsonrpc.client.builder.RequestBuilder}.
  * It's parametrized by {@link Transport} and Jackson {@link ObjectMapper}
- *
- * @author Artem Prigoda
  */
 public class JsonRpcClient {
 
@@ -136,10 +134,10 @@ public class JsonRpcClient {
      * The generator overrides the interface generator.
      * The type applies for all methods and overrides interface and method level settings.
      *
-     * @param clazz      interface metadata
+     * @param clazz       interface metadata
      * @param idGenerator custom id generator
-     * @param paramsType custom type of request params
-     * @param <T>        interface type
+     * @param paramsType  custom type of request params
+     * @param <T>         interface type
      * @return a new proxy
      */
     @SuppressWarnings("unchecked")

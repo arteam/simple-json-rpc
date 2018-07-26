@@ -9,8 +9,6 @@ import java.security.SecureRandom;
  * Date: 1/12/15
  * Time: 11:17 PM
  * Abstract generator of secure random identifiers
- *
- * @author Artem Prigoda
  */
 abstract class SecureRandomIdGenerator<T> implements IdGenerator<T> {
 

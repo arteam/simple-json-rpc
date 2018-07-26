@@ -18,8 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Date: 7/29/14
  * Time: 7:58 PM
  * Tests various JSON-RPC errors
- *
- * @author Artem Prigoda
  */
 public class JsonRpcErrorsTest {
 
@@ -241,7 +239,7 @@ public class JsonRpcErrorsTest {
 
 
     @Test
-    public void testMandatoryParameterExplicitlyNull(){
+    public void testMandatoryParameterExplicitlyNull() {
         String response = rpcController.handle(requestFile("mandatory_parameter_explicitly_null.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
     }

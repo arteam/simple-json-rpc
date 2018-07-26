@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
  * <p/>
  * It means a client isn't forced to pass this parameter to the method. If the client doesn't provide it,
  * {@code null} value is used for complex types and an appropriate default value for primitives.
- *
- * @author Artem Prigoda
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

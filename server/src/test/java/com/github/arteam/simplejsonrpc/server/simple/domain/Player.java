@@ -10,8 +10,6 @@ import java.util.Date;
 /**
  * Date: 7/29/14
  * Time: 12:49 PM
- *
- * @author Artem Prigoda
  */
 public class Player {
 

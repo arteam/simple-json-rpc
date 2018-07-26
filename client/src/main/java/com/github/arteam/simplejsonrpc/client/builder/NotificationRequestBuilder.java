@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
  * <p/>
  * It uses underlying {@link RequestBuilder} to build a request,  but not permits setting a request id.
  * Also it doesn't expect any response from the server, so there is no response parsing.
- *
- * @author Artem Prigoda
  */
 public class NotificationRequestBuilder {
 

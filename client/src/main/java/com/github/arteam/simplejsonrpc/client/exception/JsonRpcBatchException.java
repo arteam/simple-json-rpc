@@ -9,8 +9,6 @@ import java.util.Map;
  * Date: 10/13/14
  * Time: 8:17 PM
  * Exception that occurs when batch JSON-RPC request is not completely successful
- *
- * @author Artem Prigoda
  */
 public class JsonRpcBatchException extends RuntimeException {
 

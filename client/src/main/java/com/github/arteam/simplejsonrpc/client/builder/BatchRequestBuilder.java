@@ -42,7 +42,6 @@ import java.util.Map;
  *      .returnType(Player.class)
  *      .execute();
  * </pre>
- * @author Artem Prigoda
  */
 public class BatchRequestBuilder<K, V> extends AbstractBuilder {
 

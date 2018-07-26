@@ -16,8 +16,6 @@ import java.util.Map;
  * Date: 10/12/14
  * Time: 6:48 PM
  * Abstract builder for JSON-RPC requests
- *
- * @author Artem Prigoda
  */
 public class AbstractBuilder {
 

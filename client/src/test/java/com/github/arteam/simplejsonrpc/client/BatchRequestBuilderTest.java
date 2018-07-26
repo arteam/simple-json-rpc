@@ -21,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 10/12/14
  * Time: 9:38 PM
- *
- * @author Artem Prigoda
  */
 public class BatchRequestBuilderTest {
 
@@ -169,7 +167,8 @@ public class BatchRequestBuilderTest {
         Map<Integer, ?> result = client.createBatchRequest()
                 .add(12000, "isAlive", new HashMap<String, Object>(), Boolean.class)
                 .add(12001, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
-                .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>(){})
+                .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {
+                })
                 .keysType(Integer.class)
                 .execute();
         assertThat(result.get(12000)).isExactlyInstanceOf(Boolean.class);
@@ -188,7 +187,8 @@ public class BatchRequestBuilderTest {
         Map<Long, ?> result = client.createBatchRequest()
                 .add(12000L, "isAlive", new HashMap<String, Object>(), Boolean.class)
                 .add(12001L, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
-                .add(12002L, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>(){})
+                .add(12002L, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {
+                })
                 .keysType(Long.class)
                 .execute();
         assertThat(result.get(12000L)).isExactlyInstanceOf(Boolean.class);

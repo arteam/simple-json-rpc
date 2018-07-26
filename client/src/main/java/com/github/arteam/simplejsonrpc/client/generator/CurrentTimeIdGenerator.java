@@ -5,8 +5,6 @@ package com.github.arteam.simplejsonrpc.client.generator;
  * Time: 18:20
  * Return current time as id.
  * Not reliable if you need to guarantee uniqueness of request ids
- *
- * @author Artem Prigoda
  */
 public class CurrentTimeIdGenerator implements IdGenerator<Long> {
     @Override

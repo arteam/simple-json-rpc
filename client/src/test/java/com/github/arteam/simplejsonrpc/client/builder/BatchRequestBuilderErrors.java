@@ -23,8 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 10/23/14
  * Time: 11:55 PM
- *
- * @author Artem Prigoda
  */
 public class BatchRequestBuilderErrors {
 

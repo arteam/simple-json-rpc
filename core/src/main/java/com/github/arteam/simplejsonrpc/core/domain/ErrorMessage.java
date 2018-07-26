@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
  * Time: 15:16
  * <p/>
  * Representation of a JSON-RPC error message
- *
- * @author Artem Prigoda
  */
 public class ErrorMessage {
 

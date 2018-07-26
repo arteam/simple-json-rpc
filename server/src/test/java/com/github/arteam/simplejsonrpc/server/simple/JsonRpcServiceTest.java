@@ -21,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Date: 7/28/14
  * Time: 10:29 PM
  * Tests typical patterns of a JSON-RPC interaction
- *
- * @author Artem Prigoda
  */
 public class JsonRpcServiceTest {
 
@@ -136,23 +134,23 @@ public class JsonRpcServiceTest {
      * Tests passing list as a parameter
      */
     @Test
-    public void testFindPlayersByNames(){
-       test("findPlayersByFirstNames");
+    public void testFindPlayersByNames() {
+        test("findPlayersByFirstNames");
     }
 
     @Test
-    public void testFindPlayersByNumbers(){
-       test("findPlayersByNumbers");
+    public void testFindPlayersByNumbers() {
+        test("findPlayersByNumbers");
     }
 
     @Test
-    public void testGetContractSums(){
-       test("getContractSums");
+    public void testGetContractSums() {
+        test("getContractSums");
     }
 
     @Test
-    public void testGenericFindPlayersByNumbers(){
-       test("genericFindPlayersByNumbers");
+    public void testGenericFindPlayersByNumbers() {
+        test("genericFindPlayersByNumbers");
     }
 
     private void test(String testName) {

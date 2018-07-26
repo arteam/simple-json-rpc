@@ -31,8 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Date: 24.08.14
  * Time: 18:06
- *
- * @author Artem Prigoda
  */
 public class JsonRpcObjectAPITest extends BaseClientTest {
 

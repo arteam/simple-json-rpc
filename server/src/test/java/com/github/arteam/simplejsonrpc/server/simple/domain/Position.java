@@ -7,8 +7,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Date: 7/29/14
  * Time: 12:51 PM
- *
- * @author Artem Prigoda
  */
 public enum Position {
     GOALTENDER("G"), DEFENDER("D"), RIGHT_WINGER("RW"), LEFT_WINGER("LW"), CENTER("C");

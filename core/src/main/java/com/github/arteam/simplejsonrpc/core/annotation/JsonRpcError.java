@@ -9,8 +9,6 @@ import java.lang.annotation.Target;
  * Date: 7/31/14
  * Time: 6:03 PM
  * Annotation for marking an exception as a JSON-RPC error
- *
- * @author Artem Prigoda
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

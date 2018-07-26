@@ -5,8 +5,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 /**
  * Date: 7/30/14
  * Time: 3:29 PM
- *
- * @author Artem Prigoda
  */
 public class BaseService {
 

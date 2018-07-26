@@ -11,8 +11,6 @@ import java.util.Map;
  * Date: 8/1/14
  * Time: 7:42 PM
  * Metadata about a Java method
- *
- * @author Artem Prigoda
  */
 public class MethodMetadata {
 
@@ -33,6 +31,7 @@ public class MethodMetadata {
         this.name = name;
         this.paramsType = paramsType;
     }
+
     @NotNull
     public Map<String, ParameterMetadata> getParams() {
         return params;

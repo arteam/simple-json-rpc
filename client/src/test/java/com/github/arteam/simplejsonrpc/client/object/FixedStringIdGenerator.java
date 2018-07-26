@@ -5,8 +5,6 @@ import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
 /**
  * Date: 24.08.14
  * Time: 18:41
- *
- * @author Artem Prigoda
  */
 public class FixedStringIdGenerator implements IdGenerator<String> {
 

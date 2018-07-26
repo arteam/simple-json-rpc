@@ -11,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * Time: 12:35
  * <p/>
  * Representation of a JSON-RPC error response
- *
- * @author Artem Prigoda
  */
 public class ErrorResponse extends Response {
 

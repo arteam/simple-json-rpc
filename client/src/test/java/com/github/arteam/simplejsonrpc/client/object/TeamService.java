@@ -22,8 +22,6 @@ import java.util.Map;
 /**
  * Date: 24.08.14
  * Time: 18:02
- *
- * @author Artem Prigoda
  */
 @JsonRpcService
 @JsonRpcId(TestIdGenerator.class)

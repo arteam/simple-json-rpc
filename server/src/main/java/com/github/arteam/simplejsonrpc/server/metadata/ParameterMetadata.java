@@ -9,8 +9,6 @@ import java.lang.reflect.Type;
  * Date: 8/1/14
  * Time: 7:44 PM
  * Method parameter metadata
- *
- * @author Artem Prigoda
  */
 public class ParameterMetadata {
 

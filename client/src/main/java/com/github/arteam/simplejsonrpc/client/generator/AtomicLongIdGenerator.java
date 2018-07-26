@@ -8,8 +8,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p/>
  * Return id from an atomic long counter
  * It's the most reliable and straightforward way to generate identifiers
- *
- * @author Artem Prigoda
  */
 public class AtomicLongIdGenerator implements IdGenerator<Long> {
 
