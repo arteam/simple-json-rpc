@@ -2,8 +2,7 @@ package com.github.arteam.simplejsonrpc.server.simple;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
@@ -24,8 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcServiceTest {
 
-    private static ObjectMapper userMapper = new ObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    private static ObjectMapper userMapper = new ObjectMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static Map<String, RequestResponse> testData;
 
     private static JsonRpcServer rpcServer = JsonRpcServer.withMapper(userMapper);
@@ -34,11 +32,11 @@ public class JsonRpcServiceTest {
     @BeforeClass
     public static void init() throws Exception {
         userMapper.registerModule(new GuavaModule());
-        testData = new ObjectMapper().readValue(
-                Resources.toString(JsonRpcServiceTest.class.getResource("/test_data.json"), Charsets.UTF_8),
-                MapType.construct(Map.class,
-                        SimpleType.construct(String.class),
-                        SimpleType.construct(RequestResponse.class)));
+        testData = new ObjectMapper().readValue(Resources.toString(JsonRpcServiceTest.class.getResource("/test_data.json"), Charsets.UTF_8),
+                                                TypeFactory.defaultInstance()
+                                                           .constructMapType(Map.class,
+                                                                             TypeFactory.defaultInstance().constructType(String.class),
+                                                                             TypeFactory.defaultInstance().constructType(RequestResponse.class)));
     }
 
     /**
