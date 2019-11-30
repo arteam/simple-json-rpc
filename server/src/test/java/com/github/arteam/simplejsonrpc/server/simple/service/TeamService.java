@@ -9,7 +9,6 @@ import com.github.arteam.simplejsonrpc.server.simple.domain.Position;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Team;
 import com.github.arteam.simplejsonrpc.server.simple.exception.EmptyMessageTeamServiceException;
 import com.github.arteam.simplejsonrpc.server.simple.exception.TeamServiceAuthException;
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -25,6 +24,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Date: 7/27/14
