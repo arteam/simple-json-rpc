@@ -23,16 +23,11 @@ public class SecureRandomIntIdGeneratorTest {
         int limit = 1000000;
         SecureRandomIntIdGenerator generator = new SecureRandomIntIdGenerator(limit);
         int amount = 100;
-        Set<Integer> ids = Sets.newHashSet();
         for (int i = 0; i < amount; i++) {
             Integer value = generator.generate();
-            System.out.println(value);
             Assert.assertTrue(value >= 0);
             Assert.assertTrue(value < limit);
-            ids.add(value);
         }
-
-        Assert.assertEquals(ids.size(), amount);
     }
 
     @Test(expected = IllegalArgumentException.class)
