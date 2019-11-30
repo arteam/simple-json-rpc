@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
 import com.github.arteam.simplejsonrpc.server.simple.util.RequestResponse;
@@ -32,6 +33,7 @@ public class JsonRpcServiceTest {
     @BeforeClass
     public static void init() throws Exception {
         userMapper.registerModule(new GuavaModule());
+        userMapper.registerModule(new Jdk8Module());
         testData = new ObjectMapper().readValue(Resources.toString(JsonRpcServiceTest.class.getResource("/test_data.json"), Charsets.UTF_8),
                                                 TypeFactory.defaultInstance()
                                                            .constructMapType(Map.class,

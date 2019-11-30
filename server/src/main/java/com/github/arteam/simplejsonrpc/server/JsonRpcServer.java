@@ -22,7 +22,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Range;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -356,9 +355,12 @@ public class JsonRpcServer {
 
     @Nullable
     private Object getDefaultValue(@NotNull Class<?> type) {
-        if (type == Optional.class) {
+        if (type == com.google.common.base.Optional.class) {
             // If it's Guava optional then handle it as an absent value
-            return Optional.absent();
+            return com.google.common.base.Optional.absent();
+        } else if (type == java.util.Optional.class) {
+            // If it's Java optional then handle it as an absent value
+            return java.util.Optional.empty();
         } else if (type.isPrimitive()) {
             // If parameter is a primitive set the appropriate default value
             return Defaults.defaultValue(type);
