@@ -87,7 +87,7 @@ String textRequest = "{\n" +
                     "    },\n" +
                     "    \"id\": \"92739\"\n" +
                     "}";
-String response = rpcServer.handle(request, teamService);
+String response = rpcServer.handle(textRequest, teamService);
 ```
 
 See the full service [code](https://github.com/arteam/simple-json-rpc/blob/master/server/src/test/java/com/github/arteam/simplejsonrpc/server/simple/service/TeamService.java)
