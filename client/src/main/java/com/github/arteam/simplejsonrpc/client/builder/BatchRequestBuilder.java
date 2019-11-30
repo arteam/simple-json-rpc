@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcBatchException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
@@ -399,7 +399,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @return a new builder
      */
     private BatchRequestBuilder<K, V> returnType(Object id, @NotNull Class<?> responseType) {
-        returnTypes.put(id, SimpleType.construct(responseType));
+        returnTypes.put(id, TypeFactory.defaultInstance().constructType(responseType));
         return this;
     }
 
@@ -437,7 +437,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     public <NV> BatchRequestBuilder<K, NV> returnType(@NotNull Class<NV> valuesClass) {
         return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType,
-                SimpleType.construct(valuesClass));
+                TypeFactory.defaultInstance().constructType(valuesClass));
     }
 
     /**

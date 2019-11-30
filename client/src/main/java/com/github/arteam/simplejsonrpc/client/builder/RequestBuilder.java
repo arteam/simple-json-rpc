@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
@@ -74,7 +74,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
         objectParams = mapper.createObjectNode();
         arrayParams = mapper.createArrayNode();
         method = "";
-        javaType = SimpleType.construct(Object.class);
+        javaType = TypeFactory.defaultInstance().constructType(Object.class);
     }
 
     /**
@@ -193,7 +193,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     @NotNull
     public <NT> RequestBuilder<NT> returnAs(@NotNull Class<NT> responseType) {
         return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
-                SimpleType.construct(responseType));
+                TypeFactory.defaultInstance().constructType(responseType));
     }
 
     /**
