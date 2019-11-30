@@ -21,7 +21,7 @@
 
         <jackson.version>2.10.1</jackson.version>
         <guava.version>23.0</guava.version>
-        <intellij.annotations.version>12.0</intellij.annotations.version>
+        <intellij.annotations.version>18.0.0</intellij.annotations.version>
         <slf4j.version>1.7.29</slf4j.version>
 
         <!--test dependencies -->
@@ -172,10 +172,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.intellij</groupId>
+            <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>${intellij.annotations.version}</version>
         </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>
