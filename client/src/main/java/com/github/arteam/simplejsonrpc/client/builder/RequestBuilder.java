@@ -363,7 +363,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
                 throw new IllegalStateException("Unspecified id in a response: " + responseNode);
             }
 
-            if (error == null) {
+            if (error == null || error instanceof NullNode) {
                 if (result != null) {
                     return mapper.convertValue(result, javaType);
                 } else {
