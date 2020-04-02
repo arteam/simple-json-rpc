@@ -27,7 +27,7 @@
         <!--test dependencies -->
         <junit.version>4.13</junit.version>
         <joda.time.version>2.10.5</joda.time.version>
-        <assertj.version>3.14.0</assertj.version>
+        <assertj.version>3.15.0</assertj.version>
     </properties>
 
     <scm>
