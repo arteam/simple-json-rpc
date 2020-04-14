@@ -26,5 +26,5 @@ public @interface JsonRpcParam {
      *
      * @return parameter name
      */
-    public String value();
+    String value();
 }

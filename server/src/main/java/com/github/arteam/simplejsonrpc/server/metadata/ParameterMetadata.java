@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
  * Method parameter metadata
  */
 public class ParameterMetadata {
-
+    public static final String ID_NAME = "id";
     /**
      * RPC name
      */
@@ -40,6 +40,18 @@ public class ParameterMetadata {
      */
     private final boolean optional;
 
+    private final boolean isId;
+
+    public ParameterMetadata(@NotNull String name, @NotNull Class<?> type
+            , @NotNull Type genericType, int index, boolean optional, boolean isId) {
+        this.name = name;
+        this.type = type;
+        this.genericType = genericType;
+        this.index = index;
+        this.optional = optional;
+        this.isId = isId;
+    }
+
     public ParameterMetadata(@NotNull String name, @NotNull Class<?> type
             , @NotNull Type genericType, int index, boolean optional) {
         this.name = name;
@@ -47,6 +59,7 @@ public class ParameterMetadata {
         this.genericType = genericType;
         this.index = index;
         this.optional = optional;
+        this.isId = false;
     }
 
     @NotNull
@@ -61,6 +74,10 @@ public class ParameterMetadata {
 
     public boolean isOptional() {
         return optional;
+    }
+
+    public boolean isId() {
+        return isId;
     }
 
     public int getIndex() {

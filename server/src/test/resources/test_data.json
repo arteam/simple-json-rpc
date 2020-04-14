@@ -508,6 +508,20 @@
             }
         }
     },
+    "echoRpcId": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "echoRpcId",
+            "params": {
+            },
+            "id": 97555
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 97555,
+            "result": "97555"
+        }
+    },
     "genericFindPlayersByNumbers": {
         "request": {
             "jsonrpc": "2.0",

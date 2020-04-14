@@ -1,9 +1,6 @@
 package com.github.arteam.simplejsonrpc.server.simple.service;
 
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
+import com.github.arteam.simplejsonrpc.core.annotation.*;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Player;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Position;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Team;
@@ -192,6 +189,11 @@ public class TeamService extends BaseService {
                     player.getCapHit() * contractLengths.get(player.getLastName()).intValue());
         }
         return playerContractSums;
+    }
+
+    @JsonRpcMethod
+    public String echoRpcId(@JsonRpcId Long id) {
+        return id.toString();
     }
 
 

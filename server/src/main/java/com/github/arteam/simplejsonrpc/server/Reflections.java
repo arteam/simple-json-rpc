@@ -1,9 +1,6 @@
 package com.github.arteam.simplejsonrpc.server;
 
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
+import com.github.arteam.simplejsonrpc.core.annotation.*;
 import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
@@ -15,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.Objects;
 
 /**
  * Date: 07.06.14
@@ -44,7 +42,7 @@ class Reflections {
                                                          @NotNull Class<T> clazz) {
         if (annotations != null) {
             for (Annotation annotation : annotations) {
-                if (annotation.annotationType().equals(clazz)) {
+                if (Objects.requireNonNull(annotation).annotationType().equals(clazz)) {
                     return (T) annotation;
                 }
             }
@@ -124,16 +122,29 @@ class Reflections {
         for (int i = 0; i < methodParamsSize; i++) {
             Annotation[] parameterAnnotations = allParametersAnnotations[i];
             JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
-            if (jsonRpcParam == null) {
-                log.warn("Annotation @JsonRpcParam is not set for the " + i +
+            JsonRpcId jsonRpcId = Reflections.getAnnotation(parameterAnnotations, JsonRpcId.class);
+            if (jsonRpcParam != null && jsonRpcId != null) {
+                log.warn("Only one annotation @JsonRpcParam or @JsonRpcParam must be set for the " + i +
                         " parameter of a method '" + method.getName() + "'");
                 return null;
             }
-
-            String paramName = jsonRpcParam.value();
+            if (jsonRpcParam == null && jsonRpcId == null) {
+                log.warn("Annotation @JsonRpcParam or @JsonRpcParam is not set for the " + i +
+                        " parameter of a method '" + method.getName() + "'");
+                return null;
+            }
+            String paramName = null;
+            boolean isId = false;
+            if (jsonRpcParam != null) {
+                paramName = jsonRpcParam.value();
+            }
+            if (jsonRpcId != null) {
+                paramName = ParameterMetadata.ID_NAME;
+                isId = true;
+            }
             boolean optional = Reflections.getAnnotation(parameterAnnotations, JsonRpcOptional.class) != null;
             parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterTypes[i],
-                    genericParameterTypes[i], i, optional));
+                    genericParameterTypes[i], i, optional, isId));
         }
 
         try {

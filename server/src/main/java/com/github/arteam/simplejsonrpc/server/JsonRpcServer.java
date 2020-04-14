@@ -144,7 +144,7 @@ public class JsonRpcServer {
             return isNotification(rootRequest, response) ? "" : toJson(response);
         } else if (rootRequest.isArray() && rootRequest.size() > 0) {
             ArrayNode responses = mapper.createArrayNode();
-            for (JsonNode request : (ArrayNode) rootRequest) {
+            for (JsonNode request : rootRequest) {
                 Response response = handleWrapper(request, service);
                 if (!isNotification(request, response)) {
                     responses.add(mapper.convertValue(response, ObjectNode.class));
@@ -284,7 +284,7 @@ public class JsonRpcServer {
                 (ContainerNode<?>) params : mapper.createObjectNode();
         Object[] methodParams;
         try {
-            methodParams = convertToMethodParams(notNullParams, method);
+            methodParams = convertToMethodParams(id, notNullParams, method);
         } catch (IllegalArgumentException e) {
             log.error("Bad params: " + notNullParams + " of a method '" + method.getName() + "'", e);
             return new ErrorResponse(id, INVALID_PARAMS);
@@ -302,10 +302,14 @@ public class JsonRpcServer {
      * @return array of java objects for passing to the method
      */
     @NotNull
-    private Object[] convertToMethodParams(@NotNull ContainerNode<?> params,
+    private Object[] convertToMethodParams(@Nullable ValueNode id,
+                                           @NotNull ContainerNode<?> params,
                                            @NotNull MethodMetadata method) {
         int methodParamsSize = method.getParams().size();
         int jsonParamsSize = params.size();
+        if (method.getParams().values().stream().anyMatch(ParameterMetadata::isId)) {
+            jsonParamsSize++;
+        }
         // Check amount arguments
         if (jsonParamsSize > methodParamsSize) {
             throw new IllegalArgumentException("Wrong amount arguments: " + jsonParamsSize +
@@ -318,7 +322,12 @@ public class JsonRpcServer {
             Class<?> parameterType = param.getType();
             int index = param.getIndex();
             String name = param.getName();
-            JsonNode jsonNode = params.isObject() ? params.get(name) : params.get(index);
+            JsonNode jsonNode;
+            if (param.isId()) {
+                jsonNode = id;
+            } else {
+                jsonNode = params.isObject() ? params.get(name) : params.get(index);
+            }
             // Handle omitted value
             if (jsonNode == null || jsonNode.isNull()) {
                 if (param.isOptional()) {

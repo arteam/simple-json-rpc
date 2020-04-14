@@ -20,7 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jackson.version>2.10.3</jackson.version>
-        <guava.version>23.0</guava.version>
+        <guava.version>28.2-jre</guava.version>
         <intellij.annotations.version>19.0.0</intellij.annotations.version>
         <slf4j.version>1.7.30</slf4j.version>
 
