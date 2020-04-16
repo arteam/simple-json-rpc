@@ -8,7 +8,7 @@ import com.github.arteam.simplejsonrpc.server.simple.service.BogusService;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 

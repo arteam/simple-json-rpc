@@ -1,12 +1,10 @@
 package com.github.arteam.simplejsonrpc.client.generator;
 
 import com.google.common.collect.Sets;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class SecureRandomLongIdGeneratorTest {
 
@@ -17,10 +15,10 @@ public class SecureRandomLongIdGeneratorTest {
         Set<Long> ids = Sets.newHashSetWithExpectedSize(amount);
         for (int i = 0; i < amount; i++) {
             Long id = generator.generate();
-            Assert.assertTrue(id.longValue() > 0);
+            Assertions.assertTrue(id.longValue() > 0);
             System.out.println(id);
             ids.add(id);
         }
-        Assert.assertEquals(ids.size(), amount);
+        Assertions.assertEquals(ids.size(), amount);
     }
 }

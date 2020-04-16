@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import org.jetbrains.annotations.NotNull;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class BaseClientTest {
             .registerModule(new GuavaModule());
 
 
-    @BeforeClass
+    @BeforeAll
     public static void load() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         requestsResponses = mapper.readValue(BaseClientTest.class.getResource("/client_test_data.json"),

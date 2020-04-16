@@ -1,10 +1,6 @@
 package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
@@ -12,14 +8,11 @@ import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -224,7 +217,7 @@ public class JsonRpcClientTest extends BaseClientTest {
                     .id(1001)
                     .returnAs(Player.class)
                     .execute();
-            Assert.fail();
+            Assertions.fail();
         } catch (JsonRpcException e) {
             e.printStackTrace();
             ErrorMessage errorMessage = e.getErrorMessage();

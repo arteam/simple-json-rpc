@@ -2,10 +2,12 @@ package com.github.arteam.simplejsonrpc.client;
 
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Date: 8/17/14
@@ -22,14 +24,13 @@ public class JsonRpcClientErrors {
         }
     });
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMethodIsNotSet() {
-        client.createRequest()
-                .execute();
+        assertThatIllegalArgumentException().isThrownBy(() -> client.createRequest().execute());
     }
 
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testBadJson() {
         client = new JsonRpcClient(new Transport() {
             @NotNull
@@ -39,13 +40,13 @@ public class JsonRpcClientErrors {
                 return "test";
             }
         });
-        client.createRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
-                .execute();
+                .execute());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testIOError() {
         client = new JsonRpcClient(new Transport() {
             @NotNull
@@ -54,13 +55,13 @@ public class JsonRpcClientErrors {
                 throw new IOException("Network is down");
             }
         });
-        client.createRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
-                .execute();
+                .execute());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testBadProtocolVersion() {
         client = new JsonRpcClient(new Transport() {
             @NotNull
@@ -69,13 +70,13 @@ public class JsonRpcClientErrors {
                 return "{\"jsonrpc\": \"1.0\", \"id\": 1001}";
             }
         });
-        client.createRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
-                .execute();
+                .execute());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void notJsonRpc20Response() {
         client = new JsonRpcClient(new Transport() {
             @NotNull
@@ -84,13 +85,13 @@ public class JsonRpcClientErrors {
                 return "{\"some\":\"json\"}";
             }
         });
-        client.createRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
-                .execute();
+                .execute());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testIdIsNotSet() {
         client = new JsonRpcClient(new Transport() {
             @NotNull
@@ -99,13 +100,13 @@ public class JsonRpcClientErrors {
                 return "{\"jsonrpc\": \"2.0\"}";
             }
         });
-        client.createRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
-                .execute();
+                .execute());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testResultAndErrorAreNotSet() {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
@@ -115,25 +116,24 @@ public class JsonRpcClientErrors {
                 return "{\"jsonrpc\": \"2.0\", \"id\": 1001}";
             }
         });
-        client.createRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
-                .execute();
+                .execute());
     }
 
-
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWrongBuilder() {
-        client.createRequest()
+        assertThatIllegalArgumentException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
                 .params(1, 2)
                 .param("test", "param")
                 .returnAs(String.class)
-                .execute();
+                .execute());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testExpectedNotNull() {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
@@ -143,10 +143,10 @@ public class JsonRpcClientErrors {
                 return "{\"jsonrpc\": \"2.0\", \"result\" : null, \"id\": 1001}";
             }
         });
-        client.createRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("getPlayer")
                 .id(1001)
                 .returnAs(Player.class)
-                .execute();
+                .execute());
     }
 }

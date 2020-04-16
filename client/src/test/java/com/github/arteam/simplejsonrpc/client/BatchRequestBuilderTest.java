@@ -8,8 +8,8 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class BatchRequestBuilderTest {
             .registerModule(new GuavaModule());
 
 
-    @BeforeClass
+    @BeforeAll
     public static void load() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         requestsResponses = mapper.readValue(BatchRequestBuilderTest.class.getResource("/batch_requests.json"),

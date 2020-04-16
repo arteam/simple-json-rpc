@@ -1,12 +1,9 @@
 package com.github.arteam.simplejsonrpc.client.generator;
 
-import com.google.common.collect.Sets;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SecureRandomIntIdGeneratorTest {
 
@@ -14,8 +11,8 @@ public class SecureRandomIntIdGeneratorTest {
     public void testDefaultLimit() {
         SecureRandomIntIdGenerator generator = new SecureRandomIntIdGenerator();
         Integer value = generator.generate();
-        Assert.assertTrue(value >= 0);
-        Assert.assertTrue(value < 65536);
+        assertTrue(value >= 0);
+        assertTrue(value < 65536);
     }
 
     @Test
@@ -25,13 +22,14 @@ public class SecureRandomIntIdGeneratorTest {
         int amount = 100;
         for (int i = 0; i < amount; i++) {
             Integer value = generator.generate();
-            Assert.assertTrue(value >= 0);
-            Assert.assertTrue(value < limit);
+            assertTrue(value >= 0);
+            assertTrue(value < limit);
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testPositiveLimit() {
-        new SecureRandomIntIdGenerator(-1);
+        assertThrows(IllegalArgumentException.class,
+                () -> new SecureRandomIntIdGenerator(-1));
     }
 }
