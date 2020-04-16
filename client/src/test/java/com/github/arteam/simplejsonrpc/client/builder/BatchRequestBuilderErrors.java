@@ -4,30 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.github.arteam.simplejsonrpc.client.JsonRpcClient;
 import com.github.arteam.simplejsonrpc.client.Transport;
-import com.github.arteam.simplejsonrpc.client.builder.BatchRequestBuilder;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcBatchException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import org.hamcrest.core.StringStartsWith;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Date: 10/23/14
  * Time: 11:55 PM
  */
 public class BatchRequestBuilderErrors {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     JsonRpcClient client = new JsonRpcClient(new Transport() {
         @NotNull
@@ -55,53 +47,48 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testRequestsAreEmpty() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Requests are not set");
-
-        client.createBatchRequest().execute();
+        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest().execute())
+                .withMessage("Requests are not set");
     }
 
     @Test
     public void testRequestWithoutReturnType() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Return type isn't specified for request with id='1'");
-
-        client.createBatchRequest().add(1L, "findPlayer", "Steven", "Stamkos")
-                .execute();
+        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
+                .execute())
+                .withMessage("Return type isn't specified for request with id='1'");
     }
 
     @Test
     public void testBothSingleAndGlobalResponseTypeAreSet() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Common and detailed configurations of return types shouldn't be mixed");
-
-        client.createBatchRequest().add(1L, "findPlayer", new Object[]{"Steven", "Stamkos"}, Player.class)
-                .returnType(Player.class)
-                .execute();
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> client.createBatchRequest()
+                        .add(1L, "findPlayer", new Object[]{"Steven", "Stamkos"}, Player.class)
+                        .returnType(Player.class)
+                        .execute())
+                .withMessage("Common and detailed configurations of return types shouldn't be mixed");
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testBadId() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Wrong id=true");
-
-        BatchRequestBuilder<?, ?> batchRequest = client.createBatchRequest();
-        batchRequest.getRequests()
-                .add(batchRequest.request(BooleanNode.TRUE, "findPlayer",
-                        new ObjectMapper().createArrayNode().add("Steven").add("Stamkos")));
-        batchRequest.returnType(Player.class).execute();
+        assertThatIllegalArgumentException().isThrownBy(() -> {
+            BatchRequestBuilder<?, ?> batchRequest = client.createBatchRequest();
+            batchRequest.getRequests()
+                    .add(batchRequest.request(BooleanNode.TRUE, "findPlayer",
+                            new ObjectMapper().createArrayNode().add("Steven").add("Stamkos")));
+            batchRequest.returnType(Player.class).execute();
+        }).withMessage("Wrong id=true");
     }
 
     @Test
     public void tesKeyIdIsNotExpectedType() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Id: '1' has wrong type: 'Long'. Should be: 'String'");
-
-        client.createBatchRequest().add(1L, "findPlayer", "Steven", "Stamkos")
+        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
+                .add(1L, "findPlayer", "Steven", "Stamkos")
                 .returnType(Player.class)
                 .keysType(String.class)
-                .execute();
+                .execute())
+                .withMessage("Id: '1' has wrong type: 'Long'. Should be: 'String'");
     }
 
     @Test
@@ -114,28 +101,25 @@ public class BatchRequestBuilderErrors {
             }
         });
 
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("I/O error during a request processing");
-
-        client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .keysType(Long.class)
-                .returnType(Player.class)
-                .execute();
+        assertThatIllegalStateException().isThrownBy(() ->
+                client.createBatchRequest()
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                        .keysType(Long.class)
+                        .returnType(Player.class)
+                        .execute())
+                .withMessage("I/O error during a request processing");
     }
 
     @Test
     public void testFailFastOnNotJsonData() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage(new StringStartsWith("No serializer found"));
-
-        client.createBatchRequest()
+        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
                 .add(1L, "findPlayer", new Name("Steven"), new Name("Stamkos"))
                 .add(2L, "findPlayer", new Name("Vladimir"), new Name("Sobotka"))
                 .keysType(Long.class)
                 .returnType(Player.class)
-                .execute();
+                .execute())
+                .withMessageStartingWith("No serializer found");
     }
 
     private static class Name {
@@ -148,9 +132,6 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testNotArrayResponse() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Expected array but was OBJECT");
-
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
@@ -158,18 +139,16 @@ public class BatchRequestBuilderErrors {
                 return "{\"test\":\"data\"}";
             }
         });
-        client.createBatchRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
                 .returnType(Player.class)
-                .execute();
+                .execute())
+                .withMessage("Expected array but was OBJECT");
     }
 
     @Test
     public void testNotJsonResponse() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage(new StringStartsWith("Unable parse a JSON response"));
-
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
@@ -177,18 +156,16 @@ public class BatchRequestBuilderErrors {
                 return "test data";
             }
         });
-        client.createBatchRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
                 .returnType(Player.class)
-                .execute();
+                .execute())
+                .withMessageStartingWith("Unable parse a JSON response");
     }
 
     @Test
     public void testNoVersion() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage(new StringStartsWith("Not a JSON-RPC response"));
-
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
@@ -196,18 +173,16 @@ public class BatchRequestBuilderErrors {
                 return "[{\"test\":\"data\"}]";
             }
         });
-        client.createBatchRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
                 .returnType(Player.class)
-                .execute();
+                .execute())
+                .withMessageStartingWith("Not a JSON-RPC response");
     }
 
     @Test
     public void testBadVersion() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage(new StringStartsWith("Bad protocol version"));
-
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
@@ -230,18 +205,16 @@ public class BatchRequestBuilderErrors {
                         "}]";
             }
         });
-        client.createBatchRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
                 .returnType(Player.class)
-                .execute();
+                .execute())
+                .withMessageStartingWith("Bad protocol version");
     }
 
     @Test
     public void testUnexpectedResult() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage(new StringStartsWith("Neither result or error is set in response"));
-
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
@@ -252,18 +225,16 @@ public class BatchRequestBuilderErrors {
                         "}]";
             }
         });
-        client.createBatchRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .add(2L, "findPlayer", "Vladimir", "Sobotka")
                 .returnType(Player.class)
-                .execute();
+                .execute())
+                .withMessageStartingWith("Neither result or error is set in response");
     }
 
     @Test
     public void testUnspecifiedId() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Unspecified id: '10' in response");
-
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
@@ -286,10 +257,11 @@ public class BatchRequestBuilderErrors {
                         "}]";
             }
         });
-        client.createBatchRequest()
+        assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                 .add(1L, "findPlayer", "Steven", "Stamkos")
                 .returnType(Player.class)
-                .execute();
+                .execute())
+                .withMessage("Unspecified id: '10' in response");
     }
 
     @Test
@@ -318,30 +290,29 @@ public class BatchRequestBuilderErrors {
                         "]";
             }
         });
-        try {
-            client.createBatchRequest()
-                    .add(1L, "findPlayer", "Steven", "Stamkos")
-                    .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                    .returnType(Player.class)
-                    .keysType(Long.class)
-                    .execute();
-            Assert.fail();
-        } catch (JsonRpcBatchException e) {
-            Map<?, ErrorMessage> errors = e.getErrors();
-            Map<?, ?> successes = e.getSuccesses();
-            System.out.println(successes);
-            System.out.println(errors);
 
-            Object result = successes.get(1L);
-            assertThat(result).isNotNull();
-            assertThat(result).isInstanceOf(Player.class);
-            assertThat(((Player) result).getFirstName()).isEqualTo("Steven");
-            assertThat(((Player) result).getLastName()).isEqualTo("Stamkos");
+        JsonRpcBatchException e = catchThrowableOfType(() ->
+                client.createBatchRequest()
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                        .returnType(Player.class)
+                        .keysType(Long.class)
+                        .execute(), JsonRpcBatchException.class);
 
-            assertThat(errors).isNotEmpty();
-            ErrorMessage errorMessage = errors.get(2L);
-            assertThat(errorMessage.getCode()).isEqualTo(-32603);
-            assertThat(errorMessage.getMessage()).isEqualTo("Internal error");
-        }
+        Map<?, ErrorMessage> errors = e.getErrors();
+        Map<?, ?> successes = e.getSuccesses();
+        System.out.println(successes);
+        System.out.println(errors);
+
+        Object result = successes.get(1L);
+        assertThat(result).isNotNull();
+        assertThat(result).isInstanceOf(Player.class);
+        assertThat(((Player) result).getFirstName()).isEqualTo("Steven");
+        assertThat(((Player) result).getLastName()).isEqualTo("Stamkos");
+
+        assertThat(errors).isNotEmpty();
+        ErrorMessage errorMessage = errors.get(2L);
+        assertThat(errorMessage.getCode()).isEqualTo(-32603);
+        assertThat(errorMessage.getMessage()).isEqualTo("Internal error");
     }
 }

@@ -10,8 +10,8 @@ import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
 import com.github.arteam.simplejsonrpc.server.simple.util.RequestResponse;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ public class JsonRpcServiceTest {
     private static JsonRpcServer rpcServer = JsonRpcServer.withMapper(userMapper);
     private static TeamService teamService = new TeamService();
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         userMapper.registerModule(new GuavaModule());
         userMapper.registerModule(new Jdk8Module());

@@ -1,8 +1,8 @@
 package com.github.arteam.simplejsonrpc.client.generator;
 
 import com.google.common.collect.Sets;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -30,15 +30,15 @@ public class SecureRandomStringIdGeneratorTest {
         for (int i = 0; i < amount; i++) {
             String id = secureRandomStringIdGenerator.generate();
             System.out.println(id);
-            Assert.assertEquals(id.length(), size);
+            Assertions.assertEquals(id.length(), size);
             for (char c : id.toCharArray()) {
                 if (Arrays.binarySearch(ALPHABET, c) == -1) {
-                    Assert.fail("Bad symbol: " + c);
+                    Assertions.fail("Bad symbol: " + c);
                 }
             }
             ids.add(id);
         }
-        Assert.assertEquals(ids.size(), amount);
+        Assertions.assertEquals(ids.size(), amount);
     }
 
 }
