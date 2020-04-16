@@ -6,8 +6,8 @@ import com.github.arteam.simplejsonrpc.client.JsonRpcClient;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.object.TeamService;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.BitSet;
@@ -50,6 +50,6 @@ public class AtomicLongIdGeneratorTest {
         }
         executor.shutdown();
         executor.awaitTermination(5, TimeUnit.SECONDS);
-        Assert.assertEquals(numbers.cardinality(), 100);
+        Assertions.assertEquals(numbers.cardinality(), 100);
     }
 }

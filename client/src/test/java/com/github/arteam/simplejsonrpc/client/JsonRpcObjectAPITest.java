@@ -14,11 +14,8 @@ import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import com.google.common.base.Optional;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,15 +24,13 @@ import java.util.Map;
 import java.util.zip.Checksum;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Date: 24.08.14
  * Time: 18:06
  */
 public class JsonRpcObjectAPITest extends BaseClientTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testAddPlayer() {
@@ -68,7 +63,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         JsonRpcClient client = initClient("optional_params");
         List<Player> players = client.onDemand(TeamService.class, new FixedStringIdGenerator("xar331"))
                 .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.<Double>absent());
-        Assert.assertEquals(players.size(), 1);
+        Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
         assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
         assertThat(player.getNumber()).isEqualTo(91);
@@ -81,7 +76,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         JsonRpcClient client = initClient("find_array_null_params");
         List<Player> players = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("pasd81"))
                 .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.<Double>absent());
-        Assert.assertEquals(players.size(), 1);
+        Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
         assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
         assertThat(player.getNumber()).isEqualTo(19);
@@ -168,7 +163,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         JsonRpcClient client = initClient("methodNotFound");
         try {
             client.onDemand(TeamService.class, new FixedIntegerIdGenerator(1001)).getPlayer();
-            Assert.fail();
+            Assertions.fail();
         } catch (JsonRpcException e) {
             e.printStackTrace();
             ErrorMessage errorMessage = e.getErrorMessage();
@@ -186,18 +181,16 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
 
     @Test
     public void testParameterIsNotAnnotated() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Parameter with index=0 of method 'bogusLogin' is not annotated with @JsonRpcParam");
-
-        fakeClient().onDemand(BogusTeamService.class).bogusLogin("super", "secret");
+        assertThatIllegalStateException()
+                .isThrownBy(() -> fakeClient().onDemand(BogusTeamService.class).bogusLogin("super", "secret"))
+                .withMessage("Parameter with index=0 of method 'bogusLogin' is not annotated with @JsonRpcParam");
     }
 
     @Test
     public void testNotJsonRpcMethod() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Method 'equals' is not JSON-RPC available");
-
-        fakeClient().onDemand(TeamService.class).equals("Test");
+        assertThatIllegalStateException()
+                .isThrownBy(() -> fakeClient().onDemand(TeamService.class).equals("Test"))
+                .withMessage("Method 'equals' is not JSON-RPC available");
     }
 
     @JsonRpcService
@@ -208,18 +201,16 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
 
     @Test
     public void testMethodIsNotAnnotated() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Method 'find' is not annotated as @JsonRpcMethod");
-
-        fakeClient().onDemand(MethodIsNotAnnotatedService.class).find("Logan");
+        assertThatIllegalStateException()
+                .isThrownBy(() -> fakeClient().onDemand(MethodIsNotAnnotatedService.class).find("Logan"))
+                .withMessage("Method 'find' is not annotated as @JsonRpcMethod");
     }
 
     @Test
     public void testServiceIsNotAnnotated() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Class 'java.util.zip.Checksum' is not annotated as @JsonRpcService");
-
-        fakeClient().onDemand(Checksum.class).getValue();
+        assertThatIllegalStateException()
+                .isThrownBy(() -> fakeClient().onDemand(Checksum.class).getValue())
+                .withMessage("Class 'java.util.zip.Checksum' is not annotated as @JsonRpcService");
     }
 
     @JsonRpcService
@@ -231,10 +222,9 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
 
     @Test
     public void testDuplicatedParameterNames() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Two parameters of method 'find' have the same name 'code'");
-
-        fakeClient().onDemand(DuplicateParametersService.class).find("Joe", "12", 21);
+        assertThatIllegalStateException()
+                .isThrownBy(() -> fakeClient().onDemand(DuplicateParametersService.class).find("Joe", "12", 21))
+                .withMessage("Two parameters of method 'find' have the same name 'code'");
     }
 
 }
