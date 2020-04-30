@@ -15,7 +15,6 @@ import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
 import com.google.common.base.Defaults;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -51,11 +50,11 @@ import java.lang.reflect.InvocationTargetException;
 public class JsonRpcServer {
 
     // Error messages
-    private static final ErrorMessage PARSE_ERROR = new ErrorMessage(-32700, "Parse error");
-    private static final ErrorMessage METHOD_NOT_FOUND = new ErrorMessage(-32601, "Method not found");
-    private static final ErrorMessage INVALID_REQUEST = new ErrorMessage(-32600, "Invalid Request");
-    private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid params");
-    private static final ErrorMessage INTERNAL_ERROR = new ErrorMessage(-32603, "Internal error");
+    private static final ErrorMessage PARSE_ERROR = new ErrorMessage(-32700, "Parse error", null);
+    private static final ErrorMessage METHOD_NOT_FOUND = new ErrorMessage(-32601, "Method not found", null);
+    private static final ErrorMessage INVALID_REQUEST = new ErrorMessage(-32600, "Invalid Request", null);
+    private static final ErrorMessage INVALID_PARAMS = new ErrorMessage(-32602, "Invalid params", null);
+    private static final ErrorMessage INTERNAL_ERROR = new ErrorMessage(-32603, "Internal error", null);
 
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
     private static final String VERSION = "2.0";
@@ -235,7 +234,7 @@ public class JsonRpcServer {
             log.warn("Error message should not be empty");
             return new ErrorResponse(request.getId(), INTERNAL_ERROR);
         }
-        return new ErrorResponse(request.getId(), new ErrorMessage(code, message));
+        return new ErrorResponse(request.getId(), new ErrorMessage(code, message, null));
     }
 
     /**
