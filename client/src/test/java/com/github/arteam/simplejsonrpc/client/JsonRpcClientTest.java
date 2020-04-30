@@ -1,6 +1,7 @@
 package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
@@ -225,6 +226,61 @@ public class JsonRpcClientTest extends BaseClientTest {
             assertThat(errorMessage.getMessage()).isEqualTo("Method not found");
         }
     }
-
-
+    
+    @Test
+    public void testJsonRpcErrorWithDataAttribute() {
+        JsonRpcClient client = initClient("errorWithDataAttribute");
+        try {
+            client.createRequest()
+                    .method("getErrorWithData")
+                    .id(1002)
+                    .returnAs(Player.class)
+                    .execute();
+            Assertions.fail();
+        } catch (JsonRpcException e) {
+            e.printStackTrace();
+            ErrorMessage errorMessage = e.getErrorMessage();
+            assertThat(errorMessage.getCode()).isEqualTo(-32000);
+            assertThat(errorMessage.getMessage()).isEqualTo("This is an error with data attribute");
+            assertThat(errorMessage.getData()).isEqualTo(JsonNodeFactory.instance.textNode("Error data"));
+        }
+    }
+    
+    @Test
+    public void testJsonRpcErrorWithNullDataAttribute() {
+        JsonRpcClient client = initClient("errorWithNullDataAttribute");
+        try {
+            client.createRequest()
+                    .method("getErrorWithNullData")
+                    .id(1003)
+                    .returnAs(Player.class)
+                    .execute();
+            Assertions.fail();
+        } catch (JsonRpcException e) {
+            e.printStackTrace();
+            ErrorMessage errorMessage = e.getErrorMessage();
+            assertThat(errorMessage.getCode()).isEqualTo(-32000);
+            assertThat(errorMessage.getMessage()).isEqualTo("This is an error with null data attribute");
+            assertThat(errorMessage.getData()).isEqualTo(JsonNodeFactory.instance.nullNode());
+        }
+    }
+    
+    @Test
+    public void testJsonRpcErrorWithStructuredDataAttribute() {
+        JsonRpcClient client = initClient("errorWithStructuredDataAttribute");
+        try {
+            client.createRequest()
+                    .method("getErrorWithStructuredData")
+                    .id(1003)
+                    .returnAs(Player.class)
+                    .execute();
+            Assertions.fail();
+        } catch (JsonRpcException e) {
+            e.printStackTrace();
+            ErrorMessage errorMessage = e.getErrorMessage();
+            assertThat(errorMessage.getCode()).isEqualTo(-32000);
+            assertThat(errorMessage.getMessage()).isEqualTo("This is an error with structured data attribute");
+            assertThat(errorMessage.getData()).isNotNull();
+        }
+    }
 }
