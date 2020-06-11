@@ -1,8 +1,0 @@
-language: java
-
-after_success:
-  - mvn jacoco:report coveralls:jacoco
-jdk:   
-  - openjdk8
-  - openjdk11
-  - openjdk14
