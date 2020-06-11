@@ -106,11 +106,11 @@ Maven:
 
 ## Requirements
 
-JDK 1.6 and higher
+JDK 1.8 and higher
 
 ## Dependencies
 
-* [Jackson](https://github.com/FasterXML/jackson) 2.7.5
-* [Guava](http://code.google.com/p/guava-libraries/) 19.0
+* [Jackson](https://github.com/FasterXML/jackson) 2.11.0
+* [Guava](http://code.google.com/p/guava-libraries/) 23.0
 * [SLF4J](http://www.slf4j.org/) 1.7.21
 * [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
