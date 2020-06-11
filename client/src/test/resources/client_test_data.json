@@ -339,6 +339,60 @@
             }
         }
     },
+    "errorWithDataAttribute": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "getErrorWithData",
+            "params": [],
+            "id": 1002
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 1002,
+            "error": {
+                "code": -32000,
+                "message": "This is an error with data attribute",
+                "data": "Error data"
+            }
+        }
+    },
+     "errorWithNullDataAttribute": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "getErrorWithNullData",
+            "params": [],
+            "id": 1003
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 1003,
+            "error": {
+                "code": -32000,
+                "message": "This is an error with null data attribute",
+                "data": null
+            }
+        }
+    },
+    "errorWithStructuredDataAttribute": {
+        "request": {
+            "jsonrpc": "2.0",
+            "method": "getErrorWithStructuredData",
+            "params": [],
+            "id": 1003
+        },
+        "response": {
+            "jsonrpc": "2.0",
+            "id": 1003,
+            "error": {
+                "code": -32000,
+                "message": "This is an error with structured data attribute",
+                "data": {
+                    "data_status": 11,
+                    "data_message": "Message"
+                }
+            }
+        }
+    },
     "logout": {
         "request": {
             "jsonrpc": "2.0",
