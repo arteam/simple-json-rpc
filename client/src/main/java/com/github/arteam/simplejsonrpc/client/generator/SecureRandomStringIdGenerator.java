@@ -53,10 +53,10 @@ public class SecureRandomStringIdGenerator extends SecureRandomIdGenerator<Strin
         char[] result = new char[source.length * 2];
         for (int i = 0; i < source.length; i++) {
             int unsigned = source[i] & 0xFF;
-            int first4Bytes = unsigned >>> 4;
-            int last4Bytes = unsigned & 0x0F;
-            result[i * 2] = ALPHABET[first4Bytes];
-            result[i * 2 + 1] = ALPHABET[last4Bytes];
+            int first4Bits = unsigned >>> 4;
+            int last4Bits = unsigned & 0x0F;
+            result[i * 2] = ALPHABET[first4Bits];
+            result[i * 2 + 1] = ALPHABET[last4Bits];
         }
         return new String(result);
     }
