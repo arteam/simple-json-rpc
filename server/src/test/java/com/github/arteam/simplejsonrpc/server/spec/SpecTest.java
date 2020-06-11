@@ -23,12 +23,9 @@ public class SpecTest {
     ObjectMapper mapper = new ObjectMapper();
 
     private void test(String testName) {
-        try {
-            InputStream stream = SpecTest.class.getResourceAsStream("/spec/" + testName + ".properties");
+        try (InputStream stream = SpecTest.class.getResourceAsStream("/spec/" + testName + ".properties")) {
             Properties testProps = new Properties();
             testProps.load(stream);
-            stream.close();
-
             String textRequest = testProps.getProperty("request");
             JsonNode response = mapper.readTree(testProps.getProperty("response"));
 
