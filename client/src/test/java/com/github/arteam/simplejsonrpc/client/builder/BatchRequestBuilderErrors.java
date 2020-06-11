@@ -38,7 +38,7 @@ public class BatchRequestBuilderErrors {
                     "        },\n" +
                     "        \"number\": 91,\n" +
                     "        \"position\": \"C\",\n" +
-                    "        \"birthDate\": \"1990-02-07T00:00:00.000+0000\",\n" +
+                    "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
                     "        \"capHit\": 7.5\n" +
                     "    }\n" +
                     "}]";
@@ -199,7 +199,7 @@ public class BatchRequestBuilderErrors {
                         "        },\n" +
                         "        \"number\": 91,\n" +
                         "        \"position\": \"C\",\n" +
-                        "        \"birthDate\": \"1990-02-07T00:00:00.000+0000\",\n" +
+                        "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
                         "        \"capHit\": 7.5\n" +
                         "    }\n" +
                         "}]";
@@ -251,7 +251,7 @@ public class BatchRequestBuilderErrors {
                         "        },\n" +
                         "        \"number\": 91,\n" +
                         "        \"position\": \"C\",\n" +
-                        "        \"birthDate\": \"1990-02-07T00:00:00.000+0000\",\n" +
+                        "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
                         "        \"capHit\": 7.5\n" +
                         "    }\n" +
                         "}]";
@@ -282,7 +282,7 @@ public class BatchRequestBuilderErrors {
                         "        },\n" +
                         "        \"number\": 91,\n" +
                         "        \"position\": \"C\",\n" +
-                        "        \"birthDate\": \"1990-02-07T00:00:00.000+0000\",\n" +
+                        "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
                         "        \"capHit\": 7.5\n" +
                         "    }\n" +
                         "}, " +
