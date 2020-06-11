@@ -9,7 +9,7 @@ It exposes two styles of API:
 
 ### Client
 
-The basic class in API is `JsonRpcClient`. It's a factory for creating request builders: you pass to it an implementation of the `Transport` class. It actually sends a request through the network and converts a response to a text implementation. Other optional argument is Jackson's `ObjectMapper` which could be used for customization of JSON serializing and data binding. After that `JsonRpcClient` is ready for creating builders and proxies.
+The basic class in API is `JsonRpcClient`. It's a factory for creating request builders: you pass to it an implementation of the `Transport` class. It actually sends a request through the network and converts a response to a text implementation. Other optional argument is Jackson's `ObjectMapper` which could be used for customization of JSON serialization and data binding. After that `JsonRpcClient` is ready for creating builders and proxies.
 
 #### Configuration
 
@@ -21,7 +21,7 @@ JsonRpcClient client = new JsonRpcClient(new Transport() {
     @NotNull
     @Override
     public String pass(@NotNull String request) throws IOException {
-        // Used Apache HttpClient 4.3.1 as an example
+        // Apache HttpClient 4.3.1 is used as an example
         HttpPost post = new HttpPost("http://json-rpc-server/team");
         post.setEntity(new StringEntity(request, Charsets.UTF_8));
         post.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString());
@@ -79,13 +79,13 @@ The idea of this API is to define an interface which models a remote service. Th
 * `@JsonRpcService` marks an interface as a JSON-RPC service.
 * `@JsonRpcMethod` marks a method as a JSON-RPC method.
 * `@JsonRpcParam` is a mandatory annotation for the method parameter and it should contain a parameter name 
-(this is a requirement because Java compiler doesn't retain information about parameter names in a class file 
+(this is mandatory because the Java compiler doesn't retain information about parameter names in a class file 
 and therefore this information is not available in runtime).
 
 Additional annotations:
 
-* `@JsonRpcId` is used for defining a generator of request identifiers. `CurrentTimeIdGenerator` is used by default.
-* `@JsonRpcParams` is used for defining type of JSON-RPC request params (array or map). It could be applied on an interface and on a method as well.
+* `@JsonRpcId` is used for defining the generator of request identifiers. `CurrentTimeIdGenerator` is used by default.
+* `@JsonRpcParams` is used for defining the type of JSON-RPC request params (an array or a map). It could be applied on an interface and on a method as well.
 * `@JsonRpcOptional` is used for marking method parameter as an optional. Parameter that marked with this annotation can accept null values. By default all parameters are mandatory.
 
 ### Example
@@ -146,9 +146,9 @@ Maven:
 
 ## Requirements
 
-JDK 1.6 and higher
+JDK 1.8 and higher
 
 ## Dependencies
 
-* [Jackson](https://github.com/FasterXML/jackson) 2.7.3
+* [Jackson](https://github.com/FasterXML/jackson) 2.11.0
 * [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
