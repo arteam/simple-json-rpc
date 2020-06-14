@@ -1,0 +1,9 @@
+{
+    "jsonrpc": "2.0",
+    "method": "errorDataMultipleGettersLogin",
+    "params": {
+        "login": "secret",
+        "password": "stuff"
+    },
+    "id": "7272"
+}

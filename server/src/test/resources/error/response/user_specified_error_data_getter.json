@@ -1,0 +1,12 @@
+{
+  "jsonrpc": "2.0",
+  "id": "7272",
+  "error": {
+    "code": -30001,
+    "message": "Error with data (getter)",
+    "data": [
+      "Data 1",
+      "Data 2"
+    ]
+  }
+}

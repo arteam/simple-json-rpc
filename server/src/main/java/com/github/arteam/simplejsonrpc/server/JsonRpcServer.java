@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcError;
 import com.github.arteam.simplejsonrpc.core.domain.*;
 import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
+import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
 import com.google.common.base.Defaults;
@@ -71,6 +72,10 @@ public class JsonRpcServer {
      * Cache of classes metadata
      */
     private LoadingCache<Class<?>, ClassMetadata> classesMetadata;
+    /**
+     * Cache of classes metadata
+     */
+    private LoadingCache<Class<? extends Throwable>, ErrorDataResolver> dataResolvers;
 
     /**
      * Init JSON-RPC server
@@ -81,12 +86,19 @@ public class JsonRpcServer {
     public JsonRpcServer(@NotNull ObjectMapper mapper, @NotNull CacheBuilderSpec cacheBuilderSpec) {
         this.mapper = mapper;
         classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
-                new CacheLoader<Class<?>, ClassMetadata>() {
-                    @Override
-                    public ClassMetadata load(Class<?> clazz) throws Exception {
-                        return Reflections.getClassMetadata(clazz);
-                    }
-                });
+            new CacheLoader<Class<?>, ClassMetadata>() {
+                @Override
+                public ClassMetadata load(Class<?> clazz) throws Exception {
+                    return Reflections.getClassMetadata(clazz);
+                }
+            });
+        dataResolvers = CacheBuilder.from(cacheBuilderSpec).build(
+            new CacheLoader<Class<? extends Throwable>, ErrorDataResolver>() {
+                @Override
+                public ErrorDataResolver load(Class<? extends Throwable> clazz) throws Exception {
+                    return Reflections.buildErrorDataResolver(clazz);
+                }
+            });
     }
 
     /**
@@ -234,7 +246,16 @@ public class JsonRpcServer {
             log.warn("Error message should not be empty");
             return new ErrorResponse(request.getId(), INTERNAL_ERROR);
         }
-        return new ErrorResponse(request.getId(), new ErrorMessage(code, message, null));
+        JsonNode data;
+        try {
+            data = dataResolvers.get(rootCause.getClass()).resolveData(rootCause)
+                    .<JsonNode>map(mapper::valueToTree)
+                    .orElse(null);
+        } catch (Exception e1) {
+            log.error("Error while processing error data: ", e1);
+            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
+        }
+        return new ErrorResponse(request.getId(), new ErrorMessage(code, message, data));
     }
 
     /**
