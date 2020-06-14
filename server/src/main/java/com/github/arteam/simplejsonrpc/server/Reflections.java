@@ -1,10 +1,12 @@
 package com.github.arteam.simplejsonrpc.server;
 
+import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcErrorData;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
+import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
 import com.google.common.collect.ImmutableMap;
@@ -144,4 +146,64 @@ class Reflections {
             return null;
         }
     }
+
+    static ErrorDataResolver buildErrorDataResolver(Class<? extends Throwable> throwableClass) {
+        Class<?> c = throwableClass;
+        Field dataField = null;
+        Method dataReadMethod = null;
+        while (c != null) {
+            dataField = tryFindField(c, dataField);
+            dataReadMethod = tryFindMethod(c, dataField, dataReadMethod);
+            c = c.getSuperclass();
+        }
+        if (dataField != null) {
+            return new ErrorDataResolver.FieldErrorDataResolver(dataField);
+        }
+        if (dataReadMethod != null) {
+            return new ErrorDataResolver.MethodErrorDataResolver(dataReadMethod);
+        }
+        return ErrorDataResolver.NullErrorDataResolver.RESOLVER;
+    }
+
+    private static Field tryFindField(Class<?> c, Field dataField) {
+        for (Field field : c.getDeclaredFields()) {
+            if (field.isAnnotationPresent(JsonRpcErrorData.class)) {
+                if (dataField != null) {
+                    throw new IllegalArgumentException(
+                            "Ambiguous configuration: there is more than one @JsonRpcErrorData annotated property in "
+                                    + c.getName()
+                    );
+                }
+                field.setAccessible(true);
+                dataField = field;
+            }
+        }
+        return dataField;
+    }
+
+    private static Method tryFindMethod(Class<?> c, Field dataField, Method dataReadMethod) {
+        for (Method method : c.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(JsonRpcErrorData.class)) {
+                String methodName = method.getName();
+                if (method.getReturnType() == void.class) {
+                    log.warn("Method '{}' annotated with 'JsonRpcErrorData' cannot have void return type", methodName);
+                    continue;
+                }
+                if (method.getParameterCount() > 0) {
+                    log.warn("Method '{}' annotated with 'JsonRpcErrorData' must be with zero arguments", methodName);
+                    continue;
+                }
+                if (dataField != null || dataReadMethod != null) {
+                    throw new IllegalArgumentException(
+                            "Ambiguous configuration: there is more than one @JsonRpcErrorData annotated property in "
+                                + c.getName()
+                    );
+                }
+                method.setAccessible(true);
+                dataReadMethod = method;
+            }
+        }
+        return dataReadMethod;
+    }
+
 }

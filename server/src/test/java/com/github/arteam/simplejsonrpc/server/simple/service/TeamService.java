@@ -7,8 +7,7 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Player;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Position;
 import com.github.arteam.simplejsonrpc.server.simple.domain.Team;
-import com.github.arteam.simplejsonrpc.server.simple.exception.EmptyMessageTeamServiceException;
-import com.github.arteam.simplejsonrpc.server.simple.exception.TeamServiceAuthException;
+import com.github.arteam.simplejsonrpc.server.simple.exception.*;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -133,6 +132,68 @@ public class TeamService extends BaseService {
     public long bogusMessageLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
         if (!login.equals("CAFE") && !password.equals("BABE")) {
             throw new EmptyMessageTeamServiceException("Not authorized");
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long errorDataFieldLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new ExceptionWithDataField("Detailed message", new String[]{"Data 1", "Data 2"});
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long errorDataGetterLogin(@JsonRpcParam("login") String login, @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new ExceptionWithDataGetter("Detailed message", new String[]{"Data 1", "Data 2"});
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long errorDataMultipleFieldsLogin(@JsonRpcParam("login") String login,
+                                             @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new ExceptionWithDataMultipleFields(
+                    "Detailed message",
+                    new String[]{"Data 1", "Data 2"},
+                    "AnotherData");
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long errorDataMultipleGettersLogin(@JsonRpcParam("login") String login,
+                                              @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new ExceptionWithDataMultipleGetters(
+                    "Detailed message",
+                    new String[]{"Data 1", "Data 2"},
+                    "AnotherData");
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long errorDataMultipleMixedLogin(@JsonRpcParam("login") String login,
+                                            @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new ExceptionWithDataMultipleMixed(
+                    "Detailed message",
+                    new String[]{"Data 1", "Data 2"});
+        }
+        return 0xCAFEBABE;
+    }
+
+    @JsonRpcMethod
+    public long errorDataWrongMethodsLogin(@JsonRpcParam("login") String login,
+                                           @JsonRpcParam("password") String password) {
+        if (!login.equals("CAFE") && !password.equals("BABE")) {
+            throw new ExceptionWithWrongMethods(
+                    "Detailed message",
+                    new String[]{"Data 1", "Data 2"});
         }
         return 0xCAFEBABE;
     }

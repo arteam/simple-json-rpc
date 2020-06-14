@@ -237,10 +237,50 @@ public class JsonRpcErrorsTest {
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
     }
 
-
     @Test
     public void testMandatoryParameterExplicitlyNull() {
         String response = rpcController.handle(requestFile("mandatory_parameter_explicitly_null.json"), teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("invalid_params.json")));
     }
+
+    @Test
+    public void testErrorDataField() {
+        String response = rpcController.handle(requestFile("user_specified_error_data_field.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("user_specified_error_data_field.json")));
+    }
+
+    @Test
+    public void testErrorDataGetter() {
+        String response = rpcController.handle(requestFile("user_specified_error_data_getter.json"), teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("user_specified_error_data_getter.json")));
+    }
+
+    @Test
+    public void testErrorDataMultipleFields() {
+        String response = rpcController.handle(requestFile("user_specified_error_data_multiple_fields.json"),
+                teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
+    }
+
+    @Test
+    public void testErrorDataMultipleGetters() {
+        String response = rpcController.handle(requestFile("user_specified_error_data_multiple_getters.json"),
+                teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
+    }
+
+    @Test
+    public void testErrorDataMultipleMixed() {
+        String response = rpcController.handle(requestFile("user_specified_error_data_multiple_mixed.json"),
+                teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("internal_error.json")));
+    }
+
+    @Test
+    public void testErrorDataWrongMethods() {
+        String response = rpcController.handle(requestFile("user_specified_error_data_wrong_methods.json"),
+            teamService);
+        assertThat(json(response)).isEqualTo(json(responseFile("user_specified_error_data_wrong_methods.json")));
+    }
+
 }
