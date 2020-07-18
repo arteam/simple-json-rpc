@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.Optional;
 
 /**
  * Date: 07.06.14
@@ -150,60 +151,46 @@ class Reflections {
     static ErrorDataResolver buildErrorDataResolver(Class<? extends Throwable> throwableClass) {
         Class<?> c = throwableClass;
         Field dataField = null;
-        Method dataReadMethod = null;
+        Method dataMethod = null;
         while (c != null) {
-            dataField = tryFindField(c, dataField);
-            dataReadMethod = tryFindMethod(c, dataField, dataReadMethod);
+            for (Field field : c.getDeclaredFields()) {
+                if (field.isAnnotationPresent(JsonRpcErrorData.class)) {
+                    if (dataField != null) {
+                        throw new IllegalArgumentException("Ambiguous configuration: there is more than one " +
+                                "@JsonRpcErrorData annotated property in " + c.getName());
+                    }
+                    field.setAccessible(true);
+                    dataField = field;
+                }
+            }
+            for (Method method : c.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(JsonRpcErrorData.class)) {
+                    if (method.getReturnType() == void.class) {
+                        log.warn("Method '{}' annotated with 'JsonRpcErrorData' cannot have void return type", method.getName());
+                        continue;
+                    }
+                    if (method.getParameterCount() > 0) {
+                        log.warn("Method '{}' annotated with 'JsonRpcErrorData' must be with zero arguments", method.getName());
+                        continue;
+                    }
+                    if (dataField != null || dataMethod != null) {
+                        throw new IllegalArgumentException("Ambiguous configuration: there is more than one " +
+                                "@JsonRpcErrorData annotated property in " + c.getName());
+                    }
+                    method.setAccessible(true);
+                    dataMethod = method;
+                }
+            }
             c = c.getSuperclass();
         }
         if (dataField != null) {
-            return new ErrorDataResolver.FieldErrorDataResolver(dataField);
+            Field finalDataField = dataField;
+            return t -> Optional.ofNullable(finalDataField.get(t));
+        } else if (dataMethod != null) {
+            Method finalDataMethod = dataMethod;
+            return t -> Optional.ofNullable(finalDataMethod.invoke(t));
+        } else {
+            return t -> Optional.empty();
         }
-        if (dataReadMethod != null) {
-            return new ErrorDataResolver.MethodErrorDataResolver(dataReadMethod);
-        }
-        return ErrorDataResolver.NullErrorDataResolver.RESOLVER;
     }
-
-    private static Field tryFindField(Class<?> c, Field dataField) {
-        for (Field field : c.getDeclaredFields()) {
-            if (field.isAnnotationPresent(JsonRpcErrorData.class)) {
-                if (dataField != null) {
-                    throw new IllegalArgumentException(
-                            "Ambiguous configuration: there is more than one @JsonRpcErrorData annotated property in "
-                                    + c.getName()
-                    );
-                }
-                field.setAccessible(true);
-                dataField = field;
-            }
-        }
-        return dataField;
-    }
-
-    private static Method tryFindMethod(Class<?> c, Field dataField, Method dataReadMethod) {
-        for (Method method : c.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(JsonRpcErrorData.class)) {
-                String methodName = method.getName();
-                if (method.getReturnType() == void.class) {
-                    log.warn("Method '{}' annotated with 'JsonRpcErrorData' cannot have void return type", methodName);
-                    continue;
-                }
-                if (method.getParameterCount() > 0) {
-                    log.warn("Method '{}' annotated with 'JsonRpcErrorData' must be with zero arguments", methodName);
-                    continue;
-                }
-                if (dataField != null || dataReadMethod != null) {
-                    throw new IllegalArgumentException(
-                            "Ambiguous configuration: there is more than one @JsonRpcErrorData annotated property in "
-                                + c.getName()
-                    );
-                }
-                method.setAccessible(true);
-                dataReadMethod = method;
-            }
-        }
-        return dataReadMethod;
-    }
-
 }
