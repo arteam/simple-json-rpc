@@ -48,12 +48,8 @@ public class JsonRpcClientErrors {
 
     @Test
     public void testIOError() {
-        client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                throw new IOException("Network is down");
-            }
+        client = new JsonRpcClient(request -> {
+            throw new IOException("Network is down");
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
@@ -63,13 +59,7 @@ public class JsonRpcClientErrors {
 
     @Test
     public void testBadProtocolVersion() {
-        client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                return "{\"jsonrpc\": \"1.0\", \"id\": 1001}";
-            }
-        });
+        client = new JsonRpcClient(request -> "{\"jsonrpc\": \"1.0\", \"id\": 1001}");
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
@@ -78,13 +68,7 @@ public class JsonRpcClientErrors {
 
     @Test
     public void notJsonRpc20Response() {
-        client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                return "{\"some\":\"json\"}";
-            }
-        });
+        client = new JsonRpcClient(request -> "{\"some\":\"json\"}");
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
@@ -93,13 +77,7 @@ public class JsonRpcClientErrors {
 
     @Test
     public void testIdIsNotSet() {
-        client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                return "{\"jsonrpc\": \"2.0\"}";
-            }
-        });
+        client = new JsonRpcClient(request -> "{\"jsonrpc\": \"2.0\"}");
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
                 .id(1)
@@ -108,13 +86,9 @@ public class JsonRpcClientErrors {
 
     @Test
     public void testResultAndErrorAreNotSet() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                System.out.println(request);
-                return "{\"jsonrpc\": \"2.0\", \"id\": 1001}";
-            }
+        JsonRpcClient client = new JsonRpcClient(request -> {
+            System.out.println(request);
+            return "{\"jsonrpc\": \"2.0\", \"id\": 1001}";
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
@@ -135,13 +109,9 @@ public class JsonRpcClientErrors {
 
     @Test
     public void testExpectedNotNull() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                System.out.println(request);
-                return "{\"jsonrpc\": \"2.0\", \"result\" : null, \"id\": 1001}";
-            }
+        JsonRpcClient client = new JsonRpcClient(request -> {
+            System.out.println(request);
+            return "{\"jsonrpc\": \"2.0\", \"result\" : null, \"id\": 1001}";
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("getPlayer")

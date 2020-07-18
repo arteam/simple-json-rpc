@@ -35,28 +35,18 @@ public class BaseClientTest {
 
     protected JsonRpcClient initClient(String testName) {
         final RequestResponse requestResponse = requestsResponses.get(testName);
-        return new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                System.out.println(request);
-                JsonNode requestNode = mapper.readTree(request);
-                assertThat(requestNode).isEqualTo(requestResponse.request);
-                String response = mapper.writeValueAsString(requestResponse.response);
-                System.out.println(response);
-                return response;
-            }
+        return new JsonRpcClient(request -> {
+            System.out.println(request);
+            JsonNode requestNode = mapper.readTree(request);
+            assertThat(requestNode).isEqualTo(requestResponse.request);
+            String response = mapper.writeValueAsString(requestResponse.response);
+            System.out.println(response);
+            return response;
         }, mapper);
     }
 
     protected JsonRpcClient fakeClient() {
-        return new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String request) throws IOException {
-                return "";
-            }
-        }, mapper);
+        return new JsonRpcClient(request -> "", mapper);
     }
 
 }

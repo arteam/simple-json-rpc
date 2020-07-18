@@ -18,19 +18,15 @@ public class JsonRpcClientNotifications {
 
     @Test
     public void testNotificationObjectParams() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String text) throws IOException {
-                System.out.println(text);
-                ObjectMapper mapper = new ObjectMapper();
-                Request request = mapper.readValue(text, Request.class);
-                assertThat(request.getJsonrpc()).isEqualTo("2.0");
-                assertThat(request.getMethod()).isEqualTo("update");
-                assertThat(request.getParams()).isEqualTo(mapper.createObjectNode().put("cacheName", "profiles"));
-                assertThat(request.getId().isMissingNode());
-                return "";
-            }
+        JsonRpcClient client = new JsonRpcClient(text -> {
+            System.out.println(text);
+            ObjectMapper mapper = new ObjectMapper();
+            Request request = mapper.readValue(text, Request.class);
+            assertThat(request.getJsonrpc()).isEqualTo("2.0");
+            assertThat(request.getMethod()).isEqualTo("update");
+            assertThat(request.getParams()).isEqualTo(mapper.createObjectNode().put("cacheName", "profiles"));
+            assertThat(request.getId().isMissingNode());
+            return "";
         });
 
         client.createNotification()
@@ -41,19 +37,15 @@ public class JsonRpcClientNotifications {
 
     @Test
     public void testNotificationArrayParams() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String text) throws IOException {
-                System.out.println(text);
-                ObjectMapper mapper = new ObjectMapper();
-                Request request = mapper.readValue(text, Request.class);
-                assertThat(request.getJsonrpc()).isEqualTo("2.0");
-                assertThat(request.getMethod()).isEqualTo("setExpirationTime");
-                assertThat(request.getParams()).isEqualTo(mapper.createArrayNode().add("profiles").add(20));
-                assertThat(request.getId().isMissingNode());
-                return "";
-            }
+        JsonRpcClient client = new JsonRpcClient(text -> {
+            System.out.println(text);
+            ObjectMapper mapper = new ObjectMapper();
+            Request request = mapper.readValue(text, Request.class);
+            assertThat(request.getJsonrpc()).isEqualTo("2.0");
+            assertThat(request.getMethod()).isEqualTo("setExpirationTime");
+            assertThat(request.getParams()).isEqualTo(mapper.createArrayNode().add("profiles").add(20));
+            assertThat(request.getId().isMissingNode());
+            return "";
         });
 
         client.createNotification()
@@ -64,13 +56,9 @@ public class JsonRpcClientNotifications {
 
     @Test
     public void testMethodIsNotSet() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-            @NotNull
-            @Override
-            public String pass(@NotNull String text) throws IOException {
-                System.out.println(text);
-                return "";
-            }
+        JsonRpcClient client = new JsonRpcClient(text -> {
+            System.out.println(text);
+            return "";
         });
         assertThatIllegalArgumentException().isThrownBy(() -> client.createNotification().execute());
     }
