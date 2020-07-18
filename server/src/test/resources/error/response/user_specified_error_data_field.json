@@ -1,0 +1,12 @@
+{
+  "jsonrpc": "2.0",
+  "id": "7272",
+  "error": {
+    "code": -30000,
+    "message": "Error with data (field)",
+    "data": [
+      "Data 1",
+      "Data 2"
+    ]
+  }
+}
