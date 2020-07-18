@@ -1,0 +1,12 @@
+{
+  "jsonrpc": "2.0",
+  "id": "7272",
+  "error": {
+    "code": -30005,
+    "message": "Error with wrong methods",
+    "data": [
+      "Data 1",
+      "Data 2"
+    ]
+  }
+}
