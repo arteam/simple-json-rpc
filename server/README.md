@@ -10,6 +10,8 @@ Additional annotations:
 
 * `@JsonRpcOptional` is used for marking a method parameter as an optional, so the caller is able to ignore it when invokes the method.
 * `@JsonRpcError` is used for marking an exception as a JSON-RPC error.
+* `@JsonRpcErrorData` is used for marking an exception property as the `data` attribute of a JSON-RPC error.
+
 
 ```java
 @JsonRpcService
