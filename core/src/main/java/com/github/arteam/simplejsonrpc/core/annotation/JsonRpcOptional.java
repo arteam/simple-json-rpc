@@ -8,11 +8,9 @@ import java.lang.annotation.Target;
 /**
  * Date: 6/15/14
  * Time: 1:49 AM
- * <p/>
- * Annotation for marking a parameter as an optional.
- * <p/>
- * It means a client isn't forced to pass this parameter to the method. If the client doesn't provide it,
- * {@code null} value is used for complex types and an appropriate default value for primitives.
+ * <p> Annotation for marking a parameter as an optional.</p>
+ * <p> It means a client isn't forced to pass this parameter to the method. If the client doesn't provide it,
+ * {@code null} value is used for complex types and an appropriate default value for primitives.</p>
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

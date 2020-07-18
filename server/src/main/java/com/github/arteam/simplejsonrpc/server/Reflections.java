@@ -22,8 +22,7 @@ import java.util.Optional;
 /**
  * Date: 07.06.14
  * Time: 14:42
- * <p/>
- * Reflection utils for scanning service metadata
+ * <p>Reflection utils for scanning service metadata</p>
  */
 class Reflections {
 

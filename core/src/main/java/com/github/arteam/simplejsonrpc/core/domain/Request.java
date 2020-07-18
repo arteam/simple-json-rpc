@@ -10,8 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Date: 07.06.14
  * Time: 12:24
- * <p/>
- * Representation of a JSON-RPC request
+ * <p>Representation of a JSON-RPC request</p>
  */
 public class Request {
 

@@ -22,26 +22,22 @@ import java.util.Map;
 /**
  * Date: 10/12/14
  * Time: 6:23 PM
- * <p/>
- * Fluent builder of batch JSON-RPC requests.
- * <p/>
- * It provides facility to create a list of requests, set expected response types, execute the JSON-RPC request
- * and process the JSON-RPC response.
- * <p/>
- * Return type is a map of responses (Java objects) by request ids. In cases of errors it throws
- * {@code JsonRpcBatchException} with detailed status of success and failed requests.
- * <p/>
- * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
- * <p/>
- * The basic pattern is following:
- * <pre>
+ * <p> Fluent builder of batch JSON-RPC requests</p>
+ * <p> It provides facility to create a list of requests, set expected response types,
+ * execute the JSON-RPC request and process the JSON-RPC response.</p>
+ * <p> Return type is a map of responses (Java objects) by request ids. In cases of errors it throws
+ * {@link JsonRpcBatchException} with detailed status of success and failed requests.</p>
+ * <p> It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to
+ * {@link Transport}.</p>
+ * <p> The basic pattern is following:</p>
+ * <pre>{@code
  * Map<String, Player> result = client.createBatchRequest()
  *      .add("43121", "findByInitials", "Steven", "Stamkos")
  *      .add("43122", "findByInitials", "Jack", "Allen")
  *      .keysType(String.class)
  *      .returnType(Player.class)
  *      .execute();
- * </pre>
+ * }</pre>
  */
 public class BatchRequestBuilder<K, V> extends AbstractBuilder {
 
@@ -65,7 +61,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
 
     /**
      * Expected return type for all requests
-     * <p/>
+     * <p></p>
      * This property works exclusively with {@code returnTypes}. Only one of them should be set.
      */
     @Nullable

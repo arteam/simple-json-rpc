@@ -9,13 +9,12 @@ import java.lang.annotation.Target;
  * Date: 07.06.14
  * Time: 13:02
  * Annotation for marking RPC method parameter.
- * <p/>
- * Because Java doesn't retain information about method names in a class file and
+ * <p>Because Java doesn't retain information about method names in a class file and
  * therefore this information is not available in runtime, this annotation <b>MUST</b>
- * be placed on all the method parameters.
- * <p/>
- * Otherwise {@link IllegalArgumentException} will be generated in runtime and
- * an error message will be returned to a client.
+ * be placed on all the method parameters.</p>
+ *
+ * <p> Otherwise {@link IllegalArgumentException} will be generated in runtime and
+ * an error message will be returned to a client.</p>
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

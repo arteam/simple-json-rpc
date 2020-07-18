@@ -7,8 +7,7 @@ import java.io.IOException;
 /**
  * Date: 8/9/14
  * Time: 8:52 PM
- * <p/>
- * Abstract transport for JSON-RPC communication
+ * <p>Abstract transport for JSON-RPC communication</p>
  */
 public interface Transport {
 
@@ -18,6 +17,7 @@ public interface Transport {
      *
      * @param request JSON-RPC request as a string
      * @return JSON-RPC response as a string
+     * @throws IOException if an I/O error happens during transfer
      */
     @NotNull
     public String pass(@NotNull String request) throws IOException;

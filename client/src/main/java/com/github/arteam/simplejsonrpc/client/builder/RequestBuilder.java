@@ -22,13 +22,12 @@ import java.util.Set;
 /**
  * Date: 8/9/14
  * Time: 9:04 PM
- * <p/>
- * Type-safe builder of JSON-RPC requests.
- * <p/>
- * It introduces fluent API to build a request, set an expected response type and perform the request.
- * Builder is immutable: every mutation creates a new object, so it's safe to use in multi-threaded environment.
- * <p/>
- * It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to {@link com.github.arteam.simplejsonrpc.client.Transport}.
+ * <p> Type-safe builder of JSON-RPC requests.</p>
+ * <p> It introduces fluent API to build a request, set an expected response type and perform the request.
+ * Builder is immutable: every mutation creates a new object, so it's safe to use
+ * in multi-threaded environment.</p>
+ * <p> It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing
+ * to {@link Transport}.</p>
  */
 public class RequestBuilder<T> extends AbstractBuilder {
 
@@ -145,20 +144,18 @@ public class RequestBuilder<T> extends AbstractBuilder {
 
     /**
      * Adds a new parameter to current request parameters.
-     * <p/>
-     * <i>Caution:</i> If you set request parameters this way, you should follow this convention
-     * during all the building process like that:
-     * <pre>
+     * <p><i>Caution:</i> If you set request parameters this way, you should follow this convention
+     * during all the building process like that:</p>
+     * <pre>{@code
      * client.createRequest()
      *       .method("find")
      *       .id(43121)
      *       .param("firstName", "Steven")
      *       .param("lastName", "Stamkos")
      *       .returnAs(Player.class)
-     *       .execute();
+     *       .execute();}
      * </pre>
-     * <p/>
-     * <b>Calls to <i>params</i> method are not permitted after this method has been invoked</b>.
+     * <p><b>Calls to <i>params</i> method are not permitted after this method has been invoked</b></p>
      *
      * @param name  parameter name
      * @param value parameter value
@@ -226,8 +223,9 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * Sets expected return type as a collection of objects.
      * This method is suitable for non-standard collections like {@link java.util.Queue}
      *
-     * @param elementType type of elements of a collection
-     * @param <E>         generic collection type
+     * @param collectionType type of a collection
+     * @param elementType    type of elements of a collection
+     * @param <E>            generic collection type
      * @return new builder
      */
     @NotNull
@@ -271,7 +269,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     /**
      * Sets expected return type as a generic type, e.g. Guava Optional.
      * Generic type is set as a type reference like that:
-     * <pre> new TypeReference<Optional<String>>() {} </pre>
+     * <pre> {@code new TypeReference<Optional<String>>() {} }</pre>
      *
      * @param tr   type reference
      * @param <NT> a generic type

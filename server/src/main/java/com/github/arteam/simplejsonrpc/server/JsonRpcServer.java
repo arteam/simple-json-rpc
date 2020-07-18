@@ -36,9 +36,7 @@ import java.util.Optional;
 /**
  * Date: 07.06.14
  * Time: 12:06
- * <p/>
- * Main class for processing JSON-RPC 2.0 requests from the server side.
- * <p/>
+ * <p>Main class for processing JSON-RPC 2.0 requests from the server side.</p>
  * <ol>
  * <li>Converts a text JSON-RPC request to a Java JSON tree object</li>
  * <li>Checks that the request is conform with the JSON-RPC 2.0 standard</li>

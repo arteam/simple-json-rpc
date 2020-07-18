@@ -103,6 +103,7 @@
                 <configuration>
                     <failOnWarnings>false</failOnWarnings>
                     <failOnError>false</failOnError>
+                    <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
                 <executions>
                     <execution>

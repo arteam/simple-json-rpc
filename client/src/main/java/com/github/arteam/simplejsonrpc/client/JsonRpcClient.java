@@ -13,9 +13,8 @@ import java.lang.reflect.Proxy;
 /**
  * Date: 8/9/14
  * Time: 8:58 PM
- * <p/>
- * JSON-RPC client. Represents a factory for a fluent client API {@link com.github.arteam.simplejsonrpc.client.builder.RequestBuilder}.
- * It's parametrized by {@link Transport} and Jackson {@link ObjectMapper}
+ * <p> JSON-RPC client. Represents a factory for a fluent client API {@link RequestBuilder}.
+ * It's parametrized by {@link Transport} and Jackson {@link ObjectMapper}</p>
  */
 public class JsonRpcClient {
 

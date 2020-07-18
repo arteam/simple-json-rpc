@@ -9,8 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Date: 07.06.14
  * Time: 15:16
- * <p/>
- * Representation of a JSON-RPC error message
+ * <p>Representation of a JSON-RPC error message</p>
  */
 public class ErrorMessage {
 
@@ -20,19 +19,19 @@ public class ErrorMessage {
     @NotNull
     @JsonProperty("message")
     private final String message;
-    
+
     @JsonProperty("data")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Nullable
     private final JsonNode data;
-    
+
     public ErrorMessage(@JsonProperty("code") int code,
                         @JsonProperty("message") @NotNull String message,
                         @JsonProperty("data") @Nullable JsonNode data) {
         this.code = code;
         this.message = message;
         this.data = data;
-	}
+    }
 
     public int getCode() {
         return code;
