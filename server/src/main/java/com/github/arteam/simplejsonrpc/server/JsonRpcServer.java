@@ -16,6 +16,7 @@ import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
 import com.google.common.base.Defaults;
+import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 /**
  * Date: 07.06.14
@@ -86,19 +88,19 @@ public class JsonRpcServer {
     public JsonRpcServer(@NotNull ObjectMapper mapper, @NotNull CacheBuilderSpec cacheBuilderSpec) {
         this.mapper = mapper;
         classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
-            new CacheLoader<Class<?>, ClassMetadata>() {
-                @Override
-                public ClassMetadata load(Class<?> clazz) throws Exception {
-                    return Reflections.getClassMetadata(clazz);
-                }
-            });
+                new CacheLoader<Class<?>, ClassMetadata>() {
+                    @Override
+                    public ClassMetadata load(Class<?> clazz) throws Exception {
+                        return Reflections.getClassMetadata(clazz);
+                    }
+                });
         dataResolvers = CacheBuilder.from(cacheBuilderSpec).build(
-            new CacheLoader<Class<? extends Throwable>, ErrorDataResolver>() {
-                @Override
-                public ErrorDataResolver load(Class<? extends Throwable> clazz) throws Exception {
-                    return Reflections.buildErrorDataResolver(clazz);
-                }
-            });
+                new CacheLoader<Class<? extends Throwable>, ErrorDataResolver>() {
+                    @Override
+                    public ErrorDataResolver load(Class<? extends Throwable> clazz) throws Exception {
+                        return Reflections.buildErrorDataResolver(clazz);
+                    }
+                });
     }
 
     /**
@@ -248,8 +250,9 @@ public class JsonRpcServer {
         }
         JsonNode data;
         try {
-            data = dataResolvers.get(rootCause.getClass()).resolveData(rootCause)
-                    .<JsonNode>map(mapper::valueToTree)
+            data = dataResolvers.get(rootCause.getClass())
+                    .resolveData(rootCause)
+                    .map((Function<Object, JsonNode>) input -> mapper.valueToTree(input))
                     .orElse(null);
         } catch (Exception e1) {
             log.error("Error while processing error data: ", e1);
