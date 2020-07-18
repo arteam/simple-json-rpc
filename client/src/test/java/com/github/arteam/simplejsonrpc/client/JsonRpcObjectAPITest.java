@@ -11,7 +11,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import com.google.common.base.Optional;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Assertions;
@@ -21,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.zip.Checksum;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +62,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     public void testOptionalParams() {
         JsonRpcClient client = initClient("optional_params");
         List<Player> players = client.onDemand(TeamService.class, new FixedStringIdGenerator("xar331"))
-                .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.<Double>absent());
+                .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
         assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
@@ -75,7 +75,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     public void testOptionalArray() {
         JsonRpcClient client = initClient("find_array_null_params");
         List<Player> players = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("pasd81"))
-                .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.<Double>absent());
+                .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
         assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));

@@ -7,7 +7,6 @@ import com.github.arteam.simplejsonrpc.client.domain.Position;
 import com.github.arteam.simplejsonrpc.client.domain.Team;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
