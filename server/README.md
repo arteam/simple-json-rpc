@@ -101,7 +101,7 @@ Maven:
 <dependency>
    <groupId>com.github.arteam</groupId>
    <artifactId>simple-json-rpc-server</artifactId>
-   <version>0.9</version>
+   <version>1.2</version>
 </dependency>
 ```
 
@@ -113,6 +113,6 @@ JDK 1.8 and higher
 ## Dependencies
 
 * [Jackson](https://github.com/FasterXML/jackson) 2.11.0
-* [Guava](http://code.google.com/p/guava-libraries/) 23.0
-* [SLF4J](http://www.slf4j.org/) 1.7.21
+* [Guava](http://code.google.com/p/guava-libraries/) 29.0
+* [SLF4J](http://www.slf4j.org/) 1.7.30
 * [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
