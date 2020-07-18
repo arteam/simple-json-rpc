@@ -342,8 +342,6 @@ public class RequestBuilder<T> extends AbstractBuilder {
             }
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Unable parse a JSON response: " + textResponse, e);
-        } catch (IOException e) {
-            throw new IllegalStateException("I/O error during a response processing", e);
         }
     }
 
