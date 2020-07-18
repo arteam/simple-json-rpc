@@ -7,8 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Date: 07.06.14
  * Time: 12:34
- * <p/>
- * Base representation of a JSON-RPC response (success or error)
+ * <p>Base representation of a JSON-RPC response (success or error)</p>
  */
 public class Response {
 

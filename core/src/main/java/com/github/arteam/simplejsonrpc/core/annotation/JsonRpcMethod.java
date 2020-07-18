@@ -8,9 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Date: 07.06.14
  * Time: 13:02
- * <p/>
- * Annotation for marking a method as eligible for calling from the web.
- * Makes sense only for public non-static methods.
+ * <p>Annotation for marking a method as eligible for calling from the web.
+ * Makes sense only for public non-static methods.</p>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

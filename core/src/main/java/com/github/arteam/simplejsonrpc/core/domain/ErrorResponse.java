@@ -9,8 +9,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Date: 07.06.14
  * Time: 12:35
- * <p/>
- * Representation of a JSON-RPC error response
+ * <p>Representation of a JSON-RPC error response</p>
  */
 public class ErrorResponse extends Response {
 

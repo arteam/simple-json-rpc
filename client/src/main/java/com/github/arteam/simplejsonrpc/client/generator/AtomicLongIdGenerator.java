@@ -5,9 +5,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Date: 12/30/14
  * Time: 11:19 PM
- * <p/>
- * Return id from an atomic long counter
- * It's the most reliable and straightforward way to generate identifiers
+ * <p>Return id from an atomic long counter
+ *  It's the most reliable and straightforward way to generate identifiers</p>
  */
 public class AtomicLongIdGenerator implements IdGenerator<Long> {
 

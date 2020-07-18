@@ -7,11 +7,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Date: 8/17/14
  * Time: 11:09 PM
- * <p/>
- * Type-safe builder of JSON-RPC notification requests.
- * <p/>
- * It uses underlying {@link RequestBuilder} to build a request,  but not permits setting a request id.
- * Also it doesn't expect any response from the server, so there is no response parsing.
+ * <p>Type-safe builder of JSON-RPC notification requests.</p>
+ * <p>It uses underlying {@link RequestBuilder} to build a request,  but not permits setting a request id.
+ * Also it doesn't expect any response from the server, so there is no response parsing.</p>
  */
 public class NotificationRequestBuilder {
 
