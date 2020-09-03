@@ -21,7 +21,7 @@
 
         <jackson.version>2.11.2</jackson.version>
         <guava.version>29.0-jre</guava.version>
-        <intellij.annotations.version>20.0.0</intellij.annotations.version>
+        <intellij.annotations.version>20.1.0</intellij.annotations.version>
         <slf4j.version>1.7.30</slf4j.version>
 
         <!--test dependencies -->
