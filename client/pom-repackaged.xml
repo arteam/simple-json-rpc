@@ -22,7 +22,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.arteam</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>simple-json-rpc-core</artifactId>
             <version>${project.version}</version>
         </dependency>
