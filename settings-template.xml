@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+  <servers>
+
+    <server>
+      <id>sonatype-server</id>
+      <username>bsorrentino</username>
+      <password>${env.OSS_SONATYPE_PASSWORD}</password>
+    </server>
+
+  </servers>
+
+  <profiles>
+
+    <profile>
+      <id>sonatype</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <snapshot.repo.id>sonatype-server</snapshot.repo.id>
+        <snapshot.repo.url>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.repo.url>
+        <release.repo.id>sonatype-server</release.repo.id>
+        <release.repo.url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</release.repo.url>
+        <!--release.repo.url>http://oss.sonatype.org/content/repositories/releases</release.repo.url-->
+        <group.repo.url>http://oss.sonatype.org/content/groups/public/</group.repo.url>
+      </properties>
+
+      <repositories>
+
+        <repository>
+          <id>sonatype-server</id>
+          <name>sonatype snapshots</name>
+          <url>${snapshot.repo.url}</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+        </repository>
+
+      </repositories>
+
+      <pluginRepositories>
+
+        <pluginRepository>
+          <id>sonatype-server</id>
+          <name>sonatype snapshots</name>
+          <url>${snapshot.repo.url}</url>
+
+          <snapshots>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
+          </snapshots>
+
+        </pluginRepository>
+
+      </pluginRepositories>
+    </profile>
+
+  </profiles>
+
+</settings>
