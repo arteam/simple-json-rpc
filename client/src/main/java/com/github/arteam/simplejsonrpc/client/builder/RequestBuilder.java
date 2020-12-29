@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Optional.empty;
+
 /**
  * Date: 8/9/14
  * Time: 9:04 PM
@@ -355,7 +357,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
             throw new IllegalArgumentException("Unable convert " + requestNode + " to JSON", e);
         }
         try {
-            textResponse = transport.pass(textRequest);
+            textResponse = transport.pass( empty(), textRequest);
         } catch (IOException e) {
             throw new IllegalStateException("I/O error during a request processing", e);
         }

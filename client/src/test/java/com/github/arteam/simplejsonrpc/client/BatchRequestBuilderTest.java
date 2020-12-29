@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +44,7 @@ public class BatchRequestBuilderTest {
         return new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
                 System.out.println(request);
                 JsonNode requestNode = mapper.readTree(request);
                 assertThat(requestNode).isEqualTo(requestResponse.request);

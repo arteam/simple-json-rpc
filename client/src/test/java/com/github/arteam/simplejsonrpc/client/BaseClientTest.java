@@ -35,7 +35,7 @@ public class BaseClientTest {
 
     protected JsonRpcClient initClient(String testName) {
         final RequestResponse requestResponse = requestsResponses.get(testName);
-        return new JsonRpcClient(request -> {
+        return new JsonRpcClient( (service, request) -> {
             System.out.println(request);
             JsonNode requestNode = mapper.readTree(request);
             assertThat(requestNode).isEqualTo(requestResponse.request);
@@ -46,7 +46,7 @@ public class BaseClientTest {
     }
 
     protected JsonRpcClient fakeClient() {
-        return new JsonRpcClient(request -> "", mapper);
+        return new JsonRpcClient( (service,request) -> "", mapper);
     }
 
 }

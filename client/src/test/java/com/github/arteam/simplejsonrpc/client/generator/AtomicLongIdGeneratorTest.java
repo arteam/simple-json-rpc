@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,7 @@ public class AtomicLongIdGeneratorTest {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull String request) throws IOException {
+            public String pass( @NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
                 System.out.println(request);
                 JsonNode jsonNode = mapper.readTree(request);
                 long id = jsonNode.get("id").asLong();

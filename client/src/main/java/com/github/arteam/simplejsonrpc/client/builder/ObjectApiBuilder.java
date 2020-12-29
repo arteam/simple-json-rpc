@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Date: 24.08.14
@@ -127,7 +128,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     @NotNull
     private String execute(@NotNull ObjectNode request) {
         try {
-            return transport.pass(mapper.writeValueAsString(request));
+            return transport.pass( Optional.of( classMetadata.getService() ), mapper.writeValueAsString(request));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Unable convert " + request + " to JSON", e);
         } catch (IOException e) {

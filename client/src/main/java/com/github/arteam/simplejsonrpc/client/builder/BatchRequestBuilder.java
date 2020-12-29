@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Optional.empty;
+
 /**
  * Date: 10/12/14
  * Time: 6:23 PM
@@ -493,7 +495,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     @NotNull
     private String executeRequest() {
         try {
-            return transport.pass(mapper.writeValueAsString(requests));
+            return transport.pass( empty(), mapper.writeValueAsString(requests));
         } catch (IOException e) {
             throw new IllegalStateException("I/O error during a request processing", e);
         }

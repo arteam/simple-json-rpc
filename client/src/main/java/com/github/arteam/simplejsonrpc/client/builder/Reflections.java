@@ -85,7 +85,7 @@ class Reflections {
         Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
         IdGenerator<?> idGenerator = getIdGenerator(classAnnotations);
         ParamsType paramsType = getParamsType(classAnnotations);
-        return new ClassMetadata(paramsType, idGenerator, methodsMetadata);
+        return new ClassMetadata(clazz, paramsType, idGenerator, methodsMetadata);
     }
 
 

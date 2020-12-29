@@ -18,7 +18,7 @@ public class JsonRpcClientNotifications {
 
     @Test
     public void testNotificationObjectParams() {
-        JsonRpcClient client = new JsonRpcClient(text -> {
+        JsonRpcClient client = new JsonRpcClient((service,text) -> {
             System.out.println(text);
             ObjectMapper mapper = new ObjectMapper();
             Request request = mapper.readValue(text, Request.class);
@@ -37,7 +37,7 @@ public class JsonRpcClientNotifications {
 
     @Test
     public void testNotificationArrayParams() {
-        JsonRpcClient client = new JsonRpcClient(text -> {
+        JsonRpcClient client = new JsonRpcClient((service,text) -> {
             System.out.println(text);
             ObjectMapper mapper = new ObjectMapper();
             Request request = mapper.readValue(text, Request.class);
@@ -56,8 +56,8 @@ public class JsonRpcClientNotifications {
 
     @Test
     public void testMethodIsNotSet() {
-        JsonRpcClient client = new JsonRpcClient(text -> {
-            System.out.println(text);
+        JsonRpcClient client = new JsonRpcClient((service,request) -> {
+            System.out.println(request);
             return "";
         });
         assertThatIllegalArgumentException().isThrownBy(() -> client.createNotification().execute());
