@@ -23,4 +23,4 @@ jobs:
       - name: Build with Maven
         env:
           OSS_SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-        run: mvn -B deploy --file pom.repackaged.xml -s settings-template.xml
+        run: mvn -B deploy --file pom-repackaged.xml -s settings-template.xml -U

@@ -4,7 +4,7 @@
         <artifactId>simple-json-rpc</artifactId>
         <groupId>org.bsc</groupId>
         <version>1.3-SNAPSHOT</version>
-        <relativePath>../pom.repackaged</relativePath>
+        <relativePath>../pom-repackaged</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

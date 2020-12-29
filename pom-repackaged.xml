@@ -11,9 +11,9 @@
     <description>Base module for simple-json-rpc modules</description>
 
     <modules>
-        <module>core/pom.repackaged.xml</module>
-        <module>client/pom.repackaged.xml</module>
-        <module>server/pom.repackaged.xml</module>
+        <module>core/pom-repackaged.xml</module>
+        <module>client/pom-repackaged.xml</module>
+        <module>server/pom-repackaged.xml</module>
     </modules>
 
     <properties>
