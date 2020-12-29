@@ -1,10 +1,6 @@
 package com.github.arteam.simplejsonrpc.server;
 
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcErrorData;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
-import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
+import com.github.arteam.simplejsonrpc.core.annotation.*;
 import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
@@ -16,8 +12,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.Optional;
+
+import static java.util.Optional.empty;
+
+/**
+ *
+ * utility data class
+ *
+ * @param <A>
+ * @param <T>
+ */
+class Tuple2<A extends Annotation, T> {
+    public final A annotation;
+    public final T owner;
+
+    private Tuple2(A annotation, T owner) {
+        this.annotation = annotation;
+        this.owner = owner;
+    }
+
+    static <A extends Annotation, T> Tuple2<A,T> of( A annotation, T owner ) {
+        return new Tuple2<A,T>( annotation, owner);
+    }
+    static <A extends Annotation, T> Optional<Tuple2<A,T>> optionalOf( A annotation, T owner ) {
+        return Optional.of(of(annotation,owner));
+    }
+}
+
 
 /**
  * Date: 07.06.14
@@ -31,7 +57,6 @@ class Reflections {
     private Reflections() {
     }
 
-
     /**
      * Finds an entity annotation with appropriate type.
      *
@@ -42,16 +67,85 @@ class Reflections {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations,
+    public static <T extends Annotation> Optional<T> getAnnotation(@Nullable Annotation[] annotations,
                                                          @NotNull Class<T> clazz) {
         if (annotations != null) {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(clazz)) {
-                    return (T) annotation;
+                    return Optional.of((T) annotation);
                 }
             }
         }
-        return null;
+        return empty();
+    }
+
+    /**
+     * get method's annotations by type, evaluating also if annotation
+     * is eventually present in the same method from inherited interfaces
+     *
+     * @param m method to evaluate
+     * @return Optional containing a tuple with annotation and declaring method if found
+     *
+     */
+    @NotNull
+    static <A extends Annotation> Optional<Tuple2<A,Method>> getMethodAnnotationByTpe( Method m, Class<A> annotationClass ) {
+
+        final Annotation[] directs = m.getDeclaredAnnotations();
+        if( directs!=null  && directs.length > 0 ) {
+            for( Annotation direct : directs ) {
+                if( direct.annotationType().equals(annotationClass))
+                    return Tuple2.optionalOf((A)direct, m);
+            }
+        }
+
+        final Class<?> interfaces[] = m.getDeclaringClass().getInterfaces();
+        if( interfaces != null && interfaces.length > 0 ) {
+            for (Class<?> ifc : interfaces) {
+                try {
+                    final Method mm = ifc.getMethod(m.getName(), m.getParameterTypes());
+                    final Annotation[] indirects = mm.getDeclaredAnnotations();
+                    for( Annotation indirect : indirects ) {
+                        if( indirect.annotationType().equals(annotationClass))
+                            return Tuple2.optionalOf( (A)indirect, mm);
+                    }
+                } catch (NoSuchMethodException e) {
+                    // skip
+                }
+            }
+        }
+        return empty();
+    }
+
+
+    /**
+     * get class's annotations by type, evaluating also if annotation
+     * is eventually present in the inherited interfaces
+     *
+     * @param clazz class to evaluate
+     * @return Optional containing a tuple with annotation and declaring class/interface if found
+     */
+    @NotNull
+    static <A extends Annotation> Optional<Tuple2<A,Class<?>>> getClassAnnotationByTpe( Class<?> clazz, Class<A> annotationClass ) {
+
+        final Annotation[] directs = clazz.getDeclaredAnnotations();
+        if( directs!=null  && directs.length > 0 ) {
+            for( Annotation direct : directs ) {
+                if( direct.annotationType().equals(annotationClass))
+                    return Tuple2.optionalOf( (A)direct, clazz );
+            }
+        }
+
+        final Class<?> interfaces[] = clazz.getInterfaces();
+        if( interfaces != null && interfaces.length > 0 ) {
+            for (Class<?> ifc : interfaces) {
+                final Annotation[] indirects = ifc.getDeclaredAnnotations();
+                for( Annotation indirect : indirects ) {
+                    if( indirect.annotationType().equals(annotationClass))
+                        return Tuple2.optionalOf((A)indirect,ifc);
+                }
+            }
+        }
+        return empty();
     }
 
     /**
@@ -71,8 +165,9 @@ class Reflections {
             for (Method method : searchType.getDeclaredMethods()) {
                 String methodName = method.getName();
                 // Checks the annotation
-                JsonRpcMethod jsonRpcMethod = getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class);
-                if (jsonRpcMethod == null) {
+                //JsonRpcMethod jsonRpcMethod = getAnnotation(method.getDeclaredAnnotations(), JsonRpcMethod.class);
+                Optional<Tuple2<JsonRpcMethod,Method>> jsonRpcMethod = getMethodAnnotationByTpe( method, JsonRpcMethod.class);
+                if (!jsonRpcMethod.isPresent()) {
                     continue;
                 }
 
@@ -87,8 +182,10 @@ class Reflections {
                     continue;
                 }
 
-                String rpcMethodName = !jsonRpcMethod.value().isEmpty() ? jsonRpcMethod.value() : methodName;
-                ImmutableMap<String, ParameterMetadata> methodParams = getMethodParameters(method);
+                final String jsonRpcMethodValue = jsonRpcMethod.get().annotation.value();
+                String rpcMethodName = !jsonRpcMethodValue.isEmpty() ? jsonRpcMethodValue : methodName;
+                //final ImmutableMap<String, ParameterMetadata> methodParams = getMethodParameters(method);
+                final ImmutableMap<String, ParameterMetadata> methodParams = getMethodParameters(jsonRpcMethod.get().owner);
                 if (methodParams == null) {
                     log.warn("Method '" + methodName + "' has misconfigured parameters");
                     continue;
@@ -100,7 +197,8 @@ class Reflections {
             searchType = searchType.getSuperclass();
         }
 
-        boolean isService = getAnnotation(clazz.getAnnotations(), JsonRpcService.class) != null;
+        //boolean isService = getAnnotation(clazz.getAnnotations(), JsonRpcService.class) != null;
+        boolean isService = getClassAnnotationByTpe(clazz, JsonRpcService.class).isPresent();
         try {
             return new ClassMetadata(isService, methodsMetadata.build());
         } catch (IllegalArgumentException e) {
@@ -125,15 +223,15 @@ class Reflections {
         ImmutableMap.Builder<String, ParameterMetadata> parametersMetadata = ImmutableMap.builder();
         for (int i = 0; i < methodParamsSize; i++) {
             Annotation[] parameterAnnotations = allParametersAnnotations[i];
-            JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
-            if (jsonRpcParam == null) {
+            Optional<JsonRpcParam> jsonRpcParam = getAnnotation(parameterAnnotations, JsonRpcParam.class);
+            if (!jsonRpcParam.isPresent()) {
                 log.warn("Annotation @JsonRpcParam is not set for the " + i +
                         " parameter of a method '" + method.getName() + "'");
                 return null;
             }
 
-            String paramName = jsonRpcParam.value();
-            boolean optional = Reflections.getAnnotation(parameterAnnotations, JsonRpcOptional.class) != null;
+            String paramName = jsonRpcParam.get().value();
+            boolean optional = getAnnotation(parameterAnnotations, JsonRpcOptional.class).isPresent();
             parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterTypes[i],
                     genericParameterTypes[i], i, optional));
         }

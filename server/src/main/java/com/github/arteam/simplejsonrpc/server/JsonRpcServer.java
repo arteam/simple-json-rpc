@@ -234,14 +234,13 @@ public class JsonRpcServer {
     private ErrorResponse handleError(@NotNull Request request, @NotNull Exception e) {
         Throwable rootCause = Throwables.getRootCause(e);
         Annotation[] annotations = rootCause.getClass().getAnnotations();
-        JsonRpcError jsonRpcErrorAnnotation =
-                Reflections.getAnnotation(annotations, JsonRpcError.class);
-        if (jsonRpcErrorAnnotation == null) {
+        Optional<JsonRpcError> jsonRpcErrorAnnotation = Reflections.getAnnotation(annotations, JsonRpcError.class);
+        if (!jsonRpcErrorAnnotation.isPresent()) {
             return new ErrorResponse(request.getId(), INTERNAL_ERROR);
         }
-        int code = jsonRpcErrorAnnotation.code();
-        String message = Strings.isNullOrEmpty(jsonRpcErrorAnnotation.message()) ?
-                rootCause.getMessage() : jsonRpcErrorAnnotation.message();
+        int code = jsonRpcErrorAnnotation.get().code();
+        String message = Strings.isNullOrEmpty(jsonRpcErrorAnnotation.get().message()) ?
+                rootCause.getMessage() : jsonRpcErrorAnnotation.get().message();
         if (Strings.isNullOrEmpty(message)) {
             log.warn("Error message should not be empty");
             return new ErrorResponse(request.getId(), INTERNAL_ERROR);
