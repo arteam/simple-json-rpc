@@ -339,7 +339,7 @@ public class JsonRpcServer {
             int index = param.getIndex();
             String name = param.getName();
             JsonNode jsonNode = params.isObject() ? params.get(name) : params.get(index);
-            // Handle omitted value
+            // Handle omitted name
             if (jsonNode == null || jsonNode.isNull()) {
                 if (param.isOptional()) {
                     methodParams[index] = getDefaultValue(parameterType);
@@ -376,13 +376,13 @@ public class JsonRpcServer {
     @Nullable
     private Object getDefaultValue(@NotNull Class<?> type) {
         if (type == com.google.common.base.Optional.class) {
-            // If it's Guava optional then handle it as an absent value
+            // If it's Guava optional then handle it as an absent name
             return com.google.common.base.Optional.absent();
         } else if (type == java.util.Optional.class) {
-            // If it's Java optional then handle it as an absent value
+            // If it's Java optional then handle it as an absent name
             return java.util.Optional.empty();
         } else if (type.isPrimitive()) {
-            // If parameter is a primitive set the appropriate default value
+            // If parameter is a primitive set the appropriate default name
             return Defaults.defaultValue(type);
         }
         return null;

@@ -50,7 +50,7 @@ class Reflections {
                         "' is not annotated as @JsonRpcService");
             }
 
-            serviceName = rpcServiceAnn.value().isEmpty() ? searchClass.getCanonicalName() : rpcServiceAnn.value();
+            serviceName = rpcServiceAnn.name().isEmpty() ? searchClass.getCanonicalName() : rpcServiceAnn.name();
 
             Method[] methods = searchClass.getMethods();
             for (Method method : methods) {

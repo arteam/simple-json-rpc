@@ -52,7 +52,7 @@ public class NotificationRequestBuilder {
      * Adds a new parameter to current request parameters.
      *
      * @param name  parameter name
-     * @param value parameter value
+     * @param value parameter name
      * @return new builder
      */
     @NotNull
