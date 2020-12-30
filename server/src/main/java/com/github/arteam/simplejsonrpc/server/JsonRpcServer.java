@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+
+import static java.lang.String.format;
 
 /**
  * Date: 07.06.14
@@ -128,6 +131,27 @@ public class JsonRpcServer {
         return new JsonRpcServer(new ObjectMapper(), cacheSpec);
     }
 
+    /**
+     * get and/or register a new service metadata instance in cache
+     *
+     * @param service
+     * @return
+     */
+    @NotNull
+    protected final ClassMetadata getServiceMetadata(@NotNull  Object service ) {
+
+        try {
+            final ClassMetadata serviceMetadata = classesMetadata.get(service.getClass());
+            if (!serviceMetadata.isService()) {
+                final String errMsg = format("%s is not available as a JSON-RPC 2.0 service", service.getClass());
+                throw new IllegalArgumentException( errMsg );
+            }
+            return serviceMetadata;
+        } catch (ExecutionException e) {
+            throw new IllegalStateException(e.getCause());
+        }
+
+    }
     /**
      * Handles a JSON-RPC request(single or batch),
      * delegates processing to the service, and returns a JSON-RPC response.

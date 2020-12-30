@@ -29,10 +29,10 @@ public class MethodMetadata {
      * Map of method params by RPC name
      */
     @NotNull
-    private final ImmutableMap<String, ParameterMetadata> params;
+    private final java.util.Map<String, ParameterMetadata> params;
 
     public MethodMetadata(@NotNull String name, @NotNull Method method,
-                          @NotNull ImmutableMap<String, ParameterMetadata> params) {
+                          @NotNull java.util.Map<String, ParameterMetadata> params) {
         this.name = name;
         this.method = method;
         this.params = params;
@@ -49,7 +49,7 @@ public class MethodMetadata {
     }
 
     @NotNull
-    public ImmutableMap<String, ParameterMetadata> getParams() {
+    public java.util.Map<String, ParameterMetadata> getParams() {
         return params;
     }
 

@@ -185,7 +185,7 @@ class Reflections {
                 final String jsonRpcMethodValue = jsonRpcMethod.get().annotation.value();
                 String rpcMethodName = !jsonRpcMethodValue.isEmpty() ? jsonRpcMethodValue : methodName;
                 //final ImmutableMap<String, ParameterMetadata> methodParams = getMethodParameters(method);
-                final ImmutableMap<String, ParameterMetadata> methodParams = getMethodParameters(jsonRpcMethod.get().owner);
+                final java.util.Map<String, ParameterMetadata> methodParams = getMethodParameters(jsonRpcMethod.get().owner);
                 if (methodParams == null) {
                     log.warn("Method '" + methodName + "' has misconfigured parameters");
                     continue;
@@ -197,14 +197,21 @@ class Reflections {
             searchType = searchType.getSuperclass();
         }
 
-        //boolean isService = getAnnotation(clazz.getAnnotations(), JsonRpcService.class) != null;
-        boolean isService = getClassAnnotationByTpe(clazz, JsonRpcService.class).isPresent();
-        try {
-            return new ClassMetadata(isService, methodsMetadata.build());
-        } catch (IllegalArgumentException e) {
-            // Throw exception, because two methods with the same name leads to unexpected behaviour
-            throw new IllegalArgumentException("There two methods with the same name in " + clazz, e);
-        }
+//        boolean isService = getAnnotation(clazz.getAnnotations(), JsonRpcService.class) != null;
+//        try {
+
+            return getClassAnnotationByTpe(clazz, JsonRpcService.class)
+                    .map( t2 -> ClassMetadata.asService(
+                                t2.annotation.name().isEmpty() ?
+                                        t2.owner.getCanonicalName() :
+                                        t2.annotation.name(),
+                                methodsMetadata.build() )
+                    ).orElseGet( () -> ClassMetadata.asClass(clazz)  );
+
+//        } catch (IllegalArgumentException e) {
+//            // Throw exception, because two methods with the same name leads to unexpected behaviour
+//            throw new IllegalArgumentException("There two methods with the same name in " + clazz, e);
+//        }
     }
 
     /**
@@ -214,7 +221,7 @@ class Reflections {
      * @return map of parameters metadata by their names
      */
     @Nullable
-    private static ImmutableMap<String, ParameterMetadata> getMethodParameters(@NotNull Method method) {
+    private static java.util.Map<String, ParameterMetadata> getMethodParameters(@NotNull Method method) {
         Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
         int methodParamsSize = allParametersAnnotations.length;
         Class<?>[] parameterTypes = method.getParameterTypes();
