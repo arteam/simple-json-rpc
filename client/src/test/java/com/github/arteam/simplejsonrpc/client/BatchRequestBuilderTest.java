@@ -44,7 +44,7 @@ public class BatchRequestBuilderTest {
         return new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 System.out.println(request);
                 JsonNode requestNode = mapper.readTree(request);
                 assertThat(requestNode).isEqualTo(requestResponse.request);

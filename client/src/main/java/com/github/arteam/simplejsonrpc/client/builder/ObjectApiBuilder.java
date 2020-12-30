@@ -128,7 +128,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     @NotNull
     private String execute(@NotNull ObjectNode request) {
         try {
-            return transport.pass( Optional.of( classMetadata.getService() ), mapper.writeValueAsString(request));
+            return transport.pass( Optional.of( classMetadata.getServiceName() ), mapper.writeValueAsString(request));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Unable convert " + request + " to JSON", e);
         } catch (IOException e) {

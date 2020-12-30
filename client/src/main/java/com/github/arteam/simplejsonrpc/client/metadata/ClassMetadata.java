@@ -28,22 +28,22 @@ public class ClassMetadata {
     private final Map<Method, MethodMetadata> methods;
 
     @NotNull
-    private final Class<?> service;
+    private final String serviceName;
 
-    public ClassMetadata(@NotNull Class<?> service,
+    public ClassMetadata(@NotNull String serviceName,
                          @Nullable ParamsType paramsType,
                          @NotNull IdGenerator<?> idGenerator,
                          @NotNull Map<Method, MethodMetadata> methods)
     {
-        this.service        = service;
+        this.serviceName    = serviceName;
         this.paramsType     = paramsType;
         this.idGenerator    = idGenerator;
         this.methods        = methods;
     }
 
     @NotNull
-    public Class<?> getService() {
-        return service;
+    public String getServiceName() {
+        return serviceName;
     }
 
     @Nullable

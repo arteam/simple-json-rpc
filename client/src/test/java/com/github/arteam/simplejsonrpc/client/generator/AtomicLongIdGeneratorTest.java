@@ -25,7 +25,7 @@ public class AtomicLongIdGeneratorTest {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass( @NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass( @NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 System.out.println(request);
                 JsonNode jsonNode = mapper.readTree(request);
                 long id = jsonNode.get("id").asLong();
