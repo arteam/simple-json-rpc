@@ -25,7 +25,7 @@ public class BatchRequestBuilderErrors {
     JsonRpcClient client = new JsonRpcClient(new Transport() {
         @NotNull
         @Override
-        public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+        public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
             System.out.println(request);
             return "[{\n" +
                     "    \"jsonrpc\": \"2.0\",\n" +
@@ -97,7 +97,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 throw new IOException("Network is down");
             }
         });
@@ -136,7 +136,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 return "{\"test\":\"data\"}";
             }
         });
@@ -153,7 +153,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 return "test data";
             }
         });
@@ -170,7 +170,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 return "[{\"test\":\"data\"}]";
             }
         });
@@ -187,7 +187,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 return "[{\n" +
                         "    \"jsonrpc\": \"1.0\",\n" +
                         "    \"id\": 1,\n" +
@@ -219,7 +219,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 return "[{\n" +
                         "    \"jsonrpc\": \"2.0\",\n" +
                         "    \"id\": 1\n" +
@@ -239,7 +239,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 return "[{\n" +
                         "    \"jsonrpc\": \"2.0\",\n" +
                         "    \"id\": 10,\n" +
@@ -270,7 +270,7 @@ public class BatchRequestBuilderErrors {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 return "[{\n" +
                         "    \"jsonrpc\": \"2.0\",\n" +
                         "    \"id\": 1,\n" +

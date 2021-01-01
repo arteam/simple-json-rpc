@@ -19,7 +19,7 @@ public class JsonRpcClientErrors {
     JsonRpcClient client = new JsonRpcClient(new Transport() {
         @NotNull
         @Override
-        public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+        public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
             System.out.println(request);
             return "{\"jsonrpc\": \"2.0\", \"id\": 1001, \"result\": true}";
         }
@@ -36,7 +36,7 @@ public class JsonRpcClientErrors {
         client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass(@NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass(@NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 System.out.println(request);
                 return "test";
             }

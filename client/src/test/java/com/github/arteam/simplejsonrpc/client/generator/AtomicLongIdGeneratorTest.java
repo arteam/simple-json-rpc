@@ -25,7 +25,7 @@ public class AtomicLongIdGeneratorTest {
         JsonRpcClient client = new JsonRpcClient(new Transport() {
             @NotNull
             @Override
-            public String pass( @NotNull Optional<Class<?>> service, @NotNull String request) throws IOException {
+            public String pass( @NotNull Optional<String> serviceName, @NotNull String request) throws IOException {
                 System.out.println(request);
                 JsonNode jsonNode = mapper.readTree(request);
                 long id = jsonNode.get("id").asLong();
@@ -39,7 +39,12 @@ public class AtomicLongIdGeneratorTest {
                         .put("id", id));
             }
         });
-        final TeamService teamService = client.onDemand(TeamService.class, new AtomicLongIdGenerator());
+
+        final TeamService teamService =
+                client.onDemand(TeamService.class)
+                    .idGenerator(new AtomicLongIdGenerator())
+                    .build();
+
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (int i = 0; i < 100; i++) {
             executor.submit(new Runnable() {

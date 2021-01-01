@@ -9,6 +9,9 @@ import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
+import java.util.Optional;
+
+import static java.util.Optional.empty;
 
 /**
  * Date: 8/9/14
@@ -17,6 +20,56 @@ import java.lang.reflect.Proxy;
  * It's parametrized by {@link Transport} and Jackson {@link ObjectMapper}</p>
  */
 public class JsonRpcClient {
+
+    public class ServiceProxyBuilder<T> {
+
+        // interface metadata
+        final Class<T> service;
+        // service name
+        String serviceName;
+        // custom id generator
+        Optional<IdGenerator<?>> idGenerator = empty();
+        // custom type of request params
+        Optional<ParamsType> paramsType = empty();
+
+        public ServiceProxyBuilder(Class<T> service) {
+            this.service = service;
+            this.serviceName = service.getCanonicalName();
+        }
+
+        public ServiceProxyBuilder<T> serviceName(@NotNull String serviceName) {
+            this.serviceName = serviceName;
+            return this;
+        }
+
+        public ServiceProxyBuilder<T> idGenerator(@NotNull IdGenerator<?> idGenerator) {
+            this.idGenerator  = Optional.of(idGenerator);
+            return this;
+        }
+
+        public ServiceProxyBuilder<T> paramsType(@NotNull ParamsType paramsType) {
+            this.paramsType  = Optional.of(paramsType);
+            return this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public T build() {
+
+            final ObjectApiBuilder apiBuilder =
+                    new ObjectApiBuilder(   service,
+                                            serviceName,
+                                            transport,
+                                            mapper,
+                                            paramsType,
+                                            idGenerator);
+
+            return (T) Proxy.newProxyInstance(  getClass().getClassLoader(),
+                                                new Class[]{service},
+                                                apiBuilder );
+
+        }
+
+    }
 
     /**
      * Transport for performing JSON-RPC requests and returning responses
@@ -87,63 +140,9 @@ public class JsonRpcClient {
      * @param <T>   interface type
      * @return a new proxy
      */
-    @SuppressWarnings("unchecked")
     @NotNull
-    public <T> T onDemand(@NotNull Class<T> clazz) {
-        return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(clazz, transport, mapper, null, null));
-    }
-
-    /**
-     * Creates a new proxy for accessing a remote JSON-RPC service through an interface
-     * with a custom id generator that overrides the interface generator.
-     *
-     * @param clazz       interface metadata
-     * @param idGenerator custom id generator
-     * @param <T>         interface type
-     * @return a new proxy
-     */
-    @SuppressWarnings("unchecked")
-    @NotNull
-    public <T> T onDemand(@NotNull Class<T> clazz, @NotNull IdGenerator<?> idGenerator) {
-        return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(clazz, transport, mapper, null, idGenerator));
-    }
-
-    /**
-     * Creates a new proxy for accessing a remote JSON-RPC service through an interface
-     * with a custom type of request params.
-     * It applies for all methods and overrides interface and method level settings.
-     *
-     * @param clazz      interface metadata
-     * @param paramsType custom type of request params
-     * @param <T>        interface type
-     * @return a new proxy
-     */
-    @SuppressWarnings("unchecked")
-    @NotNull
-    public <T> T onDemand(@NotNull Class<T> clazz, @NotNull ParamsType paramsType) {
-        return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(clazz, transport, mapper, paramsType, null));
-    }
-
-    /**
-     * Creates a new proxy for accessing a remote JSON-RPC service through an interface
-     * with a custom id generator and custom type of request params.
-     * The generator overrides the interface generator.
-     * The type applies for all methods and overrides interface and method level settings.
-     *
-     * @param clazz       interface metadata
-     * @param idGenerator custom id generator
-     * @param paramsType  custom type of request params
-     * @param <T>         interface type
-     * @return a new proxy
-     */
-    @SuppressWarnings("unchecked")
-    @NotNull
-    public <T> T onDemand(Class<T> clazz, @NotNull ParamsType paramsType, @NotNull IdGenerator<?> idGenerator) {
-        return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
-                new ObjectApiBuilder(clazz, transport, mapper, paramsType, idGenerator));
+    public <T> ServiceProxyBuilder<T> onDemand(@NotNull Class<T> clazz) {
+        return new ServiceProxyBuilder<T>(clazz);
     }
 
 }

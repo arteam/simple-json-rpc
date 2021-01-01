@@ -40,13 +40,16 @@ class Reflections {
     @NotNull
     public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
         Map<Method, MethodMetadata> methodsMetadata = new HashMap<Method, MethodMetadata>(32);
+        String serviceName = clazz.getCanonicalName();
         Class<?> searchClass = clazz;
+
         while (searchClass != null) {
             JsonRpcService rpcServiceAnn = getAnnotation(searchClass.getAnnotations(), JsonRpcService.class);
             if (rpcServiceAnn == null) {
                 throw new IllegalStateException("Class '" + clazz.getCanonicalName() +
                         "' is not annotated as @JsonRpcService");
             }
+
             Method[] methods = searchClass.getMethods();
             for (Method method : methods) {
                 Annotation[] methodAnnotations = method.getDeclaredAnnotations();
@@ -85,7 +88,7 @@ class Reflections {
         Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
         IdGenerator<?> idGenerator = getIdGenerator(classAnnotations);
         ParamsType paramsType = getParamsType(classAnnotations);
-        return new ClassMetadata(clazz, paramsType, idGenerator, methodsMetadata);
+        return new ClassMetadata(paramsType, idGenerator, methodsMetadata);
     }
 
 

@@ -101,7 +101,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     }
 
     /**
-     * Sets a request id as a long value
+     * Sets a request id as a long name
      *
      * @param id a  request id
      * @return new builder
@@ -112,7 +112,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     }
 
     /**
-     * Sets a request id as an integer value
+     * Sets a request id as an integer name
      *
      * @param id a request id
      * @return new builder
@@ -123,7 +123,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     }
 
     /**
-     * Sets a request id as a string value
+     * Sets a request id as a string name
      *
      * @param id a request id
      * @return new builder
@@ -160,7 +160,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * <p><b>Calls to <i>params</i> method are not permitted after this method has been invoked</b></p>
      *
      * @param name  parameter name
-     * @param value parameter value
+     * @param value parameter name
      * @return new builder
      */
     @NotNull
@@ -257,8 +257,8 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param mapClass  expected map interface or implementation,
      *                  e.g. {@link java.util.Map}, {@link java.util.HashMap}.
      *                  {@link java.util.LinkedHashMap}, {@link java.util.SortedMap}
-     * @param valueType map value type
-     * @param <V>       generic map value type
+     * @param valueType map name type
+     * @param <V>       generic map name type
      * @return new builder
      */
     @NotNull

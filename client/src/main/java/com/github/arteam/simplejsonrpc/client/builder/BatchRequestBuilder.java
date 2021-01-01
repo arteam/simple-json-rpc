@@ -102,7 +102,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request without specifying a return type
      *
-     * @param id     request id as a long value
+     * @param id     request id as a long name
      * @param method request method
      * @param params request params as an array
      * @return the current builder
@@ -116,7 +116,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request without specifying a return type
      *
-     * @param id     request id as an int value
+     * @param id     request id as an int name
      * @param method request method
      * @param params request params as an array
      * @return the current builder
@@ -130,7 +130,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request without specifying a return type
      *
-     * @param id     request id as a text value
+     * @param id     request id as a text name
      * @param method request method
      * @param params request params as an array
      * @return the current builder
@@ -157,7 +157,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request without specifying a return type
      *
-     * @param id     request id as a long value
+     * @param id     request id as a long name
      * @param method request method
      * @param params request params as a map of parameter names to values
      * @return the current builder
@@ -171,7 +171,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request without specifying a return type
      *
-     * @param id     request id as an int value
+     * @param id     request id as an int name
      * @param method request method
      * @param params request params as a map of parameter names to values
      * @return the current builder
@@ -185,7 +185,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request without specifying a return type
      *
-     * @param id     request id as a text value
+     * @param id     request id as a text name
      * @param method request method
      * @param params request params as a map of parameter names to values
      * @return the current builder
@@ -212,7 +212,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a return type
      *
-     * @param id           request id as a long value
+     * @param id           request id as a long name
      * @param method       request method
      * @param params       request params as an array
      * @param responseType expected response type
@@ -227,7 +227,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a return type
      *
-     * @param id           request id as an int value
+     * @param id           request id as an int name
      * @param method       request method
      * @param params       request params as an array
      * @param responseType expected response type
@@ -242,7 +242,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a return type
      *
-     * @param id           request id as a text value
+     * @param id           request id as a text name
      * @param method       request method
      * @param params       request params as an array
      * @param responseType expected response type
@@ -257,7 +257,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a return type
      *
-     * @param id           request id as a long value
+     * @param id           request id as a long name
      * @param method       request method
      * @param params       request params as a map of parameter names to values
      * @param responseType expected response type
@@ -272,7 +272,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a return type
      *
-     * @param id           request id as an int value
+     * @param id           request id as an int name
      * @param method       request method
      * @param params       request params as a map of parameter names to values
      * @param responseType expected response type
@@ -287,7 +287,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a return type
      *
-     * @param id           request id as a text value
+     * @param id           request id as a text name
      * @param method       request method
      * @param params       request params as a map of parameter names to values
      * @param responseType expected response type
@@ -302,7 +302,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a complex return type
      *
-     * @param id            request id as a long value
+     * @param id            request id as a long name
      * @param method        request method
      * @param params        request params as an array
      * @param typeReference expected complex response type
@@ -317,7 +317,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a complex return type
      *
-     * @param id            request id as an int value
+     * @param id            request id as an int name
      * @param method        request method
      * @param params        request params as an array
      * @param typeReference expected complex response type
@@ -332,7 +332,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a complex return type
      *
-     * @param id            request id as a text value
+     * @param id            request id as a text name
      * @param method        request method
      * @param params        request params as an array
      * @param typeReference expected complex response type
@@ -347,7 +347,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a complex return type
      *
-     * @param id            request id as a long value
+     * @param id            request id as a long name
      * @param method        request method
      * @param params        request params as a map of parameter names to values
      * @param typeReference expected complex response type
@@ -362,7 +362,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a complex return type
      *
-     * @param id            request id as an int value
+     * @param id            request id as an int name
      * @param method        request method
      * @param params        request params as a map of parameter names to values
      * @param typeReference expected complex response type
@@ -377,7 +377,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     /**
      * Adds a new request with a complex return type
      *
-     * @param id            request id as a text value
+     * @param id            request id as a text name
      * @param method        request method
      * @param params        request params as a map of parameter names to values
      * @param typeReference expected complex response type
