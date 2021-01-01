@@ -14,12 +14,13 @@ import com.github.arteam.simplejsonrpc.client.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.ParameterMetadata;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Optional;
+
+import static java.util.Optional.empty;
 
 /**
  * Date: 24.08.14
@@ -28,30 +29,37 @@ import java.util.Optional;
  */
 public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandler {
 
-    @Nullable
-    private ParamsType userParamsType;
+    private Optional<ParamsType> userParamsType = empty();
 
-    @Nullable
-    private IdGenerator userIdGenerator;
+    private Optional<IdGenerator<?>> userIdGenerator;
 
     @NotNull
     private ClassMetadata classMetadata;
+
+    final String serviceName;
 
     /**
      * Crate a new proxy for an interface
      *
      * @param clazz           service interface
+     * @param serviceName     service name
      * @param transport       transport abstraction
      * @param mapper          json mapper
      * @param userParamsType  custom type of request params
      * @param userIdGenerator custom id generator
      */
-    public ObjectApiBuilder(@NotNull Class<?> clazz, @NotNull Transport transport, @NotNull ObjectMapper mapper,
-                            @Nullable ParamsType userParamsType, @Nullable IdGenerator userIdGenerator) {
+    public ObjectApiBuilder(@NotNull Class<?> clazz,
+                            @NotNull String serviceName,
+                            @NotNull Transport transport,
+                            @NotNull ObjectMapper mapper,
+                            Optional<ParamsType> userParamsType,
+                            Optional<IdGenerator<?>> userIdGenerator)
+    {
         super(transport, mapper);
         this.classMetadata = Reflections.getClassMetadata(clazz);
         this.userParamsType = userParamsType;
         this.userIdGenerator = userIdGenerator;
+        this.serviceName = serviceName;
     }
 
     @Override
@@ -65,7 +73,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
         // Get method name (annotation or the actual name), params and id generator
         String methodName = methodMetadata.getName();
         JsonNode params = getParams(methodMetadata, args, getParamsType(classMetadata, methodMetadata));
-        IdGenerator<?> idGenerator = userIdGenerator != null ? userIdGenerator : classMetadata.getIdGenerator();
+        IdGenerator<?> idGenerator = userIdGenerator.orElseGet( () -> classMetadata.getIdGenerator() );
 
         //  Construct a request
         ValueNode id = new POJONode(idGenerator.generate());
@@ -128,7 +136,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     @NotNull
     private String execute(@NotNull ObjectNode request) {
         try {
-            return transport.pass( Optional.of( classMetadata.getServiceName() ), mapper.writeValueAsString(request));
+            return transport.pass( Optional.of(serviceName), mapper.writeValueAsString(request));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Unable convert " + request + " to JSON", e);
         } catch (IOException e) {
@@ -146,14 +154,15 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      */
     @NotNull
     private ParamsType getParamsType(@NotNull ClassMetadata classMetadata, @NotNull MethodMetadata methodMetadata) {
-        if (userParamsType != null) {
-            return userParamsType;
-        } else if (methodMetadata.getParamsType() != null) {
-            return methodMetadata.getParamsType();
-        } else if (classMetadata.getParamsType() != null) {
-            return classMetadata.getParamsType();
-        }
-        return ParamsType.MAP;
+        return userParamsType.orElseGet( () -> {
+            if (methodMetadata.getParamsType() != null) {
+                return methodMetadata.getParamsType();
+            } else if (classMetadata.getParamsType() != null) {
+                return classMetadata.getParamsType();
+            }
+            return ParamsType.MAP;
+        });
+
     }
 
 }

@@ -141,12 +141,7 @@ public class JsonRpcServer {
     protected final ClassMetadata getServiceMetadata(@NotNull  Object service ) {
 
         try {
-            final ClassMetadata serviceMetadata = classesMetadata.get(service.getClass());
-            if (!serviceMetadata.isService()) {
-                final String errMsg = format("%s is not available as a JSON-RPC 2.0 service", service.getClass());
-                throw new IllegalArgumentException( errMsg );
-            }
-            return serviceMetadata;
+            return classesMetadata.get(service.getClass());
         } catch (ExecutionException e) {
             throw new IllegalStateException(e.getCause());
         }

@@ -201,12 +201,8 @@ class Reflections {
 //        try {
 
             return getClassAnnotationByTpe(clazz, JsonRpcService.class)
-                    .map( t2 -> ClassMetadata.asService(
-                                t2.annotation.name().isEmpty() ?
-                                        t2.owner.getCanonicalName() :
-                                        t2.annotation.name(),
-                                methodsMetadata.build() )
-                    ).orElseGet( () -> ClassMetadata.asClass(clazz)  );
+                    .map( t2 -> ClassMetadata.asService( methodsMetadata.build() )
+                    ).orElseGet( () -> ClassMetadata.asClass()  );
 
 //        } catch (IllegalArgumentException e) {
 //            // Throw exception, because two methods with the same name leads to unexpected behaviour

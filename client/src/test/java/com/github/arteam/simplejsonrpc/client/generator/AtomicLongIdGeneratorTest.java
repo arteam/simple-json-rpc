@@ -39,7 +39,12 @@ public class AtomicLongIdGeneratorTest {
                         .put("id", id));
             }
         });
-        final TeamService teamService = client.onDemand(TeamService.class, new AtomicLongIdGenerator());
+
+        final TeamService teamService =
+                client.onDemand(TeamService.class)
+                    .idGenerator(new AtomicLongIdGenerator())
+                    .build();
+
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (int i = 0; i < 100; i++) {
             executor.submit(new Runnable() {

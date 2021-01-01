@@ -19,7 +19,6 @@ public class MetadataTest {
         final ClassMetadata metadata = Reflections.getClassMetadata( TeamService.class );
 
         assertNotNull( metadata );
-        assertEquals( TeamService.class.getCanonicalName(), metadata.getServiceName() );
 
         assertNotNull( metadata.getParamsType() );
         assertEquals(ParamsType.MAP.name(), metadata.getParamsType().name() );

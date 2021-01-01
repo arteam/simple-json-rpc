@@ -26,38 +26,28 @@ public class ClassMetadata {
     @NotNull
     private final Map<String, MethodMetadata> methods;
 
-    @NotNull
-    private final String serviceName;
-
     /**
      * factory method for create a service's Metadata
      *
-     * @param serviceName
      * @param methods
      * @return
      */
-    public static ClassMetadata asService( @NotNull String serviceName,  @NotNull Map<String, MethodMetadata> methods ) {
-        return new ClassMetadata( true, serviceName, methods );
+    public static ClassMetadata asService( @NotNull Map<String, MethodMetadata> methods ) {
+        return new ClassMetadata( true, methods );
     }
 
     /**
      * factory method for create a simple class Metadata (no service)
      *
-     * @param clazz
      * @return
      */
-    public static ClassMetadata asClass( @NotNull Class<?> clazz ) {
-        return new ClassMetadata( false, clazz.getCanonicalName(), emptyMap() );
+    public static ClassMetadata asClass() {
+        return new ClassMetadata( false, emptyMap() );
     }
 
-    private  ClassMetadata(boolean service,  @NotNull String serviceName,  @NotNull Map<String, MethodMetadata> methods) {
-        this.serviceName = serviceName;
+    private  ClassMetadata(boolean service,  @NotNull Map<String, MethodMetadata> methods) {
         this.service = service;
         this.methods = methods;
-    }
-
-    public String getServiceName() {
-        return serviceName;
     }
 
     public boolean isService() {

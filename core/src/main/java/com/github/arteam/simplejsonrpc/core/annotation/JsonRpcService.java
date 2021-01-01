@@ -11,12 +11,4 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface JsonRpcService {
-    /**
-     * RPC service name. <b>if it is empty, it will be set the canonical name of class</b>.
-     * It is used to bind and retrieve service
-     *
-     * @return service name
-     */
-    String name() default "";
-
 }

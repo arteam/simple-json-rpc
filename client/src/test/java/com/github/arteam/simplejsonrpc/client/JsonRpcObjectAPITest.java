@@ -35,7 +35,8 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testAddPlayer() {
         JsonRpcClient client = initClient("add_player");
-        TeamService teamService = client.onDemand(TeamService.class, new FixedStringIdGenerator("asd671"));
+        TeamService teamService =
+                client.onDemand(TeamService.class).idGenerator(new FixedStringIdGenerator("asd671")).build();
         boolean result = teamService.add(new Player("Kevin", "Shattenkirk", new Team("St. Louis Blues", "NHL"), 22, Position.DEFENDER,
                 ISODateTimeFormat.date().withZone(DateTimeZone.UTC).parseDateTime("1989-01-29").toDate(),
                 4.25));
@@ -45,7 +46,10 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void findPlayerByInitials() {
         JsonRpcClient client = initClient("find_player");
-        Player player = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(43121)).findByInitials("Steven", "Stamkos");
+        Player player = client.onDemand(TeamService.class)
+                .idGenerator( new FixedIntegerIdGenerator(43121))
+                .build()
+                .findByInitials("Steven", "Stamkos");
         assertThat(player).isNotNull();
         assertThat(player.getFirstName()).isEqualTo("Steven");
         assertThat(player.getLastName()).isEqualTo("Stamkos");
@@ -54,15 +58,24 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testPlayerIsNotFound() {
         JsonRpcClient client = initClient("player_is_not_found");
-        Player player = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(4111)).findByInitials("Vladimir", "Sobotka");
+        Player player = client.onDemand(TeamService.class).idGenerator( new FixedIntegerIdGenerator(4111)).build().findByInitials("Vladimir", "Sobotka");
         assertThat(player).isNull();
     }
 
     @Test
     public void testOptionalParams() {
         JsonRpcClient client = initClient("optional_params");
-        List<Player> players = client.onDemand(TeamService.class, new FixedStringIdGenerator("xar331"))
-                .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
+        List<Player> players =
+                client.onDemand(TeamService.class)
+                        .idGenerator( new FixedStringIdGenerator("xar331"))
+                        .build()
+                        .find(null,
+                                91,
+                                Optional.of(new Team("St. Louis Blues", "NHL")),
+                                null,
+                                null,
+                                null,
+                                Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
         assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
@@ -74,7 +87,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testOptionalArray() {
         JsonRpcClient client = initClient("find_array_null_params");
-        List<Player> players = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("pasd81"))
+        List<Player> players = client.onDemand(TeamService.class).paramsType(ParamsType.ARRAY).idGenerator( new FixedStringIdGenerator("pasd81")).build()
                 .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
@@ -87,7 +100,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testFindArray() {
         JsonRpcClient client = initClient("find_player_array");
-        Player player = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("dsfs1214"))
+        Player player = client.onDemand(TeamService.class).paramsType( ParamsType.ARRAY).idGenerator( new FixedStringIdGenerator("dsfs1214")).build()
                 .findByInitials("Ben", "Bishop");
         assertThat(player).isNotNull();
         assertThat(player.getFirstName()).isEqualTo("Ben");
@@ -97,7 +110,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testReturnList() {
         JsonRpcClient client = initClient("findByBirthYear");
-        List<Player> players = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(5621)).findByBirthYear(1990);
+        List<Player> players = client.onDemand(TeamService.class).idGenerator( new FixedIntegerIdGenerator(5621)).build().findByBirthYear(1990);
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
         assertThat(players.get(0).getLastName()).isEqualTo("Allen");
@@ -108,7 +121,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testNoParams() {
         JsonRpcClient client = initClient("getPlayers");
-        List<Player> players = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(1000)).getPlayers();
+        List<Player> players = client.onDemand(TeamService.class).idGenerator( new FixedIntegerIdGenerator(1000)).build().getPlayers();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
         assertThat(players.get(0).getLastName()).isEqualTo("Bishop");
@@ -119,7 +132,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testReturnVoid() {
         JsonRpcClient client = initClient("logout");
-        client.onDemand(TeamService.class, new FixedIntegerIdGenerator(29314)).logout("fgt612");
+        client.onDemand(TeamService.class).idGenerator( new FixedIntegerIdGenerator(29314)).build().logout("fgt612");
     }
 
     @Test
@@ -135,7 +148,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
             put("Hedman", 2);
         }};
         JsonRpcClient client = initClient("getContractSums");
-        Map<String, Double> contractSums = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(97555))
+        Map<String, Double> contractSums = client.onDemand(TeamService.class).idGenerator( new FixedIntegerIdGenerator(97555)).build()
                 .getContractSums(contractLengths);
         assertThat(contractSums).isExactlyInstanceOf(LinkedHashMap.class);
         assertThat(contractSums).isEqualTo(new HashMap<String, Double>() {{
@@ -153,7 +166,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testOptional() {
         JsonRpcClient client = initClient("player_is_not_found");
-        Optional<Player> optionalPlayer = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(4111))
+        Optional<Player> optionalPlayer = client.onDemand(TeamService.class).idGenerator( new FixedIntegerIdGenerator(4111)).build()
                 .optionalFindByInitials("Vladimir", "Sobotka");
         assertThat(optionalPlayer.isPresent()).isFalse();
     }
@@ -162,7 +175,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     public void testJsonRpcError() {
         JsonRpcClient client = initClient("methodNotFound");
         try {
-            client.onDemand(TeamService.class, new FixedIntegerIdGenerator(1001)).getPlayer();
+            client.onDemand(TeamService.class).idGenerator( new FixedIntegerIdGenerator(1001)).build().getPlayer();
             Assertions.fail();
         } catch (JsonRpcException e) {
             e.printStackTrace();
@@ -182,14 +195,14 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testParameterIsNotAnnotated() {
         assertThatIllegalStateException()
-                .isThrownBy(() -> fakeClient().onDemand(BogusTeamService.class).bogusLogin("super", "secret"))
+                .isThrownBy(() -> fakeClient().onDemand(BogusTeamService.class).build().bogusLogin("super", "secret"))
                 .withMessage("Parameter with index=0 of method 'bogusLogin' is not annotated with @JsonRpcParam");
     }
 
     @Test
     public void testNotJsonRpcMethod() {
         assertThatIllegalStateException()
-                .isThrownBy(() -> fakeClient().onDemand(TeamService.class).equals("Test"))
+                .isThrownBy(() -> fakeClient().onDemand(TeamService.class).build().equals("Test"))
                 .withMessage("Method 'equals' is not JSON-RPC available");
     }
 
@@ -202,14 +215,14 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testMethodIsNotAnnotated() {
         assertThatIllegalStateException()
-                .isThrownBy(() -> fakeClient().onDemand(MethodIsNotAnnotatedService.class).find("Logan"))
+                .isThrownBy(() -> fakeClient().onDemand(MethodIsNotAnnotatedService.class).build().find("Logan"))
                 .withMessage("Method 'find' is not annotated as @JsonRpcMethod");
     }
 
     @Test
     public void testServiceIsNotAnnotated() {
         assertThatIllegalStateException()
-                .isThrownBy(() -> fakeClient().onDemand(Checksum.class).getValue())
+                .isThrownBy(() -> fakeClient().onDemand(Checksum.class).build().getValue())
                 .withMessage("Class 'java.util.zip.Checksum' is not annotated as @JsonRpcService");
     }
 
@@ -223,7 +236,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     @Test
     public void testDuplicatedParameterNames() {
         assertThatIllegalStateException()
-                .isThrownBy(() -> fakeClient().onDemand(DuplicateParametersService.class).find("Joe", "12", 21))
+                .isThrownBy(() -> fakeClient().onDemand(DuplicateParametersService.class).build().find("Joe", "12", 21))
                 .withMessage("Two parameters of method 'find' have the same name 'code'");
     }
 

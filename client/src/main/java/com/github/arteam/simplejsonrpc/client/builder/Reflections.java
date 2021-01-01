@@ -50,8 +50,6 @@ class Reflections {
                         "' is not annotated as @JsonRpcService");
             }
 
-            serviceName = rpcServiceAnn.name().isEmpty() ? searchClass.getCanonicalName() : rpcServiceAnn.name();
-
             Method[] methods = searchClass.getMethods();
             for (Method method : methods) {
                 Annotation[] methodAnnotations = method.getDeclaredAnnotations();
@@ -90,7 +88,7 @@ class Reflections {
         Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
         IdGenerator<?> idGenerator = getIdGenerator(classAnnotations);
         ParamsType paramsType = getParamsType(classAnnotations);
-        return new ClassMetadata(serviceName, paramsType, idGenerator, methodsMetadata);
+        return new ClassMetadata(paramsType, idGenerator, methodsMetadata);
     }
 
 
