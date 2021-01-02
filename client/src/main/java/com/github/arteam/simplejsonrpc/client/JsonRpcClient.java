@@ -1,11 +1,9 @@
 package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.arteam.simplejsonrpc.client.builder.BatchRequestBuilder;
-import com.github.arteam.simplejsonrpc.client.builder.NotificationRequestBuilder;
-import com.github.arteam.simplejsonrpc.client.builder.ObjectApiBuilder;
-import com.github.arteam.simplejsonrpc.client.builder.RequestBuilder;
+import com.github.arteam.simplejsonrpc.client.builder.*;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
+import com.github.arteam.simplejsonrpc.client.metadata.ServiceMetadataFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
@@ -32,6 +30,8 @@ public class JsonRpcClient {
         // custom type of request params
         Optional<ParamsType> paramsType = empty();
 
+        ServiceMetadataFactory serviceMetadataFactory = new AnnotationsServiceMetadataFactory();
+
         public ServiceProxyBuilder(Class<T> service) {
             this.service = service;
             this.serviceName = service.getCanonicalName();
@@ -52,6 +52,11 @@ public class JsonRpcClient {
             return this;
         }
 
+        public ServiceProxyBuilder<T> serviceMetadataFactory(@NotNull ServiceMetadataFactory serviceMetadataFactory) {
+            this.serviceMetadataFactory  = serviceMetadataFactory;
+            return this;
+        }
+
         @SuppressWarnings("unchecked")
         public T build() {
 
@@ -60,6 +65,7 @@ public class JsonRpcClient {
                                             serviceName,
                                             transport,
                                             mapper,
+                                            serviceMetadataFactory,
                                             paramsType,
                                             idGenerator);
 
