@@ -1,6 +1,6 @@
 package com.github.arteam.simplejsonrpc.server;
 
-import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
+import com.github.arteam.simplejsonrpc.server.metadata.ServiceMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class JsonRpcServerRegistry {
      */
     public JsonRpcServerRegistry(@NotNull JsonRpcServer server, @NotNull Object defaultService ) {
         this.server = server;
-        final ClassMetadata serviceMetadata = server.getServiceMetadata(defaultService); // Check service
+        final ServiceMetadata serviceMetadata = server.getServiceMetadata(defaultService); // Check service
 
         if (!serviceMetadata.isService()) {
             final String errMsg = format("%s is not available as a JSON-RPC 2.0 service", defaultService.getClass());

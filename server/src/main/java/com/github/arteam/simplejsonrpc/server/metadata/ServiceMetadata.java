@@ -1,9 +1,7 @@
 package com.github.arteam.simplejsonrpc.server.metadata;
 
-import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
@@ -13,7 +11,7 @@ import static java.util.Collections.emptyMap;
  * Time: 7:42 PM
  * Metadata about a Java class
  */
-public class ClassMetadata {
+public class ServiceMetadata {
 
     /**
      * Whether class JSON-RPC 2.0 service
@@ -32,8 +30,8 @@ public class ClassMetadata {
      * @param methods
      * @return
      */
-    public static ClassMetadata asService( @NotNull Map<String, MethodMetadata> methods ) {
-        return new ClassMetadata( true, methods );
+    public static ServiceMetadata asService(@NotNull Map<String, MethodMetadata> methods ) {
+        return new ServiceMetadata( true, methods );
     }
 
     /**
@@ -41,11 +39,11 @@ public class ClassMetadata {
      *
      * @return
      */
-    public static ClassMetadata asClass() {
-        return new ClassMetadata( false, emptyMap() );
+    public static ServiceMetadata asClass() {
+        return new ServiceMetadata( false, emptyMap() );
     }
 
-    private  ClassMetadata(boolean service,  @NotNull Map<String, MethodMetadata> methods) {
+    private ServiceMetadata(boolean service, @NotNull Map<String, MethodMetadata> methods) {
         this.service = service;
         this.methods = methods;
     }
