@@ -9,9 +9,10 @@ import com.github.arteam.simplejsonrpc.client.ParamsType;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
-import com.github.arteam.simplejsonrpc.client.metadata.ClassMetadata;
+import com.github.arteam.simplejsonrpc.client.metadata.ServiceMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.ParameterMetadata;
+import com.github.arteam.simplejsonrpc.client.metadata.ServiceMetadataFactory;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +35,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     private Optional<IdGenerator<?>> userIdGenerator;
 
     @NotNull
-    private ClassMetadata classMetadata;
+    private ServiceMetadata classMetadata;
 
     final String serviceName;
 
@@ -52,11 +53,12 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
                             @NotNull String serviceName,
                             @NotNull Transport transport,
                             @NotNull ObjectMapper mapper,
+                            @NotNull ServiceMetadataFactory serviceMetadataFactory,
                             Optional<ParamsType> userParamsType,
                             Optional<IdGenerator<?>> userIdGenerator)
     {
         super(transport, mapper);
-        this.classMetadata = Reflections.getClassMetadata(clazz);
+        this.classMetadata = serviceMetadataFactory.createServiceMetadata(clazz);
         this.userParamsType = userParamsType;
         this.userIdGenerator = userIdGenerator;
         this.serviceName = serviceName;
@@ -153,7 +155,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * @return type of params
      */
     @NotNull
-    private ParamsType getParamsType(@NotNull ClassMetadata classMetadata, @NotNull MethodMetadata methodMetadata) {
+    private ParamsType getParamsType(@NotNull ServiceMetadata classMetadata, @NotNull MethodMetadata methodMetadata) {
         return userParamsType.orElseGet( () -> {
             if (methodMetadata.getParamsType() != null) {
                 return methodMetadata.getParamsType();

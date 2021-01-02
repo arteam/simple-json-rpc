@@ -1,13 +1,13 @@
 package com.github.arteam.simplejsonrpc.client.builder;
 
 import com.github.arteam.simplejsonrpc.client.ParamsType;
-import com.github.arteam.simplejsonrpc.client.metadata.ClassMetadata;
+import com.github.arteam.simplejsonrpc.client.metadata.ServiceMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.MethodMetadata;
+import com.github.arteam.simplejsonrpc.client.metadata.ServiceMetadataFactory;
 import com.github.arteam.simplejsonrpc.client.object.TeamService;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
-import java.util.function.IntFunction;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +16,9 @@ public class MetadataTest {
     @Test
     public void testLoadTeamService( ) {
 
-        final ClassMetadata metadata = Reflections.getClassMetadata( TeamService.class );
+        final ServiceMetadataFactory mdFactory = new AnnotationsServiceMetadataFactory();
+
+        final ServiceMetadata metadata = mdFactory.createServiceMetadata( TeamService.class );
 
         assertNotNull( metadata );
 

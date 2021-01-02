@@ -13,7 +13,7 @@ import java.util.Map;
  * Time: 7:42 PM
  * Metadata about a Java class
  */
-public class ClassMetadata {
+public class ServiceMetadata {
 
     @Nullable
     private final ParamsType paramsType;
@@ -27,9 +27,9 @@ public class ClassMetadata {
     @NotNull
     private final Map<Method, MethodMetadata> methods;
 
-    public ClassMetadata(@Nullable ParamsType paramsType,
-                         @NotNull IdGenerator<?> idGenerator,
-                         @NotNull Map<Method, MethodMetadata> methods)
+    public ServiceMetadata(@Nullable ParamsType paramsType,
+                           @NotNull IdGenerator<?> idGenerator,
+                           @NotNull Map<Method, MethodMetadata> methods)
     {
         this.paramsType     = paramsType;
         this.idGenerator    = idGenerator;
