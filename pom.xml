@@ -22,7 +22,7 @@
         <jackson.version>2.12.3</jackson.version>
         <guava.version>30.1.1-jre</guava.version>
         <intellij.annotations.version>20.1.0</intellij.annotations.version>
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.31</slf4j.version>
 
         <!--test dependencies -->
         <junit.version>5.7.1</junit.version>
