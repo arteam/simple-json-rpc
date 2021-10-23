@@ -1,9 +1,9 @@
 {
-    "jsonrpc": 2.0,
-    "method": "bogusFind",
-    "params": {
-        "firstName" : "Steven",
-        "age": 24
-    },
-    "id": "7272"
+  "jsonrpc": 2.0,
+  "method": "bogusFind",
+  "params": {
+    "firstName": "Steven",
+    "age": 24
+  },
+  "id": "7272"
 }

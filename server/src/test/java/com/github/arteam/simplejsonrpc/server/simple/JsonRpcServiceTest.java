@@ -35,10 +35,10 @@ public class JsonRpcServiceTest {
         userMapper.registerModule(new GuavaModule());
         userMapper.registerModule(new Jdk8Module());
         testData = new ObjectMapper().readValue(Resources.toString(JsonRpcServiceTest.class.getResource("/test_data.json"), Charsets.UTF_8),
-                                                TypeFactory.defaultInstance()
-                                                           .constructMapType(Map.class,
-                                                                             TypeFactory.defaultInstance().constructType(String.class),
-                                                                             TypeFactory.defaultInstance().constructType(RequestResponse.class)));
+                TypeFactory.defaultInstance()
+                        .constructMapType(Map.class,
+                                TypeFactory.defaultInstance().constructType(String.class),
+                                TypeFactory.defaultInstance().constructType(RequestResponse.class)));
     }
 
     /**

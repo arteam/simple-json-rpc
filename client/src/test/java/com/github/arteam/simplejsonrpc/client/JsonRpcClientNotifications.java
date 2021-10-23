@@ -2,10 +2,7 @@ package com.github.arteam.simplejsonrpc.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.core.domain.Request;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;

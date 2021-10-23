@@ -1,6 +1,9 @@
 {
-    "jsonrpc": 2.0,
-    "method": "findByInitials",
-    "params": ["Steven", null],
-    "id": "7272"
+  "jsonrpc": 2.0,
+  "method": "findByInitials",
+  "params": [
+    "Steven",
+    null
+  ],
+  "id": "7272"
 }

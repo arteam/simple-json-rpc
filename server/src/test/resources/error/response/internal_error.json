@@ -1,1 +1,8 @@
-{"jsonrpc":"2.0","id":"7272", "error":{"code":-32603,"message":"Internal error"}}
+{
+  "jsonrpc": "2.0",
+  "id": "7272",
+  "error": {
+    "code": -32603,
+    "message": "Internal error"
+  }
+}

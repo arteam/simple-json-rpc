@@ -10,7 +10,11 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcError;
-import com.github.arteam.simplejsonrpc.core.domain.*;
+import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
+import com.github.arteam.simplejsonrpc.core.domain.ErrorResponse;
+import com.github.arteam.simplejsonrpc.core.domain.Request;
+import com.github.arteam.simplejsonrpc.core.domain.Response;
+import com.github.arteam.simplejsonrpc.core.domain.SuccessResponse;
 import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
@@ -31,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
 
 /**
  * Date: 07.06.14

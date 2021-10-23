@@ -9,7 +9,7 @@ import java.util.Set;
 public class SecureRandomLongIdGeneratorTest {
 
     @Test
-    public void testGenerate()  {
+    public void testGenerate() {
         SecureRandomLongIdGenerator generator = new SecureRandomLongIdGenerator();
         int amount = 100;
         Set<Long> ids = Sets.newHashSetWithExpectedSize(amount);

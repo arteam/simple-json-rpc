@@ -1,8 +1,8 @@
 {
-    "jsonrpc": 2.0,
-    "method": "find_by_birth_year",
-    "params": {
-        "birth_year" : "June 1990"
-    },
-    "id": "7272"
+  "jsonrpc": 2.0,
+  "method": "find_by_birth_year",
+  "params": {
+    "birth_year": "June 1990"
+  },
+  "id": "7272"
 }

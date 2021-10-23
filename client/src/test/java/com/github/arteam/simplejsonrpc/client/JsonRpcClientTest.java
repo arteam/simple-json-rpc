@@ -13,7 +13,13 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -225,7 +231,7 @@ public class JsonRpcClientTest extends BaseClientTest {
             assertThat(errorMessage.getMessage()).isEqualTo("Method not found");
         }
     }
-    
+
     @Test
     public void testJsonRpcErrorWithDataAttribute() {
         JsonRpcClient client = initClient("errorWithDataAttribute");
@@ -244,7 +250,7 @@ public class JsonRpcClientTest extends BaseClientTest {
             assertThat(errorMessage.getData()).isEqualTo(JsonNodeFactory.instance.textNode("Error data"));
         }
     }
-    
+
     @Test
     public void testJsonRpcErrorWithNullDataAttribute() {
         JsonRpcClient client = initClient("errorWithNullDataAttribute");
@@ -263,7 +269,7 @@ public class JsonRpcClientTest extends BaseClientTest {
             assertThat(errorMessage.getData()).isEqualTo(JsonNodeFactory.instance.nullNode());
         }
     }
-    
+
     @Test
     public void testJsonRpcErrorWithStructuredDataAttribute() {
         JsonRpcClient client = initClient("errorWithStructuredDataAttribute");

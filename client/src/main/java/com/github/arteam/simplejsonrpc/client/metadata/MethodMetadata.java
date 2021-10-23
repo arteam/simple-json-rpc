@@ -4,7 +4,6 @@ import com.github.arteam.simplejsonrpc.client.ParamsType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**

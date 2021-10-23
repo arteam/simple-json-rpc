@@ -279,7 +279,7 @@ public class JsonRpcErrorsTest {
     @Test
     public void testErrorDataWrongMethods() {
         String response = rpcController.handle(requestFile("user_specified_error_data_wrong_methods.json"),
-            teamService);
+                teamService);
         assertThat(json(response)).isEqualTo(json(responseFile("user_specified_error_data_wrong_methods.json")));
     }
 

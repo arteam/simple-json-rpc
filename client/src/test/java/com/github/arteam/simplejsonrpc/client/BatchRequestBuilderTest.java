@@ -82,7 +82,8 @@ public class BatchRequestBuilderTest {
     }
 
     private static TypeReference<Player> playerTypeReference() {
-        return new TypeReference<Player>() {};
+        return new TypeReference<Player>() {
+        };
     }
 
     @Test

@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**

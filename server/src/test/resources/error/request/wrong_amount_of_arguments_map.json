@@ -1,10 +1,10 @@
 {
-    "jsonrpc": 2.0,
-    "method": "findByInitials",
-    "params": {
-        "firstName" : "Steven",
-        "lastName" : "Stamkos",
-        "number" : 91
-    },
-    "id": "7272"
+  "jsonrpc": 2.0,
+  "method": "findByInitials",
+  "params": {
+    "firstName": "Steven",
+    "lastName": "Stamkos",
+    "number": 91
+  },
+  "id": "7272"
 }

@@ -40,14 +40,14 @@ public class TeamService extends BaseService {
     private static final DateTimeFormatter fmt = ISODateTimeFormat.date().withZone(DateTimeZone.UTC);
 
     private final List<Player> players = Stream.of(
-            new Player("David", "Backes", new Team("St. Louis Blues", "NHL"), 42, Position.CENTER, date("1984-05-01"), 4.5),
-            new Player("Vladimir", "Tarasenko", new Team("St. Louis Blues", "NHL"), 91, Position.RIGHT_WINGER, date("1991-12-13"), 0.9),
-            new Player("Jack", "Allen", new Team("St. Louis Blues", "NHL"), 34, Position.GOALTENDER, date("1990-08-07"), 0.5),
-            new Player("Jay", "Bouwmeester", new Team("St. Louis Blues", "NHL"), 19, Position.DEFENDER, date("1985-08-07"), 5.4),
-            new Player("Steven", "Stamkos", new Team("Tampa Bay Lightning", "NHL"), 91, Position.CENTER, date("1990-02-07"), 7.5),
-            new Player("Ryan", "Callahan", new Team("Tampa Bay Lightning", "NHL"), 24, Position.RIGHT_WINGER, date("1985-03-21"), 5.8),
-            new Player("Ben", "Bishop", new Team("Tampa Bay Lightning", "NHL"), 30, Position.GOALTENDER, date("1986-11-21"), 2.3),
-            new Player("Victor", "Hedman", new Team("Tampa Bay Lightning", "NHL"), 77, Position.DEFENDER, date("1990-12-18"), 4.0))
+                    new Player("David", "Backes", new Team("St. Louis Blues", "NHL"), 42, Position.CENTER, date("1984-05-01"), 4.5),
+                    new Player("Vladimir", "Tarasenko", new Team("St. Louis Blues", "NHL"), 91, Position.RIGHT_WINGER, date("1991-12-13"), 0.9),
+                    new Player("Jack", "Allen", new Team("St. Louis Blues", "NHL"), 34, Position.GOALTENDER, date("1990-08-07"), 0.5),
+                    new Player("Jay", "Bouwmeester", new Team("St. Louis Blues", "NHL"), 19, Position.DEFENDER, date("1985-08-07"), 5.4),
+                    new Player("Steven", "Stamkos", new Team("Tampa Bay Lightning", "NHL"), 91, Position.CENTER, date("1990-02-07"), 7.5),
+                    new Player("Ryan", "Callahan", new Team("Tampa Bay Lightning", "NHL"), 24, Position.RIGHT_WINGER, date("1985-03-21"), 5.8),
+                    new Player("Ben", "Bishop", new Team("Tampa Bay Lightning", "NHL"), 30, Position.GOALTENDER, date("1986-11-21"), 2.3),
+                    new Player("Victor", "Hedman", new Team("Tampa Bay Lightning", "NHL"), 77, Position.DEFENDER, date("1990-12-18"), 4.0))
             .collect(Collectors.toList());
 
     @JsonRpcMethod
