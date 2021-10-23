@@ -8,26 +8,13 @@ import java.util.Date;
 
 public class Player {
 
-    @JsonProperty
-    private String firstName;
-
-    @JsonProperty
-    private String lastName;
-
-    @JsonProperty
-    private Team team;
-
-    @JsonProperty
-    private int number;
-
-    @JsonProperty
-    private Position position;
-
-    @JsonProperty
-    private Date birthDate;
-
-    @JsonProperty
-    private double capHit;
+    private final String firstName;
+    private final String lastName;
+    private final Team team;
+    private final int number;
+    private final Position position;
+    private final Date birthDate;
+    private final double capHit;
 
     @JsonCreator
     public Player(@JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName,
