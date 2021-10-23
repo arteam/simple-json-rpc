@@ -1,19 +1,16 @@
 package com.github.arteam.simplejsonrpc.client.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 
 public enum Position {
     GOALTENDER("G"), DEFENDER("D"), RIGHT_WINGER("RW"), LEFT_WINGER("LW"), CENTER("C");
 
     private static final Position[] VALUES = values();
 
-    @JsonProperty
-    private String code;
+    private final String code;
 
-    private Position(String code) {
+    Position(String code) {
         this.code = code;
     }
 

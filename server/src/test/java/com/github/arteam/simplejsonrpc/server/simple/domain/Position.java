@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.server.simple.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
@@ -13,10 +12,9 @@ public enum Position {
 
     private static final Position[] VALUES = values();
 
-    @JsonProperty
-    private String code;
+    private final String code;
 
-    private Position(String code) {
+    Position(String code) {
         this.code = code;
     }
 
