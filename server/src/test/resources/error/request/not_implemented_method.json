@@ -1,8 +1,8 @@
 {
-    "jsonrpc": 2.0,
-    "method": "findByCapHit",
-    "params": {
-        "cap": 4.5
-    },
-    "id": "7272"
+  "jsonrpc": 2.0,
+  "method": "findByCapHit",
+  "params": {
+    "cap": 4.5
+  },
+  "id": "7272"
 }

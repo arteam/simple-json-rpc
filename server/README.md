@@ -1,17 +1,20 @@
 ## JSON-RPC 2.0 server
 
-If you want to expose your service via the JSON-RPC protocol, you need to model it as a JSON-RPC service. For this you can use the `@JsonRpcService`, `@JsonRpcMethod` and `@JsonRpcParam` annotations.
+If you want to expose your service via the JSON-RPC protocol, you need to model it as a JSON-RPC service. For this you
+can use the `@JsonRpcService`, `@JsonRpcMethod` and `@JsonRpcParam` annotations.
 
 * `@JsonRpcService` marks a class as a JSON-RPC service.
 * `@JsonRpcMethod` marks a method as eligible for calling from the network.
-* `@JsonRpcParam` is a mandatory annotation for a method parameter and should contain the parameter name (this is a requirement, because Java compiler doesn't retain information about parameter names in a class file and therefore this information is not available in the runtime).
+* `@JsonRpcParam` is a mandatory annotation for a method parameter and should contain the parameter name (this is a
+  requirement, because Java compiler doesn't retain information about parameter names in a class file and therefore this
+  information is not available in the runtime).
 
 Additional annotations:
 
-* `@JsonRpcOptional` is used for marking a method parameter as an optional, so the caller is able to ignore it when invokes the method.
+* `@JsonRpcOptional` is used for marking a method parameter as an optional, so the caller is able to ignore it when
+  invokes the method.
 * `@JsonRpcError` is used for marking an exception as a JSON-RPC error.
 * `@JsonRpcErrorData` is used for marking an exception property as the `data` attribute of a JSON-RPC error.
-
 
 ```java
 @JsonRpcService
@@ -92,11 +95,16 @@ String textRequest = "{\n" +
 String response = rpcServer.handle(textRequest, teamService);
 ```
 
-See the full service [code](https://github.com/arteam/simple-json-rpc/blob/master/server/src/test/java/com/github/arteam/simplejsonrpc/server/simple/service/TeamService.java)
-and more examples in [tests](https://github.com/arteam/simple-json-rpc/blob/master/server/src/test/java/com/github/arteam/simplejsonrpc/server/simple).
+See the full
+service [code](https://github.com/arteam/simple-json-rpc/blob/master/server/src/test/java/com/github/arteam/simplejsonrpc/server/simple/service/TeamService.java)
+and more examples
+in [tests](https://github.com/arteam/simple-json-rpc/blob/master/server/src/test/java/com/github/arteam/simplejsonrpc/server/simple)
+.
 
 ## Setup
+
 Maven:
+
 ```xml
 <dependency>
    <groupId>com.github.arteam</groupId>
@@ -104,7 +112,6 @@ Maven:
    <version>1.2</version>
 </dependency>
 ```
-
 
 ## Requirements
 

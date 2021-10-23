@@ -3,7 +3,6 @@ package com.github.arteam.simplejsonrpc.server.simple.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 import java.util.Date;
 

@@ -1,411 +1,414 @@
 {
-    "add_player": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "add",
-            "params": {
-                "player": {
-                    "firstName": "Kevin",
-                    "lastName": "Shattenkirk",
-                    "team": {
-                        "name": "St. Louis Blues",
-                        "league": "NHL"
-                    },
-                    "number": 22,
-                    "position": "D",
-                    "birthDate": "1989-01-29T00:00:00.000+00:00",
-                    "capHit": 4.25
-                }
-            },
-            "id": "asd671"
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": "asd671",
-            "result": true
+  "add_player": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "add",
+      "params": {
+        "player": {
+          "firstName": "Kevin",
+          "lastName": "Shattenkirk",
+          "team": {
+            "name": "St. Louis Blues",
+            "league": "NHL"
+          },
+          "number": 22,
+          "position": "D",
+          "birthDate": "1989-01-29T00:00:00.000+00:00",
+          "capHit": 4.25
         }
+      },
+      "id": "asd671"
     },
-    "find_shattenkirk": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "findByInitials",
-            "params": {
-                "firstName": "Kevin",
-                "lastName": "Shattenkirk"
-            },
-            "id": "92739"
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": "92739",
-            "result": {
-                "firstName": "Kevin",
-                "lastName": "Shattenkirk",
-                "team": {
-                    "name": "St. Louis Blues",
-                    "league": "NHL"
-                },
-                "number": 22,
-                "position": "D",
-                "birthDate": "1989-01-29T00:00:00.000+00:00",
-                "capHit": 4.25
-            }
-        }
-    },
-    "find_player": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "findByInitials",
-            "params": {
-                "firstName": "Steven",
-                "lastName": "Stamkos"
-            },
-            "id": 43121
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 43121,
-            "result": {
-                "firstName": "Steven",
-                "lastName": "Stamkos",
-                "team": {
-                    "name": "Tampa Bay Lightning",
-                    "league": "NHL"
-                },
-                "number": 91,
-                "position": "C",
-                "birthDate": "1990-02-07T00:00:00.000+00:00",
-                "capHit": 7.5
-            }
-        }
-    },
-    "player_is_not_found": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "findByInitials",
-            "params": {
-                "firstName": "Vladimir",
-                "lastName": "Sobotka"
-            },
-            "id": 4111
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 4111,
-            "result": null
-        }
-    },
-    "find_player_array": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "findByInitials",
-            "params": ["Ben", "Bishop"],
-            "id": "dsfs1214"
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": "dsfs1214",
-            "result": {
-                "firstName": "Ben",
-                "lastName": "Bishop",
-                "team": {
-                    "name": "Tampa Bay Lightning",
-                    "league": "NHL"
-                },
-                "number": 30,
-                "position": "G",
-                "birthDate": "1986-11-21T00:00:00.000+00:00",
-                "capHit": 2.3
-            }
-        }
-    },
-    "optional_params": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "find",
-            "params": {
-                "team": {
-                    "name": "St. Louis Blues",
-                    "league": "NHL"
-                },
-                "number": 91
-            },
-            "id": "xar331"
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": "xar331",
-            "result": [
-                {
-                    "firstName": "Vladimir",
-                    "lastName": "Tarasenko",
-                    "team": {
-                        "name": "St. Louis Blues",
-                        "league": "NHL"
-                    },
-                    "number": 91,
-                    "position": "RW",
-                    "birthDate": "1991-12-13T00:00:00.000+00:00",
-                    "capHit": 0.9
-                }
-            ]
-        }
-    },
-    "find_array_null_params": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "find",
-            "params": [
-                null,
-                19,
-                {
-                    "name": "St. Louis Blues",
-                    "league": "NHL"
-                },
-                null,
-                null,
-                null,
-                null
-            ],
-            "id": "pasd81"
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": "pasd81",
-            "result": [
-                {
-                    "firstName": "Jay",
-                    "lastName": "Bouwmeester",
-                    "team": {
-                        "name": "St. Louis Blues",
-                        "league": "NHL"
-                    },
-                    "number": 19,
-                    "position": "D",
-                    "birthDate": "1985-08-07T00:00:00.000+00:00",
-                    "capHit": 5.4
-                }
-            ]
-        }
-    },
-    "findByBirthYear": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "find_by_birth_year",
-            "params": {
-                "birth_year": 1990
-            },
-            "id": 5621
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 5621,
-            "result": [
-                {
-                    "firstName": "Jack",
-                    "lastName": "Allen",
-                    "team": {
-                        "name": "St. Louis Blues",
-                        "league": "NHL"
-                    },
-                    "number": 34,
-                    "position": "G",
-                    "birthDate": "1990-08-07T00:00:00.000+00:00",
-                    "capHit": 0.5
-                },
-                {
-                    "firstName": "Steven",
-                    "lastName": "Stamkos",
-                    "team": {
-                        "name": "Tampa Bay Lightning",
-                        "league": "NHL"
-                    },
-                    "number": 91,
-                    "position": "C",
-                    "birthDate": "1990-02-07T00:00:00.000+00:00",
-                    "capHit": 7.5
-                },
-                {
-                    "firstName": "Victor",
-                    "lastName": "Hedman",
-                    "team": {
-                        "name": "Tampa Bay Lightning",
-                        "league": "NHL"
-                    },
-                    "number": 77,
-                    "position": "D",
-                    "birthDate": "1990-12-18T00:00:00.000+00:00",
-                    "capHit": 4.0
-                }
-            ]
-        }
-    },
-    "getPlayers": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "getPlayers",
-            "params": [],
-            "id": 1000
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 1000,
-            "result": [
-                {
-                    "firstName": "Ben",
-                    "lastName": "Bishop",
-                    "team": {
-                        "name": "Tampa Bay Lightning",
-                        "league": "NHL"
-                    },
-                    "number": 30,
-                    "position": "G",
-                    "birthDate": "1986-11-21T00:00:00.000+00:00",
-                    "capHit": 2.3
-                },
-                {
-                    "firstName": "Vladimir",
-                    "lastName": "Tarasenko",
-                    "team": {
-                        "name": "St. Louis Blues",
-                        "league": "NHL"
-                    },
-                    "number": 91,
-                    "position": "RW",
-                    "birthDate": "1991-12-13T00:00:00.000+00:00",
-                    "capHit": 0.9
-                },
-                {
-                    "firstName": "Jay",
-                    "lastName": "Bouwmeester",
-                    "team": {
-                        "name": "St. Louis Blues",
-                        "league": "NHL"
-                    },
-                    "number": 19,
-                    "position": "D",
-                    "birthDate": "1985-08-07T00:00:00.000+00:00",
-                    "capHit": 5.4
-                }
-            ]
-        }
-    },
-    "getContractSums": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "getContractSums",
-            "params": {
-                "contractLengths": {
-                    "Backes": 4,
-                    "Tarasenko": 3,
-                    "Allen": 2,
-                    "Bouwmeester": 5,
-                    "Stamkos": 8,
-                    "Callahan": 3,
-                    "Bishop": 4,
-                    "Hedman": 2
-                }
-            },
-            "id": 97555
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 97555,
-            "result": {
-                "Backes": 18.0,
-                "Tarasenko": 2.7,
-                "Allen": 1.0,
-                "Bouwmeester": 27.0,
-                "Stamkos": 60.0,
-                "Callahan": 17.4,
-                "Bishop": 9.2,
-                "Hedman": 8.0
-            }
-        }
-    },
-    "methodNotFound": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "getPlayer",
-            "params": [],
-            "id": 1001
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 1001,
-            "error": {
-                "code": -32601,
-                "message": "Method not found"
-            }
-        }
-    },
-    "errorWithDataAttribute": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "getErrorWithData",
-            "params": [],
-            "id": 1002
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 1002,
-            "error": {
-                "code": -32000,
-                "message": "This is an error with data attribute",
-                "data": "Error data"
-            }
-        }
-    },
-     "errorWithNullDataAttribute": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "getErrorWithNullData",
-            "params": [],
-            "id": 1003
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 1003,
-            "error": {
-                "code": -32000,
-                "message": "This is an error with null data attribute",
-                "data": null
-            }
-        }
-    },
-    "errorWithStructuredDataAttribute": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "getErrorWithStructuredData",
-            "params": [],
-            "id": 1003
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 1003,
-            "error": {
-                "code": -32000,
-                "message": "This is an error with structured data attribute",
-                "data": {
-                    "data_status": 11,
-                    "data_message": "Message"
-                }
-            }
-        }
-    },
-    "logout": {
-        "request": {
-            "jsonrpc": "2.0",
-            "method": "logout",
-            "params": {
-                "token": "fgt612"
-            },
-            "id": 29314
-        },
-        "response": {
-            "jsonrpc": "2.0",
-            "id": 29314,
-            "result": null
-        }
+    "response": {
+      "jsonrpc": "2.0",
+      "id": "asd671",
+      "result": true
     }
+  },
+  "find_shattenkirk": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "findByInitials",
+      "params": {
+        "firstName": "Kevin",
+        "lastName": "Shattenkirk"
+      },
+      "id": "92739"
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": "92739",
+      "result": {
+        "firstName": "Kevin",
+        "lastName": "Shattenkirk",
+        "team": {
+          "name": "St. Louis Blues",
+          "league": "NHL"
+        },
+        "number": 22,
+        "position": "D",
+        "birthDate": "1989-01-29T00:00:00.000+00:00",
+        "capHit": 4.25
+      }
+    }
+  },
+  "find_player": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "findByInitials",
+      "params": {
+        "firstName": "Steven",
+        "lastName": "Stamkos"
+      },
+      "id": 43121
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 43121,
+      "result": {
+        "firstName": "Steven",
+        "lastName": "Stamkos",
+        "team": {
+          "name": "Tampa Bay Lightning",
+          "league": "NHL"
+        },
+        "number": 91,
+        "position": "C",
+        "birthDate": "1990-02-07T00:00:00.000+00:00",
+        "capHit": 7.5
+      }
+    }
+  },
+  "player_is_not_found": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "findByInitials",
+      "params": {
+        "firstName": "Vladimir",
+        "lastName": "Sobotka"
+      },
+      "id": 4111
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 4111,
+      "result": null
+    }
+  },
+  "find_player_array": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "findByInitials",
+      "params": [
+        "Ben",
+        "Bishop"
+      ],
+      "id": "dsfs1214"
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": "dsfs1214",
+      "result": {
+        "firstName": "Ben",
+        "lastName": "Bishop",
+        "team": {
+          "name": "Tampa Bay Lightning",
+          "league": "NHL"
+        },
+        "number": 30,
+        "position": "G",
+        "birthDate": "1986-11-21T00:00:00.000+00:00",
+        "capHit": 2.3
+      }
+    }
+  },
+  "optional_params": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "find",
+      "params": {
+        "team": {
+          "name": "St. Louis Blues",
+          "league": "NHL"
+        },
+        "number": 91
+      },
+      "id": "xar331"
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": "xar331",
+      "result": [
+        {
+          "firstName": "Vladimir",
+          "lastName": "Tarasenko",
+          "team": {
+            "name": "St. Louis Blues",
+            "league": "NHL"
+          },
+          "number": 91,
+          "position": "RW",
+          "birthDate": "1991-12-13T00:00:00.000+00:00",
+          "capHit": 0.9
+        }
+      ]
+    }
+  },
+  "find_array_null_params": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "find",
+      "params": [
+        null,
+        19,
+        {
+          "name": "St. Louis Blues",
+          "league": "NHL"
+        },
+        null,
+        null,
+        null,
+        null
+      ],
+      "id": "pasd81"
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": "pasd81",
+      "result": [
+        {
+          "firstName": "Jay",
+          "lastName": "Bouwmeester",
+          "team": {
+            "name": "St. Louis Blues",
+            "league": "NHL"
+          },
+          "number": 19,
+          "position": "D",
+          "birthDate": "1985-08-07T00:00:00.000+00:00",
+          "capHit": 5.4
+        }
+      ]
+    }
+  },
+  "findByBirthYear": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "find_by_birth_year",
+      "params": {
+        "birth_year": 1990
+      },
+      "id": 5621
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 5621,
+      "result": [
+        {
+          "firstName": "Jack",
+          "lastName": "Allen",
+          "team": {
+            "name": "St. Louis Blues",
+            "league": "NHL"
+          },
+          "number": 34,
+          "position": "G",
+          "birthDate": "1990-08-07T00:00:00.000+00:00",
+          "capHit": 0.5
+        },
+        {
+          "firstName": "Steven",
+          "lastName": "Stamkos",
+          "team": {
+            "name": "Tampa Bay Lightning",
+            "league": "NHL"
+          },
+          "number": 91,
+          "position": "C",
+          "birthDate": "1990-02-07T00:00:00.000+00:00",
+          "capHit": 7.5
+        },
+        {
+          "firstName": "Victor",
+          "lastName": "Hedman",
+          "team": {
+            "name": "Tampa Bay Lightning",
+            "league": "NHL"
+          },
+          "number": 77,
+          "position": "D",
+          "birthDate": "1990-12-18T00:00:00.000+00:00",
+          "capHit": 4.0
+        }
+      ]
+    }
+  },
+  "getPlayers": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "getPlayers",
+      "params": [],
+      "id": 1000
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 1000,
+      "result": [
+        {
+          "firstName": "Ben",
+          "lastName": "Bishop",
+          "team": {
+            "name": "Tampa Bay Lightning",
+            "league": "NHL"
+          },
+          "number": 30,
+          "position": "G",
+          "birthDate": "1986-11-21T00:00:00.000+00:00",
+          "capHit": 2.3
+        },
+        {
+          "firstName": "Vladimir",
+          "lastName": "Tarasenko",
+          "team": {
+            "name": "St. Louis Blues",
+            "league": "NHL"
+          },
+          "number": 91,
+          "position": "RW",
+          "birthDate": "1991-12-13T00:00:00.000+00:00",
+          "capHit": 0.9
+        },
+        {
+          "firstName": "Jay",
+          "lastName": "Bouwmeester",
+          "team": {
+            "name": "St. Louis Blues",
+            "league": "NHL"
+          },
+          "number": 19,
+          "position": "D",
+          "birthDate": "1985-08-07T00:00:00.000+00:00",
+          "capHit": 5.4
+        }
+      ]
+    }
+  },
+  "getContractSums": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "getContractSums",
+      "params": {
+        "contractLengths": {
+          "Backes": 4,
+          "Tarasenko": 3,
+          "Allen": 2,
+          "Bouwmeester": 5,
+          "Stamkos": 8,
+          "Callahan": 3,
+          "Bishop": 4,
+          "Hedman": 2
+        }
+      },
+      "id": 97555
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 97555,
+      "result": {
+        "Backes": 18.0,
+        "Tarasenko": 2.7,
+        "Allen": 1.0,
+        "Bouwmeester": 27.0,
+        "Stamkos": 60.0,
+        "Callahan": 17.4,
+        "Bishop": 9.2,
+        "Hedman": 8.0
+      }
+    }
+  },
+  "methodNotFound": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "getPlayer",
+      "params": [],
+      "id": 1001
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 1001,
+      "error": {
+        "code": -32601,
+        "message": "Method not found"
+      }
+    }
+  },
+  "errorWithDataAttribute": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "getErrorWithData",
+      "params": [],
+      "id": 1002
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 1002,
+      "error": {
+        "code": -32000,
+        "message": "This is an error with data attribute",
+        "data": "Error data"
+      }
+    }
+  },
+  "errorWithNullDataAttribute": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "getErrorWithNullData",
+      "params": [],
+      "id": 1003
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 1003,
+      "error": {
+        "code": -32000,
+        "message": "This is an error with null data attribute",
+        "data": null
+      }
+    }
+  },
+  "errorWithStructuredDataAttribute": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "getErrorWithStructuredData",
+      "params": [],
+      "id": 1003
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 1003,
+      "error": {
+        "code": -32000,
+        "message": "This is an error with structured data attribute",
+        "data": {
+          "data_status": 11,
+          "data_message": "Message"
+        }
+      }
+    }
+  },
+  "logout": {
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "logout",
+      "params": {
+        "token": "fgt612"
+      },
+      "id": 29314
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 29314,
+      "result": null
+    }
+  }
 }

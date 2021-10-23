@@ -1,8 +1,11 @@
 {
-    "jsonrpc": "2.0",
-    "method": "findPlayersByNumbers",
-    "params": {
-        "numbers": ["Vladimir", "Jack"]
-    },
-    "id": "7272"
+  "jsonrpc": "2.0",
+  "method": "findPlayersByNumbers",
+  "params": {
+    "numbers": [
+      "Vladimir",
+      "Jack"
+    ]
+  },
+  "id": "7272"
 }

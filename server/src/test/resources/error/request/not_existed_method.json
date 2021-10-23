@@ -1,9 +1,9 @@
 {
-    "jsonrpc": 2.0,
-    "method": "findByName",
-    "params": {
-        "firstName" : "Steven",
-        "lastName" : "Stamkos"
-    },
-    "id": "7272"
+  "jsonrpc": 2.0,
+  "method": "findByName",
+  "params": {
+    "firstName": "Steven",
+    "lastName": "Stamkos"
+  },
+  "id": "7272"
 }

@@ -1,17 +1,17 @@
 {
-    "jsonrpc": "2.0",
-    "method": "getContractSums",
-    "params": {
-        "contractLengths": {
-            "Backes": "4 years",
-            "Tarasenko": 3,
-            "Allen": 2,
-            "Bouwmeester": 5,
-            "Stamkos": 8,
-            "Callahan": 3,
-            "Bishop": 4,
-            "Hedman": 2
-        }
-    },
-    "id": "7272"
+  "jsonrpc": "2.0",
+  "method": "getContractSums",
+  "params": {
+    "contractLengths": {
+      "Backes": "4 years",
+      "Tarasenko": 3,
+      "Allen": 2,
+      "Bouwmeester": 5,
+      "Stamkos": 8,
+      "Callahan": 3,
+      "Bishop": 4,
+      "Hedman": 2
+    }
+  },
+  "id": "7272"
 }

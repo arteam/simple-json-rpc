@@ -1,11 +1,11 @@
 {
-    "jsonrpc": 2.0,
-    "method": "findByInitials",
-    "params": {
-        "firstName" : "Steven",
-        "lastName" : "Stamkos"
-    },
-    "id": {
-        "sha" : "ca231d2"
-    }
+  "jsonrpc": 2.0,
+  "method": "findByInitials",
+  "params": {
+    "firstName": "Steven",
+    "lastName": "Stamkos"
+  },
+  "id": {
+    "sha": "ca231d2"
+  }
 }

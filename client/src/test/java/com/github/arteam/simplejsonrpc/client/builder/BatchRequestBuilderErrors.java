@@ -13,7 +13,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 /**
  * Date: 10/23/14
@@ -54,8 +57,8 @@ public class BatchRequestBuilderErrors {
     @Test
     public void testRequestWithoutReturnType() {
         assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .execute())
                 .withMessage("Return type isn't specified for request with id='1'");
     }
 
@@ -84,10 +87,10 @@ public class BatchRequestBuilderErrors {
     @Test
     public void tesKeyIdIsNotExpectedType() {
         assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .returnType(Player.class)
-                .keysType(String.class)
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .returnType(Player.class)
+                        .keysType(String.class)
+                        .execute())
                 .withMessage("Id: '1' has wrong type: 'Long'. Should be: 'String'");
     }
 
@@ -102,23 +105,23 @@ public class BatchRequestBuilderErrors {
         });
 
         assertThatIllegalStateException().isThrownBy(() ->
-                client.createBatchRequest()
-                        .add(1L, "findPlayer", "Steven", "Stamkos")
-                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                        .keysType(Long.class)
-                        .returnType(Player.class)
-                        .execute())
+                        client.createBatchRequest()
+                                .add(1L, "findPlayer", "Steven", "Stamkos")
+                                .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                                .keysType(Long.class)
+                                .returnType(Player.class)
+                                .execute())
                 .withMessage("I/O error during a request processing");
     }
 
     @Test
     public void testFailFastOnNotJsonData() {
         assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", new Name("Steven"), new Name("Stamkos"))
-                .add(2L, "findPlayer", new Name("Vladimir"), new Name("Sobotka"))
-                .keysType(Long.class)
-                .returnType(Player.class)
-                .execute())
+                        .add(1L, "findPlayer", new Name("Steven"), new Name("Stamkos"))
+                        .add(2L, "findPlayer", new Name("Vladimir"), new Name("Sobotka"))
+                        .keysType(Long.class)
+                        .returnType(Player.class)
+                        .execute())
                 .withMessageStartingWith("No serializer found");
     }
 
@@ -140,10 +143,10 @@ public class BatchRequestBuilderErrors {
             }
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .returnType(Player.class)
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                        .returnType(Player.class)
+                        .execute())
                 .withMessage("Expected array but was OBJECT");
     }
 
@@ -157,10 +160,10 @@ public class BatchRequestBuilderErrors {
             }
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .returnType(Player.class)
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                        .returnType(Player.class)
+                        .execute())
                 .withMessageStartingWith("Unable parse a JSON response");
     }
 
@@ -174,10 +177,10 @@ public class BatchRequestBuilderErrors {
             }
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .returnType(Player.class)
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                        .returnType(Player.class)
+                        .execute())
                 .withMessageStartingWith("Not a JSON-RPC response");
     }
 
@@ -206,10 +209,10 @@ public class BatchRequestBuilderErrors {
             }
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .returnType(Player.class)
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                        .returnType(Player.class)
+                        .execute())
                 .withMessageStartingWith("Bad protocol version");
     }
 
@@ -226,10 +229,10 @@ public class BatchRequestBuilderErrors {
             }
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .add(2L, "findPlayer", "Vladimir", "Sobotka")
-                .returnType(Player.class)
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .add(2L, "findPlayer", "Vladimir", "Sobotka")
+                        .returnType(Player.class)
+                        .execute())
                 .withMessageStartingWith("Neither result or error is set in response");
     }
 
@@ -258,9 +261,9 @@ public class BatchRequestBuilderErrors {
             }
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
-                .add(1L, "findPlayer", "Steven", "Stamkos")
-                .returnType(Player.class)
-                .execute())
+                        .add(1L, "findPlayer", "Steven", "Stamkos")
+                        .returnType(Player.class)
+                        .execute())
                 .withMessage("Unspecified id: '10' in response");
     }
 

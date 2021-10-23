@@ -1,34 +1,34 @@
 [
-    {
-        "jsonrpc": 2.0,
-        "method": "find_by_birth_year",
-        "params": {
-            "birthYear": "June 1990"
-        },
-        "id": "7272"
+  {
+    "jsonrpc": 2.0,
+    "method": "find_by_birth_year",
+    "params": {
+      "birthYear": "June 1990"
     },
-    {
-        "jsonrpc": 2.0,
-        "method": "privateGetPlayers",
-        "params": [],
-        "id": "7273"
+    "id": "7272"
+  },
+  {
+    "jsonrpc": 2.0,
+    "method": "privateGetPlayers",
+    "params": [],
+    "id": "7273"
+  },
+  {
+    "jsonrpc": 2.0,
+    "method": "findByInitials",
+    "params": {
+      "firstName": "Steven",
+      "lastName": "Stamkos"
     },
-    {
-        "jsonrpc": 2.0,
-        "method": "findByInitials",
-        "params": {
-            "firstName": "Steven",
-            "lastName": "Stamkos"
-        },
-        "id": {
-            "sha": "ca231d2"
-        }
-    },
-    {
-        "jsonrpc": 2.0,
-        "method": "findByCapHit",
-        "params": {
-            "cap": 4.5
-        }
+    "id": {
+      "sha": "ca231d2"
     }
+  },
+  {
+    "jsonrpc": 2.0,
+    "method": "findByCapHit",
+    "params": {
+      "cap": 4.5
+    }
+  }
 ]

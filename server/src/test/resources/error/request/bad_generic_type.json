@@ -1,6 +1,15 @@
 {
-                "jsonrpc": "2.0",
-                "method": "findPlayersByFirstNames",
-                "params": {"names": [{"name":"Vladimir"},{"name":"Jack"}]},
-                "id": "7272"
+  "jsonrpc": "2.0",
+  "method": "findPlayersByFirstNames",
+  "params": {
+    "names": [
+      {
+        "name": "Vladimir"
+      },
+      {
+        "name": "Jack"
+      }
+    ]
+  },
+  "id": "7272"
 }

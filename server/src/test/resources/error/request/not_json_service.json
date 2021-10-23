@@ -1,6 +1,6 @@
 {
-    "jsonrpc": "2.0",
-    "method": "isAlive",
-    "params": {},
-    "id": "7272"
+  "jsonrpc": "2.0",
+  "method": "isAlive",
+  "params": {},
+  "id": "7272"
 }

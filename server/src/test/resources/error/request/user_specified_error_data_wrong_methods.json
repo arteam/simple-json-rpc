@@ -1,9 +1,9 @@
 {
-    "jsonrpc": "2.0",
-    "method": "errorDataWrongMethodsLogin",
-    "params": {
-        "login": "secret",
-        "password": "stuff"
-    },
-    "id": "7272"
+  "jsonrpc": "2.0",
+  "method": "errorDataWrongMethodsLogin",
+  "params": {
+    "login": "secret",
+    "password": "stuff"
+  },
+  "id": "7272"
 }
