@@ -49,7 +49,7 @@ class Reflections {
                                                          @NotNull Class<T> clazz) {
         if (annotations != null) {
             for (Annotation annotation : annotations) {
-                if (annotation.annotationType().equals(clazz)) {
+                if (annotation != null && annotation.annotationType().equals(clazz)) {
                     return (T) annotation;
                 }
             }
