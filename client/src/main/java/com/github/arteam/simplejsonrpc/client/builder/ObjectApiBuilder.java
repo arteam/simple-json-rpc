@@ -94,14 +94,14 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * Get request params in a JSON representation (map or array)
      */
     @NotNull
-    private JsonNode getParams(@NotNull MethodMetadata method, @NotNull Object[] args,
+    private JsonNode getParams(@NotNull MethodMetadata method, @Nullable Object[] args,
                                @NotNull ParamsType paramsType) {
         ObjectNode paramsAsMap = mapper.createObjectNode();
         ArrayNode paramsAsArray = mapper.createArrayNode();
         for (String paramName : method.getParams().keySet()) {
             ParameterMetadata parameterMetadata = method.getParams().get(paramName);
             int index = parameterMetadata.getIndex();
-            JsonNode jsonArg = mapper.valueToTree(args[index]);
+            JsonNode jsonArg = mapper.valueToTree(args != null ? args[index] : null);
             if (jsonArg == null || jsonArg == NullNode.instance) {
                 if (parameterMetadata.isOptional()) {
                     if (paramsType == ParamsType.ARRAY) {
