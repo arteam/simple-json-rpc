@@ -314,7 +314,12 @@ public class JsonRpcServer {
             return new ErrorResponse(id, INVALID_PARAMS);
         }
 
-        Object result = method.getMethod().invoke(service, methodParams);
+        Object result;
+        try {
+            result = method.getMethodHandle().bindTo(service).invokeWithArguments(methodParams);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
         return new SuccessResponse(id, result);
     }
 
