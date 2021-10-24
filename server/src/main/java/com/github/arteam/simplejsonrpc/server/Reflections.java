@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -30,6 +32,7 @@ import java.util.Optional;
 class Reflections {
 
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
+    private static final MethodHandles.Lookup METHOD_HANDLES_LOOKUP = MethodHandles.lookup();
 
     private Reflections() {
     }
@@ -67,7 +70,6 @@ class Reflections {
     @NotNull
     public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
         ImmutableMap.Builder<String, MethodMetadata> methodsMetadata = ImmutableMap.builder();
-
         Class<?> searchType = clazz;
         // Search through the class hierarchy
         while (searchType != null) {
@@ -98,7 +100,13 @@ class Reflections {
                 }
 
                 method.setAccessible(true);
-                methodsMetadata.put(rpcMethodName, new MethodMetadata(rpcMethodName, method, methodParams));
+                MethodHandle methodHandle;
+                try {
+                    methodHandle = METHOD_HANDLES_LOOKUP.unreflect(method);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                methodsMetadata.put(rpcMethodName, new MethodMetadata(rpcMethodName, methodHandle, methodParams));
             }
             searchType = searchType.getSuperclass();
         }
@@ -152,8 +160,8 @@ class Reflections {
 
     static ErrorDataResolver buildErrorDataResolver(Class<? extends Throwable> throwableClass) {
         Class<?> c = throwableClass;
-        Field dataField = null;
-        Method dataMethod = null;
+        MethodHandle dataField = null;
+        MethodHandle dataMethod = null;
         while (c != null) {
             for (Field field : c.getDeclaredFields()) {
                 if (field.isAnnotationPresent(JsonRpcErrorData.class)) {
@@ -162,7 +170,11 @@ class Reflections {
                                 "@JsonRpcErrorData annotated property in " + c.getName());
                     }
                     field.setAccessible(true);
-                    dataField = field;
+                    try {
+                        dataField = METHOD_HANDLES_LOOKUP.unreflectGetter(field);
+                    } catch (IllegalAccessException e) {
+                        throw new IllegalStateException(e);
+                    }
                 }
             }
             for (Method method : c.getDeclaredMethods()) {
@@ -180,17 +192,33 @@ class Reflections {
                                 "@JsonRpcErrorData annotated property in " + c.getName());
                     }
                     method.setAccessible(true);
-                    dataMethod = method;
+                    try {
+                        dataMethod = METHOD_HANDLES_LOOKUP.unreflect(method);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
             c = c.getSuperclass();
         }
         if (dataField != null) {
-            Field finalDataField = dataField;
-            return t -> Optional.ofNullable(finalDataField.get(t));
+            MethodHandle finalDataField = dataField;
+            return t -> {
+                try {
+                    return Optional.ofNullable(finalDataField.invoke(t));
+                } catch (Throwable e) {
+                    throw new IllegalStateException(e);
+                }
+            };
         } else if (dataMethod != null) {
-            Method finalDataMethod = dataMethod;
-            return t -> Optional.ofNullable(finalDataMethod.invoke(t));
+            MethodHandle finalDataMethod = dataMethod;
+            return t -> {
+                try {
+                    return Optional.ofNullable(finalDataMethod.invoke(t));
+                } catch (Throwable e) {
+                    throw new IllegalStateException(e);
+                }
+            };
         } else {
             return t -> Optional.empty();
         }

@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
 
 /**
  * Date: 8/1/14
@@ -20,10 +20,10 @@ public class MethodMetadata {
     private final String name;
 
     /**
-     * Actual method
+     * Actual method handle
      */
     @NotNull
-    private final Method method;
+    private final MethodHandle methodHandle;
 
     /**
      * Map of method params by RPC name
@@ -31,10 +31,10 @@ public class MethodMetadata {
     @NotNull
     private final ImmutableMap<String, ParameterMetadata> params;
 
-    public MethodMetadata(@NotNull String name, @NotNull Method method,
+    public MethodMetadata(@NotNull String name, @NotNull MethodHandle methodHandle,
                           @NotNull ImmutableMap<String, ParameterMetadata> params) {
         this.name = name;
-        this.method = method;
+        this.methodHandle = methodHandle;
         this.params = params;
     }
 
@@ -44,8 +44,8 @@ public class MethodMetadata {
     }
 
     @NotNull
-    public Method getMethod() {
-        return method;
+    public MethodHandle getMethodHandle() {
+        return methodHandle;
     }
 
     @NotNull
@@ -57,7 +57,7 @@ public class MethodMetadata {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", name)
-                .add("method", method)
+                .add("method", methodHandle)
                 .add("params", params)
                 .toString();
     }
