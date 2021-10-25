@@ -20,7 +20,6 @@ import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
 import com.google.common.base.Defaults;
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -35,6 +34,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Date: 07.06.14
@@ -139,23 +141,31 @@ public class JsonRpcServer {
      * @param service     actual service for the request processing
      * @return text representation of a JSON-RPC response
      */
-    @NotNull
     public String handle(@NotNull String textRequest, @NotNull Object service) {
+        return handle(service, () -> mapper.readTree(textRequest), this::toJson, () -> "");
+    }
+
+    public byte[] handle(@NotNull byte[] byteRequest, @NotNull Object service) {
+        return handle(service, () -> mapper.readTree(byteRequest), this::toJsonByteArray, () -> new byte[]{});
+    }
+
+    private <T> T handle(@NotNull Object service, JsonNodeSupplier rootRequestSupplier, Function<Object, T> jsonConverter,
+                         Supplier<T> emptyResponse) {
         JsonNode rootRequest;
         try {
-            rootRequest = mapper.readTree(textRequest);
+            rootRequest = rootRequestSupplier.get();
             if (log.isDebugEnabled()) {
                 log.debug("Request : {}", mapper.writeValueAsString(rootRequest));
             }
         } catch (IOException e) {
             log.error("Bad json request", e);
-            return toJson(new ErrorResponse(PARSE_ERROR));
+            return jsonConverter.apply(new ErrorResponse(PARSE_ERROR));
         }
 
         // Check if a single request or a batch
         if (rootRequest.isObject()) {
             Response response = handleWrapper(rootRequest, service);
-            return isNotification(rootRequest, response) ? "" : toJson(response);
+            return isNotification(rootRequest, response) ? emptyResponse.get() : jsonConverter.apply(response);
         } else if (rootRequest.isArray() && rootRequest.size() > 0) {
             ArrayNode responses = mapper.createArrayNode();
             for (JsonNode request : (ArrayNode) rootRequest) {
@@ -165,11 +175,11 @@ public class JsonRpcServer {
                 }
             }
 
-            return responses.size() > 0 ? toJson(responses) : "";
+            return responses.size() > 0 ? jsonConverter.apply(responses) : emptyResponse.get();
         }
 
         log.error("Invalid JSON-RPC request: " + rootRequest);
-        return toJson(new ErrorResponse(INVALID_REQUEST));
+        return jsonConverter.apply(new ErrorResponse(INVALID_REQUEST));
     }
 
     /**
@@ -403,7 +413,6 @@ public class JsonRpcServer {
      * @param value object
      * @return JSON representation
      */
-    @NotNull
     private String toJson(@NotNull Object value) {
         try {
             String response = mapper.writeValueAsString(value);
@@ -415,5 +424,24 @@ public class JsonRpcServer {
             log.error("Unable write json: " + value, e);
             throw new IllegalStateException(e);
         }
+    }
+
+    private byte[] toJsonByteArray(@NotNull Object value) {
+        try {
+            byte[] response = mapper.writeValueAsBytes(value);
+            if (log.isDebugEnabled()) {
+                log.debug("Response: {}", Arrays.toString(response));
+            }
+            return response;
+        } catch (JsonProcessingException e) {
+            log.error("Unable write json: " + value, e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+
+    @FunctionalInterface
+    private interface JsonNodeSupplier {
+        JsonNode get() throws IOException;
     }
 }
