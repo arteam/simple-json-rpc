@@ -31,7 +31,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -147,6 +150,12 @@ public class JsonRpcServer {
 
     public byte[] handle(@NotNull byte[] byteRequest, @NotNull Object service) {
         return handle(service, () -> mapper.readTree(byteRequest), this::toJsonByteArray, () -> new byte[]{});
+    }
+
+    public OutputStream handle(@NotNull InputStream requestInputStream, OutputStream responseOutputStream,
+                               @NotNull Object service) {
+        return handle(service, () -> mapper.readTree(requestInputStream),
+                v -> toJsonOutputStream(v, responseOutputStream), ByteArrayOutputStream::new);
     }
 
     private <T> T handle(@NotNull Object service, JsonNodeSupplier rootRequestSupplier, Function<Object, T> jsonConverter,
@@ -434,6 +443,16 @@ public class JsonRpcServer {
             }
             return response;
         } catch (JsonProcessingException e) {
+            log.error("Unable write json: " + value, e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private OutputStream toJsonOutputStream(@NotNull Object value, OutputStream outputStream) {
+        try {
+            mapper.writeValue(outputStream, value);
+            return outputStream;
+        } catch (IOException e) {
             log.error("Unable write json: " + value, e);
             throw new IllegalStateException(e);
         }
