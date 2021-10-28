@@ -2,6 +2,7 @@ package com.github.arteam.simplejsonrpc.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,13 +24,13 @@ public class Request {
     @NotNull
     private final JsonNode params;
 
-    @NotNull
+    @Nullable
     private final ValueNode id;
 
     public Request(@JsonProperty("jsonrpc") @Nullable String jsonrpc,
                    @JsonProperty("method") @Nullable String method,
                    @JsonProperty("params") @NotNull JsonNode params,
-                   @JsonProperty("id") @NotNull ValueNode id) {
+                   @JsonProperty("id") @Nullable ValueNode id) {
         this.jsonrpc = jsonrpc;
         this.method = method;
         this.id = id;
@@ -48,7 +49,7 @@ public class Request {
 
     @NotNull
     public ValueNode getId() {
-        return id;
+        return id != null ? id : NullNode.getInstance();
     }
 
     @NotNull
