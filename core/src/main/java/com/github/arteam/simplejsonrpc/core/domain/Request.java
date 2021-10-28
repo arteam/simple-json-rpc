@@ -21,7 +21,7 @@ public class Request {
     @Nullable
     private final String method;
 
-    @NotNull
+    @Nullable
     private final JsonNode params;
 
     @Nullable
@@ -29,7 +29,7 @@ public class Request {
 
     public Request(@JsonProperty("jsonrpc") @Nullable String jsonrpc,
                    @JsonProperty("method") @Nullable String method,
-                   @JsonProperty("params") @NotNull JsonNode params,
+                   @JsonProperty("params") @Nullable JsonNode params,
                    @JsonProperty("id") @Nullable ValueNode id) {
         this.jsonrpc = jsonrpc;
         this.method = method;
@@ -54,7 +54,7 @@ public class Request {
 
     @NotNull
     public JsonNode getParams() {
-        return params;
+        return params != null ? params : NullNode.getInstance();
     }
 
     @Override
