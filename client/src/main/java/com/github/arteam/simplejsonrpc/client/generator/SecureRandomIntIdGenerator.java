@@ -3,8 +3,9 @@ package com.github.arteam.simplejsonrpc.client.generator;
 /**
  * Date: 1/12/15
  * Time: 11:38 PM
+ * <p>
  * Generates secure random positive integers under limit
- * By default limit is 65536
+ * By default the limit is 65536
  */
 public class SecureRandomIntIdGenerator extends SecureRandomIdGenerator<Integer> {
 
