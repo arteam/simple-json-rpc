@@ -2,7 +2,6 @@ package com.github.arteam.simplejsonrpc.client.builder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.client.Transport;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Date: 8/17/14
@@ -24,7 +23,7 @@ public class NotificationRequestBuilder {
      * @param transport transport for request performing
      * @param mapper    mapper for JSON processing
      */
-    public NotificationRequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
+    public NotificationRequestBuilder(Transport transport, ObjectMapper mapper) {
         requestBuilder = new RequestBuilder<Void>(transport, mapper);
     }
 
@@ -43,8 +42,7 @@ public class NotificationRequestBuilder {
      * @param method a request method
      * @return new builder
      */
-    @NotNull
-    public NotificationRequestBuilder method(@NotNull String method) {
+    public NotificationRequestBuilder method(String method) {
         return new NotificationRequestBuilder(requestBuilder.method(method));
     }
 
@@ -55,8 +53,7 @@ public class NotificationRequestBuilder {
      * @param value parameter value
      * @return new builder
      */
-    @NotNull
-    public NotificationRequestBuilder param(@NotNull String name, @NotNull Object value) {
+    public NotificationRequestBuilder param(String name, Object value) {
         return new NotificationRequestBuilder(requestBuilder.param(name, value));
     }
 
@@ -67,8 +64,7 @@ public class NotificationRequestBuilder {
      * @param values array of parameters
      * @return new builder
      */
-    @NotNull
-    public NotificationRequestBuilder params(@NotNull Object... values) {
+    public NotificationRequestBuilder params(Object... values) {
         return new NotificationRequestBuilder(requestBuilder.params(values));
     }
 

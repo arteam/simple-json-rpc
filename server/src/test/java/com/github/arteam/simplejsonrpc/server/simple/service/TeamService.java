@@ -16,7 +16,6 @@ import com.github.arteam.simplejsonrpc.server.simple.exception.ExceptionWithData
 import com.github.arteam.simplejsonrpc.server.simple.exception.ExceptionWithWrongMethods;
 import com.github.arteam.simplejsonrpc.server.simple.exception.TeamServiceAuthException;
 import com.google.common.collect.Maps;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -75,11 +74,11 @@ public class TeamService extends BaseService {
     @JsonRpcMethod
     public List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable Position position,
                              @JsonRpcOptional @JsonRpcParam("number") @Nullable int number,
-                             @JsonRpcOptional @JsonRpcParam("team") @NotNull Optional<Team> team,
+                             @JsonRpcOptional @JsonRpcParam("team") Optional<Team> team,
                              @JsonRpcOptional @JsonRpcParam("firstName") @Nullable String firstName,
                              @JsonRpcOptional @JsonRpcParam("lastName") @Nullable String lastName,
                              @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable Date birthDate,
-                             @JsonRpcOptional @JsonRpcParam("capHit") @NotNull Optional<Double> capHit) {
+                             @JsonRpcOptional @JsonRpcParam("capHit") Optional<Double> capHit) {
         return players.stream().filter(player -> {
             if (position != null && !player.getPosition().equals(position)) return false;
             if (number != 0 && player.getNumber() != number) return false;

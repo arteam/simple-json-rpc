@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.client.metadata;
 
 import com.github.arteam.simplejsonrpc.client.ParamsType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -13,7 +12,6 @@ import java.util.Map;
  */
 public class MethodMetadata {
 
-    @NotNull
     private final String name;
 
     @Nullable
@@ -22,21 +20,18 @@ public class MethodMetadata {
     /**
      * Map of method params by RPC name
      */
-    @NotNull
     private final Map<String, ParameterMetadata> params;
 
-    public MethodMetadata(@NotNull String name, @Nullable ParamsType paramsType, @NotNull Map<String, ParameterMetadata> params) {
+    public MethodMetadata(String name, @Nullable ParamsType paramsType, Map<String, ParameterMetadata> params) {
         this.params = params;
         this.name = name;
         this.paramsType = paramsType;
     }
 
-    @NotNull
     public Map<String, ParameterMetadata> getParams() {
         return params;
     }
 
-    @NotNull
     public String getName() {
         return name;
     }

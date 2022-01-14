@@ -10,7 +10,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
@@ -45,11 +44,11 @@ public interface TeamService extends BaseService {
     @JsonRpcMethod
     List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable Position position,
                       @JsonRpcOptional @JsonRpcParam("number") int number,
-                      @JsonRpcOptional @JsonRpcParam("team") @NotNull Optional<Team> team,
+                      @JsonRpcOptional @JsonRpcParam("team") Optional<Team> team,
                       @JsonRpcOptional @JsonRpcParam("firstName") @Nullable String firstName,
                       @JsonRpcOptional @JsonRpcParam("lastName") @Nullable String lastName,
                       @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable Date birthDate,
-                      @JsonRpcOptional @JsonRpcParam("capHit") @NotNull Optional<Double> capHit);
+                      @JsonRpcOptional @JsonRpcParam("capHit") Optional<Double> capHit);
 
     @JsonRpcMethod
     Player findByCapHit(@JsonRpcParam("cap") double capHit);

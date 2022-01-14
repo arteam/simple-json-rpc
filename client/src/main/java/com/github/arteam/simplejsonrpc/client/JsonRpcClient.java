@@ -6,7 +6,6 @@ import com.github.arteam.simplejsonrpc.client.builder.NotificationRequestBuilder
 import com.github.arteam.simplejsonrpc.client.builder.ObjectApiBuilder;
 import com.github.arteam.simplejsonrpc.client.builder.RequestBuilder;
 import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
 
@@ -21,13 +20,11 @@ public class JsonRpcClient {
     /**
      * Transport for performing JSON-RPC requests and returning responses
      */
-    @NotNull
     private Transport transport;
 
     /**
      * JSON mapper for conversion between JSON and Java types
      */
-    @NotNull
     private ObjectMapper mapper;
 
     /**
@@ -35,7 +32,7 @@ public class JsonRpcClient {
      *
      * @param transport transport implementation
      */
-    public JsonRpcClient(@NotNull Transport transport) {
+    public JsonRpcClient(Transport transport) {
         this(transport, new ObjectMapper());
     }
 
@@ -45,7 +42,7 @@ public class JsonRpcClient {
      * @param transport transport implementation
      * @param mapper    JSON mapper
      */
-    public JsonRpcClient(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
+    public JsonRpcClient(Transport transport, ObjectMapper mapper) {
         this.transport = transport;
         this.mapper = mapper;
     }
@@ -55,7 +52,6 @@ public class JsonRpcClient {
      *
      * @return request builder
      */
-    @NotNull
     public RequestBuilder<Object> createRequest() {
         return new RequestBuilder<Object>(transport, mapper);
     }
@@ -65,7 +61,6 @@ public class JsonRpcClient {
      *
      * @return notification request builder
      */
-    @NotNull
     public NotificationRequestBuilder createNotification() {
         return new NotificationRequestBuilder(transport, mapper);
     }
@@ -75,7 +70,6 @@ public class JsonRpcClient {
      *
      * @return batch request builder
      */
-    @NotNull
     public BatchRequestBuilder<?, ?> createBatchRequest() {
         return new BatchRequestBuilder<Object, Object>(transport, mapper);
     }
@@ -88,8 +82,7 @@ public class JsonRpcClient {
      * @return a new proxy
      */
     @SuppressWarnings("unchecked")
-    @NotNull
-    public <T> T onDemand(@NotNull Class<T> clazz) {
+    public <T> T onDemand(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, null, null));
     }
@@ -104,8 +97,7 @@ public class JsonRpcClient {
      * @return a new proxy
      */
     @SuppressWarnings("unchecked")
-    @NotNull
-    public <T> T onDemand(@NotNull Class<T> clazz, @NotNull IdGenerator<?> idGenerator) {
+    public <T> T onDemand(Class<T> clazz, IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, null, idGenerator));
     }
@@ -121,8 +113,7 @@ public class JsonRpcClient {
      * @return a new proxy
      */
     @SuppressWarnings("unchecked")
-    @NotNull
-    public <T> T onDemand(@NotNull Class<T> clazz, @NotNull ParamsType paramsType) {
+    public <T> T onDemand(Class<T> clazz, ParamsType paramsType) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, paramsType, null));
     }
@@ -140,8 +131,7 @@ public class JsonRpcClient {
      * @return a new proxy
      */
     @SuppressWarnings("unchecked")
-    @NotNull
-    public <T> T onDemand(Class<T> clazz, @NotNull ParamsType paramsType, @NotNull IdGenerator<?> idGenerator) {
+    public <T> T onDemand(Class<T> clazz, ParamsType paramsType, IdGenerator<?> idGenerator) {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz},
                 new ObjectApiBuilder(clazz, transport, mapper, paramsType, idGenerator));
     }

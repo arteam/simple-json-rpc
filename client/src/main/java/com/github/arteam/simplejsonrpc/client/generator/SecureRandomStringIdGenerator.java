@@ -1,7 +1,5 @@
 package com.github.arteam.simplejsonrpc.client.generator;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Date: 12/30/14
  * Time: 11:45 PM
@@ -48,8 +46,7 @@ public class SecureRandomStringIdGenerator extends SecureRandomIdGenerator<Strin
      * @param source source chunk of data
      * @return string representation of the chunk as HEX values
      */
-    @NotNull
-    private static String hexString(@NotNull byte[] source) {
+    private static String hexString(byte[] source) {
         char[] result = new char[source.length * 2];
         for (int i = 0; i < source.length; i++) {
             int unsigned = source[i] & 0xFF;
