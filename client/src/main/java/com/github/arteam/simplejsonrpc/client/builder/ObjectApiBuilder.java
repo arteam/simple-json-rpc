@@ -34,7 +34,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     private ParamsType userParamsType;
 
     @Nullable
-    private IdGenerator userIdGenerator;
+    private IdGenerator<?> userIdGenerator;
 
     private ClassMetadata classMetadata;
 
@@ -48,7 +48,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * @param userIdGenerator custom id generator
      */
     public ObjectApiBuilder(Class<?> clazz, Transport transport, ObjectMapper mapper,
-                            @Nullable ParamsType userParamsType, @Nullable IdGenerator userIdGenerator) {
+                            @Nullable ParamsType userParamsType, @Nullable IdGenerator<?> userIdGenerator) {
         super(transport, mapper);
         this.classMetadata = Reflections.getClassMetadata(clazz);
         this.userParamsType = userParamsType;
