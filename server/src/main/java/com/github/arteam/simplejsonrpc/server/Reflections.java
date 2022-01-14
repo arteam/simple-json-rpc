@@ -107,7 +107,7 @@ class Reflections {
             searchType = searchType.getSuperclass();
         }
 
-        boolean isService = getAnnotation(clazz.getAnnotations(), JsonRpcService.class) != null;
+        boolean isService = getAnnotation(clazz != null ? clazz.getAnnotations() : null, JsonRpcService.class) != null;
         try {
             return new ClassMetadata(isService, methodsMetadata.build());
         } catch (IllegalArgumentException e) {

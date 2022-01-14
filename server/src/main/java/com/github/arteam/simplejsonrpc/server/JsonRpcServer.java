@@ -26,6 +26,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,7 @@ public class JsonRpcServer {
     private static final String VERSION = "2.0";
 
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     /**
      * Default Cache params specification
@@ -78,11 +79,11 @@ public class JsonRpcServer {
     /**
      * Cache of classes metadata
      */
-    private LoadingCache<Class<?>, ClassMetadata> classesMetadata;
+    private final LoadingCache<Class<?>, ClassMetadata> classesMetadata;
     /**
      * Cache of classes metadata
      */
-    private LoadingCache<Class<? extends Throwable>, ErrorDataResolver> dataResolvers;
+    private final LoadingCache<Class<? extends Throwable>, ErrorDataResolver> dataResolvers;
 
     /**
      * Init JSON-RPC server
@@ -95,14 +96,14 @@ public class JsonRpcServer {
         classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
                 new CacheLoader<Class<?>, ClassMetadata>() {
                     @Override
-                    public ClassMetadata load(Class<?> clazz) throws Exception {
+                    public @NotNull ClassMetadata load(@NotNull Class<?> clazz) throws Exception {
                         return Reflections.getClassMetadata(clazz);
                     }
                 });
         dataResolvers = CacheBuilder.from(cacheBuilderSpec).build(
                 new CacheLoader<Class<? extends Throwable>, ErrorDataResolver>() {
                     @Override
-                    public ErrorDataResolver load(Class<? extends Throwable> clazz) throws Exception {
+                    public @NotNull ErrorDataResolver load(@NotNull Class<? extends Throwable> clazz) throws Exception {
                         return Reflections.buildErrorDataResolver(clazz);
                     }
                 });
@@ -176,7 +177,7 @@ public class JsonRpcServer {
             return isNotification(rootRequest, response) ? emptyResponse.get() : jsonConverter.apply(response);
         } else if (rootRequest.isArray() && rootRequest.size() > 0) {
             ArrayNode responses = mapper.createArrayNode();
-            for (JsonNode request : (ArrayNode) rootRequest) {
+            for (JsonNode request : rootRequest) {
                 Response response = handleWrapper(request, service);
                 if (!isNotification(request, response)) {
                     responses.add(mapper.convertValue(response, ObjectNode.class));
@@ -244,7 +245,7 @@ public class JsonRpcServer {
     /**
      * Handles a runtime exception. If root exception is marked with {@link JsonRpcError} annotation,
      * it will be converted to appropriate error message.
-     * Otherwise "Internal error" message will be returned.
+     * Otherwise, "Internal error" message will be returned.
      *
      * @param request JSON-RPC request as a Java object
      * @param e       invocation exception
@@ -269,7 +270,7 @@ public class JsonRpcServer {
         try {
             data = dataResolvers.get(rootCause.getClass())
                     .resolveData(rootCause)
-                    .map((Function<Object, JsonNode>) input -> mapper.valueToTree(input))
+                    .map((Function<Object, JsonNode>) mapper::valueToTree)
                     .orElse(null);
         } catch (Exception e1) {
             log.error("Error while processing error data: ", e1);
@@ -411,7 +412,7 @@ public class JsonRpcServer {
     }
 
     /**
-     * Utility method for converting an object to JSON that doesn't throws an unchecked exception
+     * Utility method for converting an object to JSON that doesn't throw an unchecked exception
      *
      * @param value object
      * @return JSON representation

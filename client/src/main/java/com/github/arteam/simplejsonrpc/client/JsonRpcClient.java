@@ -21,12 +21,12 @@ public class JsonRpcClient {
     /**
      * Transport for performing JSON-RPC requests and returning responses
      */
-    private Transport transport;
+    private final Transport transport;
 
     /**
      * JSON mapper for conversion between JSON and Java types
      */
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     /**
      * Constructs a new JSON-RPC client with a specified transport
@@ -54,7 +54,7 @@ public class JsonRpcClient {
      * @return request builder
      */
     public RequestBuilder<Object> createRequest() {
-        return new RequestBuilder<Object>(transport, mapper);
+        return new RequestBuilder<>(transport, mapper);
     }
 
     /**
@@ -72,7 +72,7 @@ public class JsonRpcClient {
      * @return batch request builder
      */
     public BatchRequestBuilder<?, ?> createBatchRequest() {
-        return new BatchRequestBuilder<Object, Object>(transport, mapper);
+        return new BatchRequestBuilder<>(transport, mapper);
     }
 
     /**

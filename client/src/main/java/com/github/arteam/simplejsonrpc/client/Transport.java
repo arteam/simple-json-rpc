@@ -17,5 +17,5 @@ public interface Transport {
      * @return JSON-RPC response as a string
      * @throws IOException if an I/O error happens during transfer
      */
-    public String pass(String request) throws IOException;
+    String pass(String request) throws IOException;
 }

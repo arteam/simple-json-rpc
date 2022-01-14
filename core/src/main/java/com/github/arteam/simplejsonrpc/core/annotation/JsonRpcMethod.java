@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 public @interface JsonRpcMethod {
 
     /**
-     * Method RPC name. By default the actual method name is used.
+     * Method RPC name. By default, the actual method name is used.
      *
      * @return method RPC name
      */

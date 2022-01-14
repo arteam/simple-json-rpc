@@ -8,12 +8,13 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
 import com.github.arteam.simplejsonrpc.server.simple.util.RequestResponse;
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,19 +25,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcServiceTest {
 
-    private static ObjectMapper userMapper = new ObjectMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    private static final ObjectMapper userMapper = new ObjectMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static Map<String, RequestResponse> testData;
 
-    private static JsonRpcServer rpcServer = JsonRpcServer.withMapper(userMapper);
-    private static TeamService teamService = new TeamService();
+    private static final JsonRpcServer rpcServer = JsonRpcServer.withMapper(userMapper);
+    private static final TeamService teamService = new TeamService();
 
     @BeforeAll
+    @SuppressWarnings("UnstableApiUsage")
     public static void init() throws Exception {
         userMapper.registerModule(new GuavaModule());
         userMapper.registerModule(new Jdk8Module());
-        testData = new ObjectMapper().readValue(Resources.toString(JsonRpcServiceTest.class.getResource("/test_data.json"), Charsets.UTF_8),
-                TypeFactory.defaultInstance()
-                        .constructMapType(Map.class,
+        testData = new ObjectMapper()
+                .readValue(Resources.toString(Objects.requireNonNull(JsonRpcServiceTest.class.getResource("/test_data.json")), StandardCharsets.UTF_8),
+                        TypeFactory.defaultInstance().constructMapType(Map.class,
                                 TypeFactory.defaultInstance().constructType(String.class),
                                 TypeFactory.defaultInstance().constructType(RequestResponse.class)));
     }

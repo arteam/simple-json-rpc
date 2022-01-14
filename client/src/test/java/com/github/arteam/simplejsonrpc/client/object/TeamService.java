@@ -41,6 +41,7 @@ public interface TeamService extends BaseService {
     Optional<Player> optionalFindByInitials(@JsonRpcParam("firstName") String firstName,
                                             @JsonRpcParam("lastName") String lastName);
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @JsonRpcMethod
     List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable Position position,
                       @JsonRpcOptional @JsonRpcParam("number") int number,
@@ -60,7 +61,7 @@ public interface TeamService extends BaseService {
     List<Player> findPlayersByNumbers(@JsonRpcParam("numbers") int... numbers);
 
     @JsonRpcMethod
-    <T> List<Player> genericFindPlayersByNumbers(@JsonRpcParam("numbers") T... numbers);
+    <T> List<Player> genericFindPlayersByNumbers(@JsonRpcParam("numbers") final T... numbers);
 
     @JsonRpcMethod
     LinkedHashMap<String, Double> getContractSums(@JsonRpcParam("contractLengths") Map<String, ? extends Number> contractLengths);

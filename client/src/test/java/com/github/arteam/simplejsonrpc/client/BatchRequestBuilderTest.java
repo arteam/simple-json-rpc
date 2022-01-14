@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,7 @@ public class BatchRequestBuilderTest {
 
     private static Map<String, RequestResponse> requestsResponses;
 
-    ObjectMapper mapper = new ObjectMapper()
+    final ObjectMapper mapper = new ObjectMapper()
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .registerModule(new GuavaModule());
 
@@ -39,17 +38,13 @@ public class BatchRequestBuilderTest {
 
     private JsonRpcClient initClient(String testName) {
         final RequestResponse requestResponse = requestsResponses.get(testName);
-        return new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                System.out.println(request);
-                JsonNode requestNode = mapper.readTree(request);
-                assertThat(requestNode).isEqualTo(requestResponse.request);
-                String response = mapper.writeValueAsString(requestResponse.response);
-                System.out.println(response);
-                return response;
-            }
+        return new JsonRpcClient(request -> {
+            System.out.println(request);
+            JsonNode requestNode = mapper.readTree(request);
+            assertThat(requestNode).isEqualTo(requestResponse.request);
+            String response = mapper.writeValueAsString(requestResponse.response);
+            System.out.println(response);
+            return response;
         }, mapper);
     }
 
@@ -164,7 +159,7 @@ public class BatchRequestBuilderTest {
     public void testDifferentRequests() {
         JsonRpcClient client = initClient("different_requests");
         Map<Integer, ?> result = client.createBatchRequest()
-                .add(12000, "isAlive", new HashMap<String, Object>(), Boolean.class)
+                .add(12000, "isAlive", new HashMap<>(), Boolean.class)
                 .add(12001, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
                 .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {
                 })
@@ -184,7 +179,7 @@ public class BatchRequestBuilderTest {
     public void testLongIds() {
         JsonRpcClient client = initClient("different_requests");
         Map<Long, ?> result = client.createBatchRequest()
-                .add(12000L, "isAlive", new HashMap<String, Object>(), Boolean.class)
+                .add(12000L, "isAlive", new HashMap<>(), Boolean.class)
                 .add(12001L, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
                 .add(12002L, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {
                 })

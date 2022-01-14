@@ -93,7 +93,7 @@ the `@JsonRpcService`, `@JsonRpcMethod` and `@JsonRpcParam` annotations.
 
 * `@JsonRpcService` marks an interface as a JSON-RPC service.
 * `@JsonRpcMethod` marks a method as a JSON-RPC method.
-* `@JsonRpcParam` is a mandatory annotation for the method parameter and it should contain a parameter name
+* `@JsonRpcParam` is a mandatory annotation for the method parameter, and it should contain a parameter name
   (this is mandatory because the Java compiler doesn't retain information about parameter names in a class file and
   therefore this information is not available in runtime).
 
@@ -103,7 +103,7 @@ Additional annotations:
 * `@JsonRpcParams` is used for defining the type of JSON-RPC request params (an array or a map). It could be applied on
   an interface and on a method as well.
 * `@JsonRpcOptional` is used for marking method parameter as an optional. Parameter that marked with this annotation can
-  accept null values. By default all parameters are mandatory.
+  accept null values. By default, all parameters are mandatory.
 
 ### Example
 

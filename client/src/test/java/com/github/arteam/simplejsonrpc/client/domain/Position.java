@@ -26,6 +26,6 @@ public enum Position {
                 return position;
             }
         }
-        throw new IllegalStateException("Unale find Position by code=" + code);
+        throw new IllegalStateException("Unable find Position by code=" + code);
     }
 }

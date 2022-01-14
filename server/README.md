@@ -17,21 +17,21 @@ Additional annotations:
 * `@JsonRpcErrorData` is used for marking an exception property as the `data` attribute of a JSON-RPC error.
 
 ```java
+
 @JsonRpcService
 public class TeamService {
 
-    private List<Player> players = Lists.newArrayList();
+  private final List<Player> players = Lists.newArrayList();
 
-    @JsonRpcMethod
+  @JsonRpcMethod
     public boolean add(@JsonRpcParam("player") Player s) throws TeamServiceException {
         if (players.size() > 5) throw new TeamServiceException();
         return players.add(s);
     }
 
-    @JsonRpcMethod("find_by_birth_year")
-    public List<Player> findByBirthYear(@JsonRpcParam("birth_year") 
-                                        final int birthYear) {
-        return ImmutableList.copyOf(Iterables.filter(players, new Predicate<Player>() {
+  @JsonRpcMethod("find_by_birth_year")
+  public List<Player> findByBirthYear(@JsonRpcParam("birth_year") final int birthYear) {
+    return ImmutableList.copyOf(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
                 int year = new DateTime(player.getBirthDate()).getYear();
@@ -58,10 +58,10 @@ public class TeamService {
         return Lists.newArrayList(Iterables.filter(players, new Predicate<Player>() {
             @Override
             public boolean apply(Player player) {
-                if (position != null && !player.getPosition().equals(position)) 
-                    return false;
-                if (number != 0 && player.getNumber() != number) 
-                    return false;
+              if (position != null && !player.getPosition().equals(position))
+                return false;
+              if (number != 0 && player.getNumber() != number)
+                return false;
                 return true;
             }
         }));
@@ -71,7 +71,7 @@ public class TeamService {
     public List<Player> getPlayers() {
         return players;
     }
-}    
+}
 
 @JsonRpcError(code = -32032, message = "It's not permitted to add new players")
 public class TeamServiceException extends Exception {

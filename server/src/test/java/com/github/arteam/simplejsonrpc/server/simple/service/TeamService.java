@@ -71,9 +71,10 @@ public class TeamService extends BaseService {
                 .orElse(null);
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @JsonRpcMethod
     public List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable Position position,
-                             @JsonRpcOptional @JsonRpcParam("number") @Nullable int number,
+                             @JsonRpcOptional @JsonRpcParam("number") int number,
                              @JsonRpcOptional @JsonRpcParam("team") Optional<Team> team,
                              @JsonRpcOptional @JsonRpcParam("firstName") @Nullable String firstName,
                              @JsonRpcOptional @JsonRpcParam("lastName") @Nullable String lastName,
@@ -217,8 +218,9 @@ public class TeamService extends BaseService {
         }).collect(Collectors.toList());
     }
 
+    @SafeVarargs
     @JsonRpcMethod
-    public <T> List<Player> genericFindPlayersByNumbers(@JsonRpcParam("numbers") final T... numbers) {
+    public final <T> List<Player> genericFindPlayersByNumbers(@JsonRpcParam("numbers") final T... numbers) {
         return players.stream().filter(player -> {
             for (T number : numbers) {
                 if (String.valueOf(player.getNumber()).equals(number.toString())) {

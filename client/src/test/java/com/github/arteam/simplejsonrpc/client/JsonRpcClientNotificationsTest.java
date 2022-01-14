@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Date: 8/17/14
  * Time: 11:54 PM
  */
-public class JsonRpcClientNotifications {
+public class JsonRpcClientNotificationsTest {
 
     @Test
     public void testNotificationObjectParams() {
@@ -22,7 +22,7 @@ public class JsonRpcClientNotifications {
             assertThat(request.getJsonrpc()).isEqualTo("2.0");
             assertThat(request.getMethod()).isEqualTo("update");
             assertThat(request.getParams()).isEqualTo(mapper.createObjectNode().put("cacheName", "profiles"));
-            assertThat(request.getId().isMissingNode());
+            assertThat(request.getId().isMissingNode()).isFalse();
             return "";
         });
 
@@ -41,7 +41,7 @@ public class JsonRpcClientNotifications {
             assertThat(request.getJsonrpc()).isEqualTo("2.0");
             assertThat(request.getMethod()).isEqualTo("setExpirationTime");
             assertThat(request.getParams()).isEqualTo(mapper.createArrayNode().add("profiles").add(20));
-            assertThat(request.getId().isMissingNode());
+            assertThat(request.getId().isMissingNode()).isFalse();
             return "";
         });
 

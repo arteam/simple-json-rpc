@@ -6,11 +6,12 @@ import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.github.arteam.simplejsonrpc.server.simple.service.BaseService;
 import com.github.arteam.simplejsonrpc.server.simple.service.BogusService;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,22 +22,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcErrorsTest {
 
-    private static JsonRpcServer rpcController = new JsonRpcServer();
-    private static TeamService teamService = new TeamService();
+    private static final JsonRpcServer rpcController = new JsonRpcServer();
+    private static final TeamService teamService = new TeamService();
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    @SuppressWarnings("UnstableApiUsage")
     private static String requestFile(String name) {
         try {
-            return Resources.toString(JsonRpcErrorsTest.class.getResource("/error/request/" + name), Charsets.UTF_8);
+            return Resources.toString(Objects.requireNonNull(JsonRpcErrorsTest.class.getResource("/error/request/" + name)),
+                    StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private static String responseFile(String name) {
         try {
-            return Resources.toString(JsonRpcErrorsTest.class.getResource("/error/response/" + name), Charsets.UTF_8);
+            return Resources.toString(Objects.requireNonNull(JsonRpcErrorsTest.class.getResource("/error/response/" + name)),
+                    StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -174,7 +179,7 @@ public class JsonRpcErrorsTest {
     @Test
     public void testInternalErrorNotification() {
         String response = rpcController.handle(requestFile("not_implemented_method_notification.json"), teamService);
-        assertThat(response.isEmpty());
+        assertThat(response).isEmpty();
     }
 
     @Test

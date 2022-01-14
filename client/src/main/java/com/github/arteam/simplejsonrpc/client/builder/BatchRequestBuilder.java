@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.LongNode;
@@ -77,7 +76,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @param mapper    mapper for JSON processing
      */
     public BatchRequestBuilder(Transport transport, ObjectMapper mapper) {
-        this(transport, mapper, new ArrayList<ObjectNode>(), new HashMap<Object, JavaType>(), null, null);
+        this(transport, mapper, new ArrayList<>(), new HashMap<>(), null, null);
     }
 
     /**
@@ -403,7 +402,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @return a new builder
      */
     public <NK> BatchRequestBuilder<NK, V> keysType(Class<NK> keysClass) {
-        return new BatchRequestBuilder<NK, V>(transport, mapper, requests, returnTypes, keysClass, returnType);
+        return new BatchRequestBuilder<>(transport, mapper, requests, returnTypes, keysClass, returnType);
     }
 
     /**
@@ -415,7 +414,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @return a new builder
      */
     public <NV> BatchRequestBuilder<K, NV> returnType(Class<NV> valuesClass) {
-        return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType,
+        return new BatchRequestBuilder<>(transport, mapper, requests, returnTypes, keysType,
                 TypeFactory.defaultInstance().constructType(valuesClass));
     }
 
@@ -427,7 +426,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      * @return a new builder
      */
     public <NV> BatchRequestBuilder<K, NV> returnType(TypeReference<NV> tr) {
-        return new BatchRequestBuilder<K, NV>(transport, mapper, requests, returnTypes, keysType,
+        return new BatchRequestBuilder<>(transport, mapper, requests, returnTypes, keysType,
                 mapper.constructType(tr.getType()));
     }
 
@@ -488,22 +487,22 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
      */
     @SuppressWarnings("unchecked")
     private Map<K, V> processBatchResponse(String textResponse) {
-        Map<Object, Object> successes = new HashMap<Object, Object>();
-        Map<Object, ErrorMessage> errors = new HashMap<Object, ErrorMessage>();
+        Map<Object, Object> successes = new HashMap<>();
+        Map<Object, ErrorMessage> errors = new HashMap<>();
         List<?> requestIds = requestIds();
 
         try {
             JsonNode jsonResponses = mapper.readTree(textResponse);
             // If it's an empty response
             if (jsonResponses.isTextual() && jsonResponses.asText().isEmpty() && requestIds.isEmpty()) {
-                return new HashMap<K, V>();
+                return new HashMap<>();
             }
             // Not an array
             if (jsonResponses.getNodeType() != JsonNodeType.ARRAY) {
                 throw new IllegalStateException("Expected array but was " + jsonResponses.getNodeType());
             }
 
-            for (JsonNode responseNode : (ArrayNode) jsonResponses) {
+            for (JsonNode responseNode : jsonResponses) {
                 processSingleResponse(responseNode, requestIds, successes, errors);
             }
         } catch (IOException e) {
@@ -563,7 +562,7 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
     }
 
     private List<?> requestIds() {
-        List<Object> ids = new ArrayList<Object>(requests.size());
+        List<Object> ids = new ArrayList<>(requests.size());
         for (ObjectNode request : requests) {
             JsonNode id = request.get(ID);
             if (id != null) {

@@ -12,15 +12,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Date: 8/17/14
  * Time: 5:06 PM
  */
-public class JsonRpcClientErrors {
+public class JsonRpcClientErrorsTest {
 
-    JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-        @Override
-        public String pass(String request) throws IOException {
-            System.out.println(request);
-            return "{\"jsonrpc\": \"2.0\", \"id\": 1001, \"result\": true}";
-        }
+    JsonRpcClient client = new JsonRpcClient(request -> {
+        System.out.println(request);
+        return "{\"jsonrpc\": \"2.0\", \"id\": 1001, \"result\": true}";
     });
 
     @Test
@@ -31,13 +27,9 @@ public class JsonRpcClientErrors {
 
     @Test
     public void testBadJson() {
-        client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                System.out.println(request);
-                return "test";
-            }
+        client = new JsonRpcClient(request -> {
+            System.out.println(request);
+            return "test";
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")

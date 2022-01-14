@@ -38,7 +38,7 @@ class Reflections {
      * @return class metadata
      */
     public static ClassMetadata getClassMetadata(Class<?> clazz) {
-        Map<Method, MethodMetadata> methodsMetadata = new HashMap<Method, MethodMetadata>(32);
+        Map<Method, MethodMetadata> methodsMetadata = new HashMap<>(32);
         Class<?> searchClass = clazz;
         while (searchClass != null) {
             JsonRpcService rpcServiceAnn = getAnnotation(searchClass.getAnnotations(), JsonRpcService.class);
@@ -55,7 +55,7 @@ class Reflections {
                 }
 
                 // LinkedHashMap is needed to support method parameter ordering
-                Map<String, ParameterMetadata> paramsMetadata = new LinkedHashMap<String, ParameterMetadata>(8);
+                Map<String, ParameterMetadata> paramsMetadata = new LinkedHashMap<>(8);
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
                 for (int i = 0; i < parametersAnnotations.length; i++) {
                     Annotation[] parametersAnnotation = parametersAnnotations[i];
@@ -81,7 +81,7 @@ class Reflections {
             searchClass = searchClass.getSuperclass();
         }
 
-        Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
+        Annotation[] classAnnotations = clazz != null ? clazz.getDeclaredAnnotations() : null;
         IdGenerator<?> idGenerator = getIdGenerator(classAnnotations);
         ParamsType paramsType = getParamsType(classAnnotations);
         return new ClassMetadata(paramsType, idGenerator, methodsMetadata);
@@ -96,7 +96,7 @@ class Reflections {
         Class<? extends IdGenerator<?>> idGeneratorClazz = (jsonRpcIdAnn == null) ?
                 AtomicLongIdGenerator.class : jsonRpcIdAnn.value();
         try {
-            return idGeneratorClazz.newInstance();
+            return idGeneratorClazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new IllegalStateException("Unable instantiate id generator: " + idGeneratorClazz, e);
         }
@@ -114,7 +114,7 @@ class Reflections {
     private static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations, Class<T> clazz) {
         if (annotations != null) {
             for (Annotation annotation : annotations) {
-                if (annotation.annotationType().equals(clazz)) {
+                if (annotation != null && annotation.annotationType().equals(clazz)) {
                     return (T) annotation;
                 }
             }
