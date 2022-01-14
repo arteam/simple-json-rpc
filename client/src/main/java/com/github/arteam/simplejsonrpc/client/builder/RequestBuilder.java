@@ -27,11 +27,11 @@ import java.util.Set;
 /**
  * Date: 8/9/14
  * Time: 9:04 PM
- * <p> Type-safe builder of JSON-RPC requests.</p>
- * <p> It introduces fluent API to build a request, set an expected response type and perform the request.
+ * <p>Type-safe builder of JSON-RPC requests.</p>
+ * <p>It introduces fluent API to build a request, set an expected response type and perform the request.
  * Builder is immutable: every mutation creates a new object, so it's safe to use
  * in multi-threaded environment.</p>
- * <p> It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing
+ * <p>It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing
  * to {@link Transport}.</p>
  */
 public class RequestBuilder<T> extends AbstractBuilder {

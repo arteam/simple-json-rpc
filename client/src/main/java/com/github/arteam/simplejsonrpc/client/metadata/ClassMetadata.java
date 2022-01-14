@@ -10,6 +10,7 @@ import java.util.Map;
 /**
  * Date: 8/1/14
  * Time: 7:42 PM
+ * <p>
  * Metadata about a Java class
  */
 public class ClassMetadata {
