@@ -27,14 +27,14 @@ import java.util.Map;
 /**
  * Date: 10/12/14
  * Time: 6:23 PM
- * <p> Fluent builder of batch JSON-RPC requests</p>
- * <p> It provides facility to create a list of requests, set expected response types,
+ * <p>Fluent builder of batch JSON-RPC requests</p>
+ * <p>It provides facility to create a list of requests, set expected response types,
  * execute the JSON-RPC request and process the JSON-RPC response.</p>
- * <p> Return type is a map of responses (Java objects) by request ids. In cases of errors it throws
+ * <p>Return type is a map of responses (Java objects) by request ids. In cases of errors it throws
  * {@link JsonRpcBatchException} with detailed status of success and failed requests.</p>
  * <p> It delegates JSON processing to Jackson {@link ObjectMapper} and actual request performing to
  * {@link Transport}.</p>
- * <p> The basic pattern is following:</p>
+ * <p>The basic pattern is following:</p>
  * <pre>{@code
  * Map<String, Player> result = client.createBatchRequest()
  *      .add("43121", "findByInitials", "Steven", "Stamkos")
@@ -561,7 +561,6 @@ public class BatchRequestBuilder<K, V> extends AbstractBuilder {
                     "'. Should be: '" + keysType.getSimpleName() + "'");
         }
     }
-
 
     private List<?> requestIds() {
         List<Object> ids = new ArrayList<Object>(requests.size());
