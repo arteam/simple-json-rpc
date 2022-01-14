@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SpecTest {
 
-    CalculatorService calculatorService = new CalculatorService();
+    final CalculatorService calculatorService = new CalculatorService();
     // Just test factory method
-    JsonRpcServer rpcServer = JsonRpcServer.withCacheSpec(CacheBuilderSpec.disableCaching());
-    ObjectMapper mapper = new ObjectMapper();
+    final JsonRpcServer rpcServer = JsonRpcServer.withCacheSpec(CacheBuilderSpec.disableCaching());
+    final ObjectMapper mapper = new ObjectMapper();
 
     private void test(String testName) {
         try (InputStream stream = SpecTest.class.getResourceAsStream("/spec/" + testName + ".properties")) {

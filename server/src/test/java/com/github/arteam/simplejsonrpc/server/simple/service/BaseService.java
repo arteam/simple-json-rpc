@@ -15,13 +15,10 @@ public class BaseService {
 
     @JsonRpcMethod
     public void updateCache() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Updating cache...");
-                // Some time...
-                System.out.println("Done!");
-            }
+        new Thread(() -> {
+            System.out.println("Updating cache...");
+            // Some time...
+            System.out.println("Done!");
         }).start();
     }
 }

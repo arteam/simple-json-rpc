@@ -23,7 +23,7 @@ public class SecureRandomStringIdGenerator extends SecureRandomIdGenerator<Strin
     /**
      * Create generator with a specific identifiers length
      *
-     * @param idLength custom identifier length (it should pow of 2)
+     * @param idLength custom identifier length (it should be power of 2)
      */
     public SecureRandomStringIdGenerator(int idLength) {
         if (idLength < 2) {

@@ -3,7 +3,6 @@ package com.github.arteam.simplejsonrpc.client.builder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.github.arteam.simplejsonrpc.client.JsonRpcClient;
-import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcBatchException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
@@ -21,30 +20,26 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
  * Date: 10/23/14
  * Time: 11:55 PM
  */
-public class BatchRequestBuilderErrors {
+public class BatchRequestBuilderErrorsTest {
 
-    JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-        @Override
-        public String pass(String request) throws IOException {
-            System.out.println(request);
-            return "[{\n" +
-                    "    \"jsonrpc\": \"2.0\",\n" +
-                    "    \"id\": 1,\n" +
-                    "    \"result\": {\n" +
-                    "        \"firstName\": \"Steven\",\n" +
-                    "        \"lastName\": \"Stamkos\",\n" +
-                    "        \"team\": {\n" +
-                    "            \"name\": \"Tampa Bay Lightning\",\n" +
-                    "            \"league\": \"NHL\"\n" +
-                    "        },\n" +
-                    "        \"number\": 91,\n" +
-                    "        \"position\": \"C\",\n" +
-                    "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
-                    "        \"capHit\": 7.5\n" +
-                    "    }\n" +
-                    "}]";
-        }
+    final JsonRpcClient client = new JsonRpcClient(request -> {
+        System.out.println(request);
+        return "[{\n" +
+                "    \"jsonrpc\": \"2.0\",\n" +
+                "    \"id\": 1,\n" +
+                "    \"result\": {\n" +
+                "        \"firstName\": \"Steven\",\n" +
+                "        \"lastName\": \"Stamkos\",\n" +
+                "        \"team\": {\n" +
+                "            \"name\": \"Tampa Bay Lightning\",\n" +
+                "            \"league\": \"NHL\"\n" +
+                "        },\n" +
+                "        \"number\": 91,\n" +
+                "        \"position\": \"C\",\n" +
+                "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
+                "        \"capHit\": 7.5\n" +
+                "    }\n" +
+                "}]";
     });
 
     @Test
@@ -72,8 +67,7 @@ public class BatchRequestBuilderErrors {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void testBadId() throws Exception {
+    public void testBadId() {
         assertThatIllegalArgumentException().isThrownBy(() -> {
             BatchRequestBuilder<?, ?> batchRequest = client.createBatchRequest();
             batchRequest.getRequests()
@@ -95,12 +89,8 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testIOError() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                throw new IOException("Network is down");
-            }
+        JsonRpcClient client = new JsonRpcClient(request -> {
+            throw new IOException("Network is down");
         });
 
         assertThatIllegalStateException().isThrownBy(() ->
@@ -125,7 +115,7 @@ public class BatchRequestBuilderErrors {
     }
 
     private static class Name {
-        private String value;
+        private final String value;
 
         private Name(String value) {
             this.value = value;
@@ -134,13 +124,7 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testNotArrayResponse() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                return "{\"test\":\"data\"}";
-            }
-        });
+        JsonRpcClient client = new JsonRpcClient(request -> "{\"test\":\"data\"}");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -151,13 +135,7 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testNotJsonResponse() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                return "test data";
-            }
-        });
+        JsonRpcClient client = new JsonRpcClient(request -> "test data");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -168,13 +146,7 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testNoVersion() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                return "[{\"test\":\"data\"}]";
-            }
-        });
+        JsonRpcClient client = new JsonRpcClient(request -> "[{\"test\":\"data\"}]");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -185,28 +157,22 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testBadVersion() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                return "[{\n" +
-                        "    \"jsonrpc\": \"1.0\",\n" +
-                        "    \"id\": 1,\n" +
-                        "    \"result\": {\n" +
-                        "        \"firstName\": \"Steven\",\n" +
-                        "        \"lastName\": \"Stamkos\",\n" +
-                        "        \"team\": {\n" +
-                        "            \"name\": \"Tampa Bay Lightning\",\n" +
-                        "            \"league\": \"NHL\"\n" +
-                        "        },\n" +
-                        "        \"number\": 91,\n" +
-                        "        \"position\": \"C\",\n" +
-                        "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
-                        "        \"capHit\": 7.5\n" +
-                        "    }\n" +
-                        "}]";
-            }
-        });
+        JsonRpcClient client = new JsonRpcClient(request -> "[{\n" +
+                "    \"jsonrpc\": \"1.0\",\n" +
+                "    \"id\": 1,\n" +
+                "    \"result\": {\n" +
+                "        \"firstName\": \"Steven\",\n" +
+                "        \"lastName\": \"Stamkos\",\n" +
+                "        \"team\": {\n" +
+                "            \"name\": \"Tampa Bay Lightning\",\n" +
+                "            \"league\": \"NHL\"\n" +
+                "        },\n" +
+                "        \"number\": 91,\n" +
+                "        \"position\": \"C\",\n" +
+                "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
+                "        \"capHit\": 7.5\n" +
+                "    }\n" +
+                "}]");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -217,16 +183,10 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testUnexpectedResult() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                return "[{\n" +
-                        "    \"jsonrpc\": \"2.0\",\n" +
-                        "    \"id\": 1\n" +
-                        "}]";
-            }
-        });
+        JsonRpcClient client = new JsonRpcClient(request -> "[{\n" +
+                "    \"jsonrpc\": \"2.0\",\n" +
+                "    \"id\": 1\n" +
+                "}]");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -237,28 +197,22 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testUnspecifiedId() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                return "[{\n" +
-                        "    \"jsonrpc\": \"2.0\",\n" +
-                        "    \"id\": 10,\n" +
-                        "    \"result\": {\n" +
-                        "        \"firstName\": \"Steven\",\n" +
-                        "        \"lastName\": \"Stamkos\",\n" +
-                        "        \"team\": {\n" +
-                        "            \"name\": \"Tampa Bay Lightning\",\n" +
-                        "            \"league\": \"NHL\"\n" +
-                        "        },\n" +
-                        "        \"number\": 91,\n" +
-                        "        \"position\": \"C\",\n" +
-                        "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
-                        "        \"capHit\": 7.5\n" +
-                        "    }\n" +
-                        "}]";
-            }
-        });
+        JsonRpcClient client = new JsonRpcClient(request -> "[{\n" +
+                "    \"jsonrpc\": \"2.0\",\n" +
+                "    \"id\": 10,\n" +
+                "    \"result\": {\n" +
+                "        \"firstName\": \"Steven\",\n" +
+                "        \"lastName\": \"Stamkos\",\n" +
+                "        \"team\": {\n" +
+                "            \"name\": \"Tampa Bay Lightning\",\n" +
+                "            \"league\": \"NHL\"\n" +
+                "        },\n" +
+                "        \"number\": 91,\n" +
+                "        \"position\": \"C\",\n" +
+                "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
+                "        \"capHit\": 7.5\n" +
+                "    }\n" +
+                "}]");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .returnType(Player.class)
@@ -268,30 +222,24 @@ public class BatchRequestBuilderErrors {
 
     @Test
     public void testJsonRpcError() {
-        JsonRpcClient client = new JsonRpcClient(new Transport() {
-
-            @Override
-            public String pass(String request) throws IOException {
-                return "[{\n" +
-                        "    \"jsonrpc\": \"2.0\",\n" +
-                        "    \"id\": 1,\n" +
-                        "    \"result\": {\n" +
-                        "        \"firstName\": \"Steven\",\n" +
-                        "        \"lastName\": \"Stamkos\",\n" +
-                        "        \"team\": {\n" +
-                        "            \"name\": \"Tampa Bay Lightning\",\n" +
-                        "            \"league\": \"NHL\"\n" +
-                        "        },\n" +
-                        "        \"number\": 91,\n" +
-                        "        \"position\": \"C\",\n" +
-                        "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
-                        "        \"capHit\": 7.5\n" +
-                        "    }\n" +
-                        "}, " +
-                        "{\"jsonrpc\":\"2.0\",\"id\":2, \"error\":{\"code\":-32603,\"message\":\"Internal error\"}}" +
-                        "]";
-            }
-        });
+        JsonRpcClient client = new JsonRpcClient(request -> "[{\n" +
+                "    \"jsonrpc\": \"2.0\",\n" +
+                "    \"id\": 1,\n" +
+                "    \"result\": {\n" +
+                "        \"firstName\": \"Steven\",\n" +
+                "        \"lastName\": \"Stamkos\",\n" +
+                "        \"team\": {\n" +
+                "            \"name\": \"Tampa Bay Lightning\",\n" +
+                "            \"league\": \"NHL\"\n" +
+                "        },\n" +
+                "        \"number\": 91,\n" +
+                "        \"position\": \"C\",\n" +
+                "        \"birthDate\": \"1990-02-07T00:00:00.000+00:00\",\n" +
+                "        \"capHit\": 7.5\n" +
+                "    }\n" +
+                "}, " +
+                "{\"jsonrpc\":\"2.0\",\"id\":2, \"error\":{\"code\":-32603,\"message\":\"Internal error\"}}" +
+                "]");
 
         JsonRpcBatchException e = catchThrowableOfType(() ->
                 client.createBatchRequest()

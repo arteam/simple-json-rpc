@@ -13,7 +13,7 @@ public class JsonRpcException extends RuntimeException {
     /**
      * Actual error message
      */
-    private ErrorMessage errorMessage;
+    private final ErrorMessage errorMessage;
 
     public JsonRpcException(ErrorMessage errorMessage) {
         super(errorMessage.toString());

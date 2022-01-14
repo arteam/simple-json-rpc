@@ -173,7 +173,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @JsonRpcService
-    static interface BogusTeamService {
+    interface BogusTeamService {
 
         @JsonRpcMethod
         void bogusLogin(String username, @JsonRpcParam("password") String password);
@@ -186,6 +186,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
                 .withMessage("Parameter with index=0 of method 'bogusLogin' is not annotated with @JsonRpcParam");
     }
 
+    @SuppressWarnings({"EqualsBetweenInconvertibleTypes", "ResultOfMethodCallIgnored"})
     @Test
     public void testNotJsonRpcMethod() {
         assertThatIllegalStateException()
@@ -194,7 +195,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @JsonRpcService
-    public static interface MethodIsNotAnnotatedService {
+    public interface MethodIsNotAnnotatedService {
 
         boolean find(@JsonRpcParam("name") String name);
     }
@@ -214,7 +215,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     }
 
     @JsonRpcService
-    static interface DuplicateParametersService {
+    interface DuplicateParametersService {
 
         @JsonRpcMethod
         boolean find(@JsonRpcParam("code") String username, @JsonRpcParam("code") String code, @JsonRpcParam("number") int number);

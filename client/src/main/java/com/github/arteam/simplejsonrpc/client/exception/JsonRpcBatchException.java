@@ -15,12 +15,12 @@ public class JsonRpcBatchException extends RuntimeException {
     /**
      * Succeeded requests
      */
-    private Map<?, ?> successes;
+    private final Map<?, ?> successes;
 
     /**
      * Failed requests
      */
-    private Map<?, ErrorMessage> errors;
+    private final Map<?, ErrorMessage> errors;
 
     public JsonRpcBatchException(String message, Map<?, ?> successes, Map<?, ErrorMessage> errors) {
         super(message);

@@ -15,7 +15,7 @@ public class SecureRandomLongIdGeneratorTest {
         Set<Long> ids = Sets.newHashSetWithExpectedSize(amount);
         for (int i = 0; i < amount; i++) {
             Long id = generator.generate();
-            Assertions.assertTrue(id.longValue() > 0);
+            Assertions.assertTrue(id > 0);
             System.out.println(id);
             ids.add(id);
         }

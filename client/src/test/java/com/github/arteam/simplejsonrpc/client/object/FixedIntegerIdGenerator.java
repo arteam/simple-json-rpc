@@ -8,7 +8,7 @@ import com.github.arteam.simplejsonrpc.client.generator.IdGenerator;
  */
 public class FixedIntegerIdGenerator implements IdGenerator<Integer> {
 
-    private Integer value;
+    private final Integer value;
 
     public FixedIntegerIdGenerator(Integer value) {
         this.value = value;

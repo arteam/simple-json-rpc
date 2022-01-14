@@ -15,7 +15,7 @@ public class NotificationRequestBuilder {
     /**
      * Delegated request builder
      */
-    private RequestBuilder<Void> requestBuilder;
+    private final RequestBuilder<Void> requestBuilder;
 
     /**
      * Creates a new notification request builder
@@ -24,7 +24,7 @@ public class NotificationRequestBuilder {
      * @param mapper    mapper for JSON processing
      */
     public NotificationRequestBuilder(Transport transport, ObjectMapper mapper) {
-        requestBuilder = new RequestBuilder<Void>(transport, mapper);
+        requestBuilder = new RequestBuilder<>(transport, mapper);
     }
 
     /**

@@ -20,7 +20,7 @@ public class BaseClientTest {
 
     private static Map<String, RequestResponse> requestsResponses;
 
-    private ObjectMapper mapper = new ObjectMapper()
+    private final ObjectMapper mapper = new ObjectMapper()
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .registerModule(new GuavaModule())
             .registerModule(new Jdk8Module());

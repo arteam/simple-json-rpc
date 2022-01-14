@@ -32,12 +32,12 @@ import java.lang.reflect.Method;
 public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandler {
 
     @Nullable
-    private ParamsType userParamsType;
+    private final ParamsType userParamsType;
 
     @Nullable
-    private IdGenerator<?> userIdGenerator;
+    private final IdGenerator<?> userIdGenerator;
 
-    private ClassMetadata classMetadata;
+    private final ClassMetadata classMetadata;
 
     /**
      * Crate a new proxy for an interface
