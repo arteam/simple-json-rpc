@@ -3,6 +3,7 @@ package com.github.arteam.simplejsonrpc.client.generator;
 /**
  * Date: 12/30/14
  * Time: 11:45 PM
+ * <p>
  * Generate secure random strings consisting of HEX symbols with length of 40 characters
  */
 public class SecureRandomStringIdGenerator extends SecureRandomIdGenerator<String> {
