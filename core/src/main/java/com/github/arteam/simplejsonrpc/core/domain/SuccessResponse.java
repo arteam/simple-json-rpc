@@ -2,7 +2,6 @@ package com.github.arteam.simplejsonrpc.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,7 +15,7 @@ public class SuccessResponse extends Response {
     @JsonProperty("result")
     private final Object result;
 
-    public SuccessResponse(@JsonProperty("id") @NotNull ValueNode id,
+    public SuccessResponse(@JsonProperty("id") ValueNode id,
                            @JsonProperty("result") @Nullable Object result) {
         super(id);
         this.result = result;

@@ -1,7 +1,5 @@
 package com.github.arteam.simplejsonrpc.client;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 
 /**
@@ -19,6 +17,5 @@ public interface Transport {
      * @return JSON-RPC response as a string
      * @throws IOException if an I/O error happens during transfer
      */
-    @NotNull
-    public String pass(@NotNull String request) throws IOException;
+    public String pass(String request) throws IOException;
 }

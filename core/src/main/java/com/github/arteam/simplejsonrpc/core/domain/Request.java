@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -47,12 +46,12 @@ public class Request {
         return method;
     }
 
-    @NotNull
+
     public ValueNode getId() {
         return id != null ? id : NullNode.getInstance();
     }
 
-    @NotNull
+
     public JsonNode getParams() {
         return params != null ? params : NullNode.getInstance();
     }

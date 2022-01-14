@@ -21,9 +21,9 @@ JsonRpcClient client = new JsonRpcClient(new Transport() {
 
     CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    @NotNull
+    
     @Override
-    public String pass(@NotNull String request) throws IOException {
+    public String pass( String request) throws IOException {
         // Apache HttpClient 4.3.1 is used as an example
         HttpPost post = new HttpPost("http://json-rpc-server/team");
         post.setEntity(new StringEntity(request, Charsets.UTF_8));
@@ -45,11 +45,11 @@ are immutable and type-safe, so the actual request is built only in the executio
 #### Basic JSON-RPC request
 
 ```java
-Player player = client.createRequest()
+Player player=client.createRequest()
         .method("findByInitials")
         .id(43121)
-        .param("firstName", "Steven")
-        .param("lastName", "Stamkos")
+        .param("firstName","Steven")
+        .param("lastName","Stamkos")
         .returnAs(Player.class)
         .execute();
 ```
@@ -72,12 +72,12 @@ API [here](https://github.com/arteam/simple-json-rpc/blob/master/client/src/test
 #### Batch JSON-RPC request
 
 ```java
-Map<String, Player> result = client.createBatchRequest()
-     .add("43121", "findByInitials", "Steven", "Stamkos")
-     .add("43122", "findByInitials", "Jack", "Allen")
-     .keysType(String.class)
-     .returnType(Player.class)
-     .execute();
+Map<String, Player> result=client.createBatchRequest()
+        .add("43121","findByInitials","Steven","Stamkos")
+        .add("43122","findByInitials","Jack","Allen")
+        .keysType(String.class)
+        .returnType(Player.class)
+        .execute();
 ```
 
 More examples for using the
@@ -133,11 +133,11 @@ public interface TeamService {
     @JsonRpcMethod
     List<Player> find(@JsonRpcOptional @JsonRpcParam("position") @Nullable Position position,
                       @JsonRpcOptional @JsonRpcParam("number") int number,
-                      @JsonRpcOptional @JsonRpcParam("team") @NotNull Optional<Team> team,
+                      @JsonRpcOptional @JsonRpcParam("team")  Optional<Team> team,
                       @JsonRpcOptional @JsonRpcParam("firstName") @Nullable String firstName,
                       @JsonRpcOptional @JsonRpcParam("lastName") @Nullable String lastName,
                       @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable Date birthDate,
-                      @JsonRpcOptional @JsonRpcParam("capHit") @NotNull Optional<Double> capHit);
+                      @JsonRpcOptional @JsonRpcParam("capHit")  Optional<Double> capHit);
 
     @JsonRpcMethod
     List<Player> findPlayersByFirstNames(@JsonRpcParam("names") List<String> names);
@@ -147,7 +147,7 @@ public interface TeamService {
 **Basic request**
 
 ```java
- Player player = client.onDemand(TeamService.class).findByInitials("Steven", "Stamkos");
+ Player player=client.onDemand(TeamService.class).findByInitials("Steven","Stamkos");
 ```
 
 More examples for using the

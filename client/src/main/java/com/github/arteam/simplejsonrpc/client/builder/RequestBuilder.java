@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -40,31 +39,26 @@ public class RequestBuilder<T> extends AbstractBuilder {
     /**
      * JSON-RPC request method
      */
-    @NotNull
     private final String method;
 
     /**
      * JSON-RPC request id
      */
-    @NotNull
     private final ValueNode id;
 
     /**
      * JSON-RPC request params as a map
      */
-    @NotNull
     private final ObjectNode objectParams;
 
     /**
      * JSON-RPC request params as an array
      */
-    @NotNull
     private final ArrayNode arrayParams;
 
     /**
      * Generic type for representing expected response type
      */
-    @NotNull
     private final JavaType javaType;
 
     /**
@@ -73,7 +67,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param transport transport for request performing
      * @param mapper    mapper for JSON processing
      */
-    public RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper) {
+    public RequestBuilder(Transport transport, ObjectMapper mapper) {
         super(transport, mapper);
         id = NullNode.instance;
         objectParams = mapper.createObjectNode();
@@ -93,9 +87,9 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param arrayParams  new array params
      * @param javaType     new response type
      */
-    private RequestBuilder(@NotNull Transport transport, @NotNull ObjectMapper mapper, @NotNull String method,
-                           @NotNull ValueNode id, @NotNull ObjectNode objectParams, @NotNull ArrayNode arrayParams,
-                           @NotNull JavaType javaType) {
+    private RequestBuilder(Transport transport, ObjectMapper mapper, String method,
+                           ValueNode id, ObjectNode objectParams, ArrayNode arrayParams,
+                           JavaType javaType) {
         super(transport, mapper);
         this.method = method;
         this.id = id;
@@ -110,8 +104,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param id a  request id
      * @return new builder
      */
-    @NotNull
-    public RequestBuilder<T> id(@NotNull Long id) {
+    public RequestBuilder<T> id(Long id) {
         return new RequestBuilder<T>(transport, mapper, method, new LongNode(id), objectParams, arrayParams, javaType);
     }
 
@@ -121,8 +114,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param id a request id
      * @return new builder
      */
-    @NotNull
-    public RequestBuilder<T> id(@NotNull Integer id) {
+    public RequestBuilder<T> id(Integer id) {
         return new RequestBuilder<T>(transport, mapper, method, new IntNode(id), objectParams, arrayParams, javaType);
     }
 
@@ -132,8 +124,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param id a request id
      * @return new builder
      */
-    @NotNull
-    public RequestBuilder<T> id(@NotNull String id) {
+    public RequestBuilder<T> id(String id) {
         return new RequestBuilder<T>(transport, mapper, method, new TextNode(id), objectParams, arrayParams, javaType);
     }
 
@@ -143,8 +134,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param method a request method
      * @return new builder
      */
-    @NotNull
-    public RequestBuilder<T> method(@NotNull String method) {
+    public RequestBuilder<T> method(String method) {
         return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams, javaType);
     }
 
@@ -167,8 +157,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param value parameter value
      * @return new builder
      */
-    @NotNull
-    public RequestBuilder<T> param(@NotNull String name, @NotNull Object value) {
+    public RequestBuilder<T> param(String name, Object value) {
         ObjectNode newObjectParams = objectParams.deepCopy();
         newObjectParams.set(name, mapper.valueToTree(value));
         return new RequestBuilder<T>(transport, mapper, method, id, newObjectParams, arrayParams, javaType);
@@ -181,8 +170,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param values array of parameters
      * @return new builder
      */
-    @NotNull
-    public RequestBuilder<T> params(@NotNull Object... values) {
+    public RequestBuilder<T> params(Object... values) {
         return new RequestBuilder<T>(transport, mapper, method, id, objectParams, arrayParams(values), javaType);
     }
 
@@ -193,8 +181,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param <NT>         new return type
      * @return new builder
      */
-    @NotNull
-    public <NT> RequestBuilder<NT> returnAs(@NotNull Class<NT> responseType) {
+    public <NT> RequestBuilder<NT> returnAs(Class<NT> responseType) {
         return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
                 TypeFactory.defaultInstance().constructType(responseType));
     }
@@ -206,8 +193,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param <E>         generic list type
      * @return new builder
      */
-    @NotNull
-    public <E> RequestBuilder<List<E>> returnAsList(@NotNull Class<E> elementType) {
+    public <E> RequestBuilder<List<E>> returnAsList(Class<E> elementType) {
         return new RequestBuilder<List<E>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructCollectionType(List.class, elementType));
     }
@@ -219,8 +205,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param <E>         generic set type
      * @return new builder
      */
-    @NotNull
-    public <E> RequestBuilder<Set<E>> returnAsSet(@NotNull Class<E> elementType) {
+    public <E> RequestBuilder<Set<E>> returnAsSet(Class<E> elementType) {
         return new RequestBuilder<Set<E>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructCollectionType(Set.class, elementType));
     }
@@ -234,9 +219,8 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param <E>            generic collection type
      * @return new builder
      */
-    @NotNull
-    public <E> RequestBuilder<Collection<E>> returnAsCollection(@NotNull Class<? extends Collection> collectionType,
-                                                                @NotNull Class<E> elementType) {
+    public <E> RequestBuilder<Collection<E>> returnAsCollection(Class<? extends Collection> collectionType,
+                                                                Class<E> elementType) {
         return new RequestBuilder<Collection<E>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructCollectionType(collectionType, elementType));
     }
@@ -248,8 +232,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param <E>         generic array type
      * @return new builder
      */
-    @NotNull
-    public <E> RequestBuilder<E[]> returnAsArray(@NotNull Class<E> elementType) {
+    public <E> RequestBuilder<E[]> returnAsArray(Class<E> elementType) {
         return new RequestBuilder<E[]>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructArrayType(elementType));
     }
@@ -265,9 +248,8 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param <V>       generic map value type
      * @return new builder
      */
-    @NotNull
-    public <V> RequestBuilder<Map<String, V>> returnAsMap(@NotNull Class<? extends Map> mapClass,
-                                                          @NotNull Class<V> valueType) {
+    public <V> RequestBuilder<Map<String, V>> returnAsMap(Class<? extends Map> mapClass,
+                                                          Class<V> valueType) {
         return new RequestBuilder<Map<String, V>>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructMapType(mapClass, String.class, valueType));
     }
@@ -281,8 +263,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @param <NT> a generic type
      * @return new builder
      */
-    @NotNull
-    public <NT> RequestBuilder<NT> returnAs(@NotNull TypeReference<NT> tr) {
+    public <NT> RequestBuilder<NT> returnAs(TypeReference<NT> tr) {
         return new RequestBuilder<NT>(transport, mapper, method, id, objectParams, arrayParams,
                 mapper.getTypeFactory().constructType(tr.getType()));
     }
@@ -294,7 +275,6 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @throws JsonRpcException      in case of JSON-RPC error, returned by the server
      * @throws IllegalStateException if the response is null
      */
-    @NotNull
     public T execute() {
         T result = executeAndConvert();
         if (result == null) {
@@ -368,7 +348,6 @@ public class RequestBuilder<T> extends AbstractBuilder {
         return textResponse;
     }
 
-    @NotNull
     private JsonNode params() {
         if (objectParams.size() > 0) {
             if (arrayParams.size() > 0) {

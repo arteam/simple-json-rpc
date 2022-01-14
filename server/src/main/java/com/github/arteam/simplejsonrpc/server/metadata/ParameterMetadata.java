@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.server.metadata;
 
 import com.google.common.base.MoreObjects;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 
@@ -15,19 +14,16 @@ public class ParameterMetadata {
     /**
      * RPC name
      */
-    @NotNull
     private final String name;
 
     /**
      * Actual java type
      */
-    @NotNull
     private final Class<?> type;
 
     /**
      * Generic java type
      */
-    @NotNull
     private final Type genericType;
 
     /**
@@ -40,8 +36,8 @@ public class ParameterMetadata {
      */
     private final boolean optional;
 
-    public ParameterMetadata(@NotNull String name, @NotNull Class<?> type
-            , @NotNull Type genericType, int index, boolean optional) {
+    public ParameterMetadata(String name, Class<?> type
+            , Type genericType, int index, boolean optional) {
         this.name = name;
         this.type = type;
         this.genericType = genericType;
@@ -49,12 +45,12 @@ public class ParameterMetadata {
         this.optional = optional;
     }
 
-    @NotNull
+
     public String getName() {
         return name;
     }
 
-    @NotNull
+
     public Class<?> getType() {
         return type;
     }
@@ -67,7 +63,7 @@ public class ParameterMetadata {
         return index;
     }
 
-    @NotNull
+
     public Type getGenericType() {
         return genericType;
     }

@@ -17,7 +17,6 @@ import com.github.arteam.simplejsonrpc.client.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.client.metadata.ParameterMetadata;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -37,7 +36,6 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     @Nullable
     private IdGenerator userIdGenerator;
 
-    @NotNull
     private ClassMetadata classMetadata;
 
     /**
@@ -49,7 +47,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * @param userParamsType  custom type of request params
      * @param userIdGenerator custom id generator
      */
-    public ObjectApiBuilder(@NotNull Class<?> clazz, @NotNull Transport transport, @NotNull ObjectMapper mapper,
+    public ObjectApiBuilder(Class<?> clazz, Transport transport, ObjectMapper mapper,
                             @Nullable ParamsType userParamsType, @Nullable IdGenerator userIdGenerator) {
         super(transport, mapper);
         this.classMetadata = Reflections.getClassMetadata(clazz);
@@ -93,9 +91,8 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     /**
      * Get request params in a JSON representation (map or array)
      */
-    @NotNull
-    private JsonNode getParams(@NotNull MethodMetadata method, @Nullable Object[] args,
-                               @NotNull ParamsType paramsType) {
+    private JsonNode getParams(MethodMetadata method, @Nullable Object[] args,
+                               ParamsType paramsType) {
         ObjectNode paramsAsMap = mapper.createObjectNode();
         ArrayNode paramsAsArray = mapper.createArrayNode();
         for (String paramName : method.getParams().keySet()) {
@@ -128,8 +125,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * @param request json representation of a request
      * @return service response as a string
      */
-    @NotNull
-    private String execute(@NotNull ObjectNode request) {
+    private String execute(ObjectNode request) {
         try {
             return transport.pass(mapper.writeValueAsString(request));
         } catch (JsonProcessingException e) {
@@ -147,8 +143,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
      * @param methodMetadata metadata of a method
      * @return type of params
      */
-    @NotNull
-    private ParamsType getParamsType(@NotNull ClassMetadata classMetadata, @NotNull MethodMetadata methodMetadata) {
+    private ParamsType getParamsType(ClassMetadata classMetadata, MethodMetadata methodMetadata) {
         if (userParamsType != null) {
             return userParamsType;
         } else if (methodMetadata.getParamsType() != null) {

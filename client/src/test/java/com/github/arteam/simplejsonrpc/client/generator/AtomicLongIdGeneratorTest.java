@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.client.JsonRpcClient;
 import com.github.arteam.simplejsonrpc.client.Transport;
 import com.github.arteam.simplejsonrpc.client.object.TeamService;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,9 +21,9 @@ public class AtomicLongIdGeneratorTest {
         final ObjectMapper mapper = new ObjectMapper();
         final BitSet numbers = new BitSet(100);
         JsonRpcClient client = new JsonRpcClient(new Transport() {
-            @NotNull
+
             @Override
-            public String pass(@NotNull String request) throws IOException {
+            public String pass(String request) throws IOException {
                 System.out.println(request);
                 JsonNode jsonNode = mapper.readTree(request);
                 long id = jsonNode.get("id").asLong();

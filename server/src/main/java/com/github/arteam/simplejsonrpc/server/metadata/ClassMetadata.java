@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.server.metadata;
 
 import com.google.common.collect.ImmutableMap;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Date: 8/1/14
@@ -18,10 +17,9 @@ public class ClassMetadata {
     /**
      * Map of JSON-RPC 2.0 methods by rpc name
      */
-    @NotNull
     private final ImmutableMap<String, MethodMetadata> methods;
 
-    public ClassMetadata(boolean service, @NotNull ImmutableMap<String, MethodMetadata> methods) {
+    public ClassMetadata(boolean service, ImmutableMap<String, MethodMetadata> methods) {
         this.service = service;
         this.methods = methods;
     }
@@ -30,7 +28,6 @@ public class ClassMetadata {
         return service;
     }
 
-    @NotNull
     public ImmutableMap<String, MethodMetadata> getMethods() {
         return methods;
     }

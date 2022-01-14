@@ -26,7 +26,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +67,7 @@ public class JsonRpcServer {
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
     private static final String VERSION = "2.0";
 
-    @NotNull
+
     private ObjectMapper mapper;
 
     /**
@@ -91,7 +90,7 @@ public class JsonRpcServer {
      * @param mapper           used-defined JSON mapper
      * @param cacheBuilderSpec classes metadata cache specification
      */
-    public JsonRpcServer(@NotNull ObjectMapper mapper, @NotNull CacheBuilderSpec cacheBuilderSpec) {
+    public JsonRpcServer(ObjectMapper mapper, CacheBuilderSpec cacheBuilderSpec) {
         this.mapper = mapper;
         classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
                 new CacheLoader<Class<?>, ClassMetadata>() {
@@ -122,7 +121,7 @@ public class JsonRpcServer {
      * @param mapper user-defined JSON mapper
      * @return new JSON-RPC server
      */
-    public static JsonRpcServer withMapper(@NotNull ObjectMapper mapper) {
+    public static JsonRpcServer withMapper(ObjectMapper mapper) {
         return new JsonRpcServer(mapper, DEFAULT_SPEC);
     }
 
@@ -132,7 +131,7 @@ public class JsonRpcServer {
      * @param cacheSpec user-defined cache config
      * @return new JSON-RPC server
      */
-    public static JsonRpcServer withCacheSpec(@NotNull CacheBuilderSpec cacheSpec) {
+    public static JsonRpcServer withCacheSpec(CacheBuilderSpec cacheSpec) {
         return new JsonRpcServer(new ObjectMapper(), cacheSpec);
     }
 
@@ -144,21 +143,21 @@ public class JsonRpcServer {
      * @param service     actual service for the request processing
      * @return text representation of a JSON-RPC response
      */
-    public String handle(@NotNull String textRequest, @NotNull Object service) {
+    public String handle(String textRequest, Object service) {
         return handle(service, () -> mapper.readTree(textRequest), this::toJson, () -> "");
     }
 
-    public byte[] handle(@NotNull byte[] byteRequest, @NotNull Object service) {
+    public byte[] handle(byte[] byteRequest, Object service) {
         return handle(service, () -> mapper.readTree(byteRequest), this::toJsonByteArray, () -> new byte[]{});
     }
 
-    public OutputStream handle(@NotNull InputStream requestInputStream, OutputStream responseOutputStream,
-                               @NotNull Object service) {
+    public OutputStream handle(InputStream requestInputStream, OutputStream responseOutputStream,
+                               Object service) {
         return handle(service, () -> mapper.readTree(requestInputStream),
                 v -> toJsonOutputStream(v, responseOutputStream), ByteArrayOutputStream::new);
     }
 
-    private <T> T handle(@NotNull Object service, JsonNodeSupplier rootRequestSupplier, Function<Object, T> jsonConverter,
+    private <T> T handle(Object service, JsonNodeSupplier rootRequestSupplier, Function<Object, T> jsonConverter,
                          Supplier<T> emptyResponse) {
         JsonNode rootRequest;
         try {
@@ -198,7 +197,7 @@ public class JsonRpcServer {
      * @param response    a response in a Java object format
      * @return {@code true} if a request is a "notification request"
      */
-    private boolean isNotification(@NotNull JsonNode requestNode, @NotNull Response response) {
+    private boolean isNotification(JsonNode requestNode, Response response) {
         // Notification request doesn't have "id" field
         if (requestNode.get("id") == null) {
             if (response instanceof SuccessResponse) {
@@ -224,8 +223,7 @@ public class JsonRpcServer {
      * @param service     service object
      * @return JSON-RPC response as a Java object
      */
-    @NotNull
-    private Response handleWrapper(@NotNull JsonNode requestNode, @NotNull Object service) {
+    private Response handleWrapper(JsonNode requestNode, Object service) {
         Request request;
         try {
             request = mapper.convertValue(requestNode, Request.class);
@@ -252,8 +250,7 @@ public class JsonRpcServer {
      * @param e       invocation exception
      * @return JSON-RPC error response
      */
-    @NotNull
-    private ErrorResponse handleError(@NotNull Request request, @NotNull Exception e) {
+    private ErrorResponse handleError(Request request, Exception e) {
         Throwable rootCause = Throwables.getRootCause(e);
         Annotation[] annotations = rootCause.getClass().getAnnotations();
         JsonRpcError jsonRpcErrorAnnotation =
@@ -289,8 +286,7 @@ public class JsonRpcServer {
      * @return JSON-RPC response as a Java object
      * @throws Exception in case of a runtime error (reflections, business logic...)
      */
-    @NotNull
-    private Response handleSingle(@NotNull Request request, @NotNull Object service) throws Exception {
+    private Response handleSingle(Request request, Object service) throws Exception {
         // Check mandatory fields and correct protocol version
         String requestMethod = request.getMethod();
         String jsonrpc = request.getJsonrpc();
@@ -349,9 +345,7 @@ public class JsonRpcServer {
      * @param method invoked method metadata
      * @return array of java objects for passing to the method
      */
-    @NotNull
-    private Object[] convertToMethodParams(@NotNull ContainerNode<?> params,
-                                           @NotNull MethodMetadata method) {
+    private Object[] convertToMethodParams(ContainerNode<?> params, MethodMetadata method) {
         int methodParamsSize = method.getParams().size();
         int jsonParamsSize = params.size();
         // Check amount arguments
@@ -402,7 +396,7 @@ public class JsonRpcServer {
     }
 
     @Nullable
-    private Object getDefaultValue(@NotNull Class<?> type) {
+    private Object getDefaultValue(Class<?> type) {
         if (type == com.google.common.base.Optional.class) {
             // If it's Guava optional then handle it as an absent value
             return com.google.common.base.Optional.absent();
@@ -422,7 +416,7 @@ public class JsonRpcServer {
      * @param value object
      * @return JSON representation
      */
-    private String toJson(@NotNull Object value) {
+    private String toJson(Object value) {
         try {
             String response = mapper.writeValueAsString(value);
             if (log.isDebugEnabled()) {
@@ -435,7 +429,7 @@ public class JsonRpcServer {
         }
     }
 
-    private byte[] toJsonByteArray(@NotNull Object value) {
+    private byte[] toJsonByteArray(Object value) {
         try {
             byte[] response = mapper.writeValueAsBytes(value);
             if (log.isDebugEnabled()) {
@@ -448,7 +442,7 @@ public class JsonRpcServer {
         }
     }
 
-    private OutputStream toJsonOutputStream(@NotNull Object value, OutputStream outputStream) {
+    private OutputStream toJsonOutputStream(Object value, OutputStream outputStream) {
         try {
             mapper.writeValue(outputStream, value);
             return outputStream;
@@ -457,7 +451,6 @@ public class JsonRpcServer {
             throw new IllegalStateException(e);
         }
     }
-
 
     @FunctionalInterface
     private interface JsonNodeSupplier {

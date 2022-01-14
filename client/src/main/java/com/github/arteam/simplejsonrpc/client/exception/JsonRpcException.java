@@ -1,7 +1,6 @@
 package com.github.arteam.simplejsonrpc.client.exception;
 
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Date: 8/9/14
@@ -13,15 +12,13 @@ public class JsonRpcException extends RuntimeException {
     /**
      * Actual error message
      */
-    @NotNull
     private ErrorMessage errorMessage;
 
-    public JsonRpcException(@NotNull ErrorMessage errorMessage) {
+    public JsonRpcException(ErrorMessage errorMessage) {
         super(errorMessage.toString());
         this.errorMessage = errorMessage;
     }
 
-    @NotNull
     public ErrorMessage getErrorMessage() {
         return errorMessage;
     }

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
 import com.google.common.collect.ImmutableMap;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -41,9 +40,9 @@ public class BatchRequestBuilderTest {
     private JsonRpcClient initClient(String testName) {
         final RequestResponse requestResponse = requestsResponses.get(testName);
         return new JsonRpcClient(new Transport() {
-            @NotNull
+
             @Override
-            public String pass(@NotNull String request) throws IOException {
+            public String pass(String request) throws IOException {
                 System.out.println(request);
                 JsonNode requestNode = mapper.readTree(request);
                 assertThat(requestNode).isEqualTo(requestResponse.request);

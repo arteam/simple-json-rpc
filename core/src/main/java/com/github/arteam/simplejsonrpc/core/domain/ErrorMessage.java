@@ -3,7 +3,6 @@ package com.github.arteam.simplejsonrpc.core.domain;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,7 +15,6 @@ public class ErrorMessage {
     @JsonProperty("code")
     private final int code;
 
-    @NotNull
     @JsonProperty("message")
     private final String message;
 
@@ -26,7 +24,7 @@ public class ErrorMessage {
     private final JsonNode data;
 
     public ErrorMessage(@JsonProperty("code") int code,
-                        @JsonProperty("message") @NotNull String message,
+                        @JsonProperty("message") String message,
                         @JsonProperty("data") @Nullable JsonNode data) {
         this.code = code;
         this.message = message;
@@ -37,7 +35,6 @@ public class ErrorMessage {
         return code;
     }
 
-    @NotNull
     public String getMessage() {
         return message;
     }

@@ -12,7 +12,6 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcOptional;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -37,8 +36,7 @@ class Reflections {
      * @param clazz an interface for representing a remote service
      * @return class metadata
      */
-    @NotNull
-    public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
+    public static ClassMetadata getClassMetadata(Class<?> clazz) {
         Map<Method, MethodMetadata> methodsMetadata = new HashMap<Method, MethodMetadata>(32);
         Class<?> searchClass = clazz;
         while (searchClass != null) {
@@ -92,8 +90,7 @@ class Reflections {
     /**
      * Get an actual id generator
      */
-    @NotNull
-    private static IdGenerator<?> getIdGenerator(@NotNull Annotation[] classAnnotations) {
+    private static IdGenerator<?> getIdGenerator(Annotation[] classAnnotations) {
         JsonRpcId jsonRpcIdAnn = getAnnotation(classAnnotations, JsonRpcId.class);
         Class<? extends IdGenerator<?>> idGeneratorClazz = (jsonRpcIdAnn == null) ?
                 AtomicLongIdGenerator.class : jsonRpcIdAnn.value();
@@ -105,7 +102,7 @@ class Reflections {
     }
 
     @Nullable
-    private static ParamsType getParamsType(@NotNull Annotation[] annotations) {
+    private static ParamsType getParamsType(Annotation[] annotations) {
         JsonRpcParams rpcParamsAnn = getAnnotation(annotations, JsonRpcParams.class);
         return rpcParamsAnn != null ? rpcParamsAnn.value() : null;
 
@@ -113,8 +110,7 @@ class Reflections {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations,
-                                                          @NotNull Class<T> clazz) {
+    private static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations, Class<T> clazz) {
         if (annotations != null) {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(clazz)) {

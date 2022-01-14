@@ -10,7 +10,6 @@ import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
 import com.google.common.collect.ImmutableMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,6 @@ class Reflections {
     private Reflections() {
     }
 
-
     /**
      * Finds an entity annotation with appropriate type.
      *
@@ -48,8 +46,7 @@ class Reflections {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations,
-                                                         @NotNull Class<T> clazz) {
+    public static <T extends Annotation> T getAnnotation(@Nullable Annotation[] annotations, Class<T> clazz) {
         if (annotations != null) {
             for (Annotation annotation : annotations) {
                 if (annotation != null && annotation.annotationType().equals(clazz)) {
@@ -67,8 +64,7 @@ class Reflections {
      * @param clazz actual service class
      * @return service class JSON-RPC meta-information
      */
-    @NotNull
-    public static ClassMetadata getClassMetadata(@NotNull Class<?> clazz) {
+    public static ClassMetadata getClassMetadata(Class<?> clazz) {
         ImmutableMap.Builder<String, MethodMetadata> methodsMetadata = ImmutableMap.builder();
         Class<?> searchType = clazz;
         // Search through the class hierarchy
@@ -127,7 +123,7 @@ class Reflections {
      * @return map of parameters metadata by their names
      */
     @Nullable
-    private static ImmutableMap<String, ParameterMetadata> getMethodParameters(@NotNull Method method) {
+    private static ImmutableMap<String, ParameterMetadata> getMethodParameters(Method method) {
         Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
         int methodParamsSize = allParametersAnnotations.length;
         Class<?>[] parameterTypes = method.getParameterTypes();
