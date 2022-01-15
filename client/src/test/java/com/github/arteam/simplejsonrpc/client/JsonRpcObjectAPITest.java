@@ -7,6 +7,7 @@ import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.object.FixedIntegerIdGenerator;
 import com.github.arteam.simplejsonrpc.client.object.FixedStringIdGenerator;
 import com.github.arteam.simplejsonrpc.client.object.TeamService;
+import com.github.arteam.simplejsonrpc.client.util.MapBuilder;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
@@ -16,7 +17,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,30 +124,30 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
 
     @Test
     public void testMap() {
-        Map<String, Integer> contractLengths = new LinkedHashMap<String, Integer>() {{
-            put("Backes", 4);
-            put("Tarasenko", 3);
-            put("Allen", 2);
-            put("Bouwmeester", 5);
-            put("Stamkos", 8);
-            put("Callahan", 3);
-            put("Bishop", 4);
-            put("Hedman", 2);
-        }};
+        Map<String, Integer> contractLengths = new MapBuilder<String, Integer>()
+                .put("Backes", 4)
+                .put("Tarasenko", 3)
+                .put("Allen", 2)
+                .put("Bouwmeester", 5)
+                .put("Stamkos", 8)
+                .put("Callahan", 3)
+                .put("Bishop", 4)
+                .put("Hedman", 2)
+                .build();
         JsonRpcClient client = initClient("getContractSums");
         Map<String, Double> contractSums = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(97555))
                 .getContractSums(contractLengths);
         assertThat(contractSums).isExactlyInstanceOf(LinkedHashMap.class);
-        assertThat(contractSums).isEqualTo(new HashMap<String, Double>() {{
-            put("Backes", 18.0);
-            put("Tarasenko", 2.7);
-            put("Allen", 1.0);
-            put("Bouwmeester", 27.0);
-            put("Stamkos", 60.0);
-            put("Callahan", 17.4);
-            put("Bishop", 9.2);
-            put("Hedman", 8.0);
-        }});
+        assertThat(contractSums).isEqualTo(new MapBuilder<String, Double>()
+                .put("Backes", 18.0)
+                .put("Tarasenko", 2.7)
+                .put("Allen", 1.0)
+                .put("Bouwmeester", 27.0)
+                .put("Stamkos", 60.0)
+                .put("Callahan", 17.4)
+                .put("Bishop", 9.2)
+                .put("Hedman", 8.0)
+                .build());
     }
 
     @Test
