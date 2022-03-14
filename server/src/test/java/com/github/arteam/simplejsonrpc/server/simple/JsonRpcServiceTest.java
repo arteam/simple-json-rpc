@@ -3,16 +3,13 @@ package com.github.arteam.simplejsonrpc.server.simple;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
 import com.github.arteam.simplejsonrpc.server.simple.util.RequestResponse;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,13 +31,15 @@ public class JsonRpcServiceTest {
     @BeforeAll
     @SuppressWarnings("UnstableApiUsage")
     public static void init() throws Exception {
-        userMapper.registerModule(new GuavaModule());
         userMapper.registerModule(new Jdk8Module());
-        testData = new ObjectMapper()
-                .readValue(Resources.toString(Objects.requireNonNull(JsonRpcServiceTest.class.getResource("/test_data.json")), StandardCharsets.UTF_8),
-                        TypeFactory.defaultInstance().constructMapType(Map.class,
-                                TypeFactory.defaultInstance().constructType(String.class),
-                                TypeFactory.defaultInstance().constructType(RequestResponse.class)));
+        try (var is = Objects.requireNonNull(JsonRpcServiceTest.class.getResourceAsStream("/test_data.json"))) {
+            testData = new ObjectMapper()
+                    .readValue(is.readAllBytes(),
+                            TypeFactory.defaultInstance().constructMapType(Map.class,
+                                    TypeFactory.defaultInstance().constructType(String.class),
+                                    TypeFactory.defaultInstance().constructType(RequestResponse.class)));
+        }
+
     }
 
     /**

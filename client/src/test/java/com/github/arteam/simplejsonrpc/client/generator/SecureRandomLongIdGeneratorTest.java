@@ -1,9 +1,9 @@
 package com.github.arteam.simplejsonrpc.client.generator;
 
-import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class SecureRandomLongIdGeneratorTest {
@@ -12,7 +12,7 @@ public class SecureRandomLongIdGeneratorTest {
     public void testGenerate() {
         SecureRandomLongIdGenerator generator = new SecureRandomLongIdGenerator();
         int amount = 100;
-        Set<Long> ids = Sets.newHashSetWithExpectedSize(amount);
+        Set<Long> ids = new HashSet<>(amount * 2);
         for (int i = 0; i < amount; i++) {
             Long id = generator.generate();
             Assertions.assertTrue(id > 0);

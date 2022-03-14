@@ -1,6 +1,6 @@
 package com.github.arteam.simplejsonrpc.server.metadata;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 
 /**
  * Date: 8/1/14
@@ -9,5 +9,5 @@ import com.google.common.collect.ImmutableMap;
  * Metadata about a Java class
  */
 public record ClassMetadata(boolean service,
-                            ImmutableMap<String, MethodMetadata> methods) {
+                            Map<String, MethodMetadata> methods) {
 }
