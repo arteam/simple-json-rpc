@@ -42,8 +42,8 @@ public class JsonRpcClientTest extends BaseClientTest {
         JsonRpcClient client = initClient("find_player");
         Player player = client.createRequest().method("findByInitials").id(43121).param("firstName", "Steven").param("lastName", "Stamkos").returnAs(Player.class).execute();
         assertThat(player).isNotNull();
-        assertThat(player.getFirstName()).isEqualTo("Steven");
-        assertThat(player.getLastName()).isEqualTo("Stamkos");
+        assertThat(player.firstName()).isEqualTo("Steven");
+        assertThat(player.lastName()).isEqualTo("Stamkos");
     }
 
     @Test
@@ -58,8 +58,8 @@ public class JsonRpcClientTest extends BaseClientTest {
         JsonRpcClient client = initClient("find_player_array");
         Player player = client.createRequest().method("findByInitials").id("dsfs1214").params("Ben", "Bishop").returnAs(Player.class).execute();
         assertThat(player).isNotNull();
-        assertThat(player.getFirstName()).isEqualTo("Ben");
-        assertThat(player.getLastName()).isEqualTo("Bishop");
+        assertThat(player.firstName()).isEqualTo("Ben");
+        assertThat(player.lastName()).isEqualTo("Bishop");
     }
 
     @Test
@@ -68,9 +68,9 @@ public class JsonRpcClientTest extends BaseClientTest {
         List<Player> players = client.createRequest().method("find_by_birth_year").id(5621).param("birth_year", 1990).returnAsList(Player.class).execute();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        assertThat(players.get(0).getLastName()).isEqualTo("Allen");
-        assertThat(players.get(1).getLastName()).isEqualTo("Stamkos");
-        assertThat(players.get(2).getLastName()).isEqualTo("Hedman");
+        assertThat(players.get(0).lastName()).isEqualTo("Allen");
+        assertThat(players.get(1).lastName()).isEqualTo("Stamkos");
+        assertThat(players.get(2).lastName()).isEqualTo("Hedman");
     }
 
     @Test
@@ -81,7 +81,7 @@ public class JsonRpcClientTest extends BaseClientTest {
         assertThat(players).hasSize(3);
         List<String> lastNames = Lists.newArrayList();
         for (Player player : players) {
-            lastNames.add(player.getLastName());
+            lastNames.add(player.lastName());
         }
         assertThat(lastNames).containsOnly("Allen", "Stamkos", "Hedman");
     }
@@ -92,9 +92,9 @@ public class JsonRpcClientTest extends BaseClientTest {
         Player[] players = client.createRequest().method("find_by_birth_year").id(5621).param("birth_year", 1990).returnAsArray(Player.class).execute();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        assertThat(players[0].getLastName()).isEqualTo("Allen");
-        assertThat(players[1].getLastName()).isEqualTo("Stamkos");
-        assertThat(players[2].getLastName()).isEqualTo("Hedman");
+        assertThat(players[0].lastName()).isEqualTo("Allen");
+        assertThat(players[1].lastName()).isEqualTo("Stamkos");
+        assertThat(players[2].lastName()).isEqualTo("Hedman");
     }
 
     @Test
@@ -103,9 +103,9 @@ public class JsonRpcClientTest extends BaseClientTest {
         Deque<Player> players = (Deque<Player>) client.createRequest().method("find_by_birth_year").id(5621).param("birth_year", 1990).returnAsCollection(Deque.class, Player.class).execute();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        assertThat(players.pop().getLastName()).isEqualTo("Allen");
-        assertThat(players.pop().getLastName()).isEqualTo("Stamkos");
-        assertThat(players.pop().getLastName()).isEqualTo("Hedman");
+        assertThat(players.pop().lastName()).isEqualTo("Allen");
+        assertThat(players.pop().lastName()).isEqualTo("Stamkos");
+        assertThat(players.pop().lastName()).isEqualTo("Hedman");
     }
 
     @Test
@@ -114,9 +114,9 @@ public class JsonRpcClientTest extends BaseClientTest {
         List<Player> players = client.createRequest().method("getPlayers").id(1000).returnAsList(Player.class).execute();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        assertThat(players.get(0).getLastName()).isEqualTo("Bishop");
-        assertThat(players.get(1).getLastName()).isEqualTo("Tarasenko");
-        assertThat(players.get(2).getLastName()).isEqualTo("Bouwmeester");
+        assertThat(players.get(0).lastName()).isEqualTo("Bishop");
+        assertThat(players.get(1).lastName()).isEqualTo("Tarasenko");
+        assertThat(players.get(2).lastName()).isEqualTo("Bouwmeester");
     }
 
     @Test

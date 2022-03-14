@@ -19,10 +19,10 @@ public class JsonRpcClientNotificationsTest {
             System.out.println(text);
             ObjectMapper mapper = new ObjectMapper();
             Request request = mapper.readValue(text, Request.class);
-            assertThat(request.getJsonrpc()).isEqualTo("2.0");
-            assertThat(request.getMethod()).isEqualTo("update");
-            assertThat(request.getParams()).isEqualTo(mapper.createObjectNode().put("cacheName", "profiles"));
-            assertThat(request.getId().isMissingNode()).isFalse();
+            assertThat(request.jsonrpc()).isEqualTo("2.0");
+            assertThat(request.method()).isEqualTo("update");
+            assertThat(request.params()).isEqualTo(mapper.createObjectNode().put("cacheName", "profiles"));
+            assertThat(request.id().isMissingNode()).isFalse();
             return "";
         });
 
@@ -38,10 +38,10 @@ public class JsonRpcClientNotificationsTest {
             System.out.println(text);
             ObjectMapper mapper = new ObjectMapper();
             Request request = mapper.readValue(text, Request.class);
-            assertThat(request.getJsonrpc()).isEqualTo("2.0");
-            assertThat(request.getMethod()).isEqualTo("setExpirationTime");
-            assertThat(request.getParams()).isEqualTo(mapper.createArrayNode().add("profiles").add(20));
-            assertThat(request.getId().isMissingNode()).isFalse();
+            assertThat(request.jsonrpc()).isEqualTo("2.0");
+            assertThat(request.method()).isEqualTo("setExpirationTime");
+            assertThat(request.params()).isEqualTo(mapper.createArrayNode().add("profiles").add(20));
+            assertThat(request.id().isMissingNode()).isFalse();
             return "";
         });
 

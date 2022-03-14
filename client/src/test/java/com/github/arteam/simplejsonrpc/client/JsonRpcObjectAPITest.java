@@ -47,8 +47,8 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         JsonRpcClient client = initClient("find_player");
         Player player = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(43121)).findByInitials("Steven", "Stamkos");
         assertThat(player).isNotNull();
-        assertThat(player.getFirstName()).isEqualTo("Steven");
-        assertThat(player.getLastName()).isEqualTo("Stamkos");
+        assertThat(player.firstName()).isEqualTo("Steven");
+        assertThat(player.lastName()).isEqualTo("Stamkos");
     }
 
     @Test
@@ -65,10 +65,10 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
                 .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
-        assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
-        assertThat(player.getNumber()).isEqualTo(91);
-        assertThat(player.getFirstName()).isEqualTo("Vladimir");
-        assertThat(player.getLastName()).isEqualTo("Tarasenko");
+        assertThat(player.team()).isEqualTo(new Team("St. Louis Blues", "NHL"));
+        assertThat(player.number()).isEqualTo(91);
+        assertThat(player.firstName()).isEqualTo("Vladimir");
+        assertThat(player.lastName()).isEqualTo("Tarasenko");
     }
 
     @Test
@@ -78,10 +78,10 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
                 .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
-        assertThat(player.getTeam()).isEqualTo(new Team("St. Louis Blues", "NHL"));
-        assertThat(player.getNumber()).isEqualTo(19);
-        assertThat(player.getFirstName()).isEqualTo("Jay");
-        assertThat(player.getLastName()).isEqualTo("Bouwmeester");
+        assertThat(player.team()).isEqualTo(new Team("St. Louis Blues", "NHL"));
+        assertThat(player.number()).isEqualTo(19);
+        assertThat(player.firstName()).isEqualTo("Jay");
+        assertThat(player.lastName()).isEqualTo("Bouwmeester");
     }
 
     @Test
@@ -90,8 +90,8 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         Player player = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("dsfs1214"))
                 .findByInitials("Ben", "Bishop");
         assertThat(player).isNotNull();
-        assertThat(player.getFirstName()).isEqualTo("Ben");
-        assertThat(player.getLastName()).isEqualTo("Bishop");
+        assertThat(player.firstName()).isEqualTo("Ben");
+        assertThat(player.lastName()).isEqualTo("Bishop");
     }
 
     @Test
@@ -100,9 +100,9 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         List<Player> players = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(5621)).findByBirthYear(1990);
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        assertThat(players.get(0).getLastName()).isEqualTo("Allen");
-        assertThat(players.get(1).getLastName()).isEqualTo("Stamkos");
-        assertThat(players.get(2).getLastName()).isEqualTo("Hedman");
+        assertThat(players.get(0).lastName()).isEqualTo("Allen");
+        assertThat(players.get(1).lastName()).isEqualTo("Stamkos");
+        assertThat(players.get(2).lastName()).isEqualTo("Hedman");
     }
 
     @Test
@@ -111,9 +111,9 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         List<Player> players = client.onDemand(TeamService.class, new FixedIntegerIdGenerator(1000)).getPlayers();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        assertThat(players.get(0).getLastName()).isEqualTo("Bishop");
-        assertThat(players.get(1).getLastName()).isEqualTo("Tarasenko");
-        assertThat(players.get(2).getLastName()).isEqualTo("Bouwmeester");
+        assertThat(players.get(0).lastName()).isEqualTo("Bishop");
+        assertThat(players.get(1).lastName()).isEqualTo("Tarasenko");
+        assertThat(players.get(2).lastName()).isEqualTo("Bouwmeester");
     }
 
     @Test

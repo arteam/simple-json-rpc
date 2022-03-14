@@ -1,6 +1,5 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,20 +8,8 @@ import org.jetbrains.annotations.Nullable;
  * Time: 12:31
  * Representation of a successful JSON-RPC response
  */
-public class SuccessResponse extends Response {
-
-    @Nullable
-    @JsonProperty("result")
-    private final Object result;
-
-    public SuccessResponse(@JsonProperty("id") ValueNode id,
-                           @JsonProperty("result") @Nullable Object result) {
-        super(id);
-        this.result = result;
-    }
-
-    @Nullable
-    public Object getResult() {
-        return result;
-    }
+public record SuccessResponse(ValueNode id,
+                              @Nullable Object result,
+                              String jsonrpc) implements Response {
+    public static final String VERSION = "2.0";
 }

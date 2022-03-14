@@ -168,7 +168,7 @@ public class JsonRpcServer {
             }
         } catch (IOException e) {
             log.error("Bad json request", e);
-            return jsonConverter.apply(new ErrorResponse(PARSE_ERROR));
+            return jsonConverter.apply(ErrorResponse.of(PARSE_ERROR));
         }
 
         // Check if a single request or a batch
@@ -188,7 +188,7 @@ public class JsonRpcServer {
         }
 
         log.error("Invalid JSON-RPC request: " + rootRequest);
-        return jsonConverter.apply(new ErrorResponse(INVALID_REQUEST));
+        return jsonConverter.apply(ErrorResponse.of(INVALID_REQUEST));
     }
 
     /**
@@ -207,7 +207,7 @@ public class JsonRpcServer {
                 // Notification request should be a valid JSON-RPC request.
                 // So if we get "Parse error" or "Invalid request"
                 // we can't consider the request as a notification
-                int errorCode = ((ErrorResponse) response).getError().getCode();
+                int errorCode = ((ErrorResponse) response).error().getCode();
                 if (errorCode != PARSE_ERROR.getCode() && errorCode != INVALID_REQUEST.getCode()) {
                     return true;
                 }
@@ -230,7 +230,7 @@ public class JsonRpcServer {
             request = mapper.convertValue(requestNode, Request.class);
         } catch (Exception e) {
             log.error("Invalid JSON-RPC request: " + requestNode, e);
-            return new ErrorResponse(INVALID_REQUEST);
+            return ErrorResponse.of(INVALID_REQUEST);
         }
 
         try {
@@ -257,14 +257,14 @@ public class JsonRpcServer {
         JsonRpcError jsonRpcErrorAnnotation =
                 Reflections.getAnnotation(annotations, JsonRpcError.class);
         if (jsonRpcErrorAnnotation == null) {
-            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
+            return ErrorResponse.of(request.id(), INTERNAL_ERROR);
         }
         int code = jsonRpcErrorAnnotation.code();
         String message = Strings.isNullOrEmpty(jsonRpcErrorAnnotation.message()) ?
                 rootCause.getMessage() : jsonRpcErrorAnnotation.message();
         if (Strings.isNullOrEmpty(message)) {
             log.warn("Error message should not be empty");
-            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
+            return ErrorResponse.of(request.id(), INTERNAL_ERROR);
         }
         JsonNode data;
         try {
@@ -274,9 +274,9 @@ public class JsonRpcServer {
                     .orElse(null);
         } catch (Exception e1) {
             log.error("Error while processing error data: ", e1);
-            return new ErrorResponse(request.getId(), INTERNAL_ERROR);
+            return ErrorResponse.of(request.id(), INTERNAL_ERROR);
         }
-        return new ErrorResponse(request.getId(), new ErrorMessage(code, message, data));
+        return ErrorResponse.of(request.id(), new ErrorMessage(code, message, data));
     }
 
     /**
@@ -289,35 +289,35 @@ public class JsonRpcServer {
      */
     private Response handleSingle(Request request, Object service) throws Exception {
         // Check mandatory fields and correct protocol version
-        String requestMethod = request.getMethod();
-        String jsonrpc = request.getJsonrpc();
-        ValueNode id = request.getId();
+        String requestMethod = request.method();
+        String jsonrpc = request.jsonrpc();
+        ValueNode id = request.id();
         if (jsonrpc == null || requestMethod == null) {
             log.error("Not a JSON-RPC request: " + request);
-            return new ErrorResponse(id, INVALID_REQUEST);
+            return ErrorResponse.of(id, INVALID_REQUEST);
         }
 
         if (!jsonrpc.equals(VERSION)) {
             log.error("Not a JSON_RPC 2.0 request: " + request);
-            return new ErrorResponse(id, INVALID_REQUEST);
+            return ErrorResponse.of(id, INVALID_REQUEST);
         }
 
-        JsonNode params = request.getParams();
+        JsonNode params = request.params();
         if (!params.isObject() && !params.isArray() && !params.isNull()) {
             log.error("Params of request: '" + request + "' should be an object, an array or null");
-            return new ErrorResponse(id, INVALID_REQUEST);
+            return ErrorResponse.of(id, INVALID_REQUEST);
         }
 
         ClassMetadata classMetadata = classesMetadata.get(service.getClass());
-        if (!classMetadata.isService()) {
+        if (!classMetadata.service()) {
             log.warn(service.getClass() + " is not available as a JSON-RPC 2.0 service");
-            return new ErrorResponse(id, METHOD_NOT_FOUND);
+            return ErrorResponse.of(id, METHOD_NOT_FOUND);
         }
 
-        MethodMetadata method = classMetadata.getMethods().get(requestMethod);
+        MethodMetadata method = classMetadata.methods().get(requestMethod);
         if (method == null) {
             log.error("Unable find a method: '" + requestMethod + "' in a " + service.getClass());
-            return new ErrorResponse(id, METHOD_NOT_FOUND);
+            return ErrorResponse.of(id, METHOD_NOT_FOUND);
         }
 
         ContainerNode<?> notNullParams = !params.isNull() ?
@@ -326,17 +326,17 @@ public class JsonRpcServer {
         try {
             methodParams = convertToMethodParams(notNullParams, method);
         } catch (IllegalArgumentException e) {
-            log.error("Bad params: " + notNullParams + " of a method '" + method.getName() + "'", e);
-            return new ErrorResponse(id, INVALID_PARAMS);
+            log.error("Bad params: " + notNullParams + " of a method '" + method.name() + "'", e);
+            return ErrorResponse.of(id, INVALID_PARAMS);
         }
 
         Object result;
         try {
-            result = method.getMethodHandle().bindTo(service).invokeWithArguments(methodParams);
+            result = method.methodHandle().bindTo(service).invokeWithArguments(methodParams);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-        return new SuccessResponse(id, result);
+        return new SuccessResponse(id, result, SuccessResponse.VERSION);
     }
 
     /**
@@ -347,24 +347,24 @@ public class JsonRpcServer {
      * @return array of java objects for passing to the method
      */
     private Object[] convertToMethodParams(ContainerNode<?> params, MethodMetadata method) {
-        int methodParamsSize = method.getParams().size();
+        int methodParamsSize = method.params().size();
         int jsonParamsSize = params.size();
         // Check amount arguments
         if (jsonParamsSize > methodParamsSize) {
             throw new IllegalArgumentException("Wrong amount arguments: " + jsonParamsSize +
-                    " for a method '" + method.getName() + "'. Actual amount: " + methodParamsSize);
+                    " for a method '" + method.name() + "'. Actual amount: " + methodParamsSize);
         }
 
         Object[] methodParams = new Object[methodParamsSize];
         int processed = 0;
-        for (ParameterMetadata param : method.getParams().values()) {
-            Class<?> parameterType = param.getType();
-            int index = param.getIndex();
-            String name = param.getName();
+        for (ParameterMetadata param : method.params().values()) {
+            Class<?> parameterType = param.type();
+            int index = param.index();
+            String name = param.name();
             JsonNode jsonNode = params.isObject() ? params.get(name) : params.get(index);
             // Handle omitted value
             if (jsonNode == null || jsonNode.isNull()) {
-                if (param.isOptional()) {
+                if (param.optional()) {
                     methodParams[index] = getDefaultValue(parameterType);
                     if (jsonNode != null) {
                         processed++;
@@ -372,14 +372,14 @@ public class JsonRpcServer {
                     continue;
                 } else {
                     throw new IllegalArgumentException("Mandatory parameter '" + name +
-                            "' of a method '" + method.getName() + "' is not set");
+                            "' of a method '" + method.name() + "' is not set");
                 }
             }
 
             // Convert JSON object to an actual Java object
             try {
                 JsonParser jsonParser = mapper.treeAsTokens(jsonNode);
-                JavaType javaType = mapper.getTypeFactory().constructType(param.getGenericType());
+                JavaType javaType = mapper.getTypeFactory().constructType(param.genericType());
                 methodParams[index] = mapper.readValue(jsonParser, javaType);
                 processed++;
             } catch (IOException e) {
@@ -390,7 +390,7 @@ public class JsonRpcServer {
         // Check that some unprocessed parameters were not passed
         if (processed < jsonParamsSize) {
             throw new IllegalArgumentException("Some unspecified parameters in " + params +
-                    " are passed to a method '" + method.getName() + "'");
+                    " are passed to a method '" + method.name() + "'");
         }
 
         return methodParams;

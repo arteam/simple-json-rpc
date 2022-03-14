@@ -1,7 +1,5 @@
 package com.github.arteam.simplejsonrpc.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
@@ -10,24 +8,17 @@ import com.fasterxml.jackson.databind.node.ValueNode;
  * Time: 12:35
  * <p>Representation of a JSON-RPC error response</p>
  */
-public class ErrorResponse extends Response {
+public record ErrorResponse(ValueNode id,
+                            ErrorMessage error,
+                            String jsonrpc) implements Response {
 
-    @JsonProperty("error")
-    private final ErrorMessage error;
+    public static final String VERSION = "2.0";
 
-    @JsonCreator
-    public ErrorResponse(@JsonProperty("id") ValueNode id,
-                         @JsonProperty("error") ErrorMessage error) {
-        super(id);
-        this.error = error;
+    public static ErrorResponse of(ErrorMessage error) {
+        return new ErrorResponse(NullNode.getInstance(), error, VERSION);
     }
 
-    public ErrorResponse(ErrorMessage error) {
-        super(NullNode.getInstance());
-        this.error = error;
-    }
-
-    public ErrorMessage getError() {
-        return error;
+    public static ErrorResponse of(ValueNode id, ErrorMessage error) {
+        return new ErrorResponse(id, error, VERSION);
     }
 }
