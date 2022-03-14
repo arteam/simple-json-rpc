@@ -424,27 +424,23 @@ public class JsonRpcServer {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T defaultPrimitiveValue(Class<T> type) {
-        if (!type.isPrimitive()) {
-            return null;
-        }
+    private static Object defaultPrimitiveValue(Class<?> type) {
         if (type == boolean.class) {
-            return (T) Boolean.FALSE;
+            return false;
         } else if (type == char.class) {
-            return (T) Character.valueOf('\0');
+            return '\0';
         } else if (type == byte.class) {
-            return (T) Byte.valueOf((byte) 0);
+            return (byte) 0;
         } else if (type == short.class) {
-            return (T) Short.valueOf((short) 0);
+            return (short) 0;
         } else if (type == int.class) {
-            return (T) Integer.valueOf(0);
+            return 0;
         } else if (type == long.class) {
-            return (T) Long.valueOf(0L);
+            return 0L;
         } else if (type == float.class) {
-            return (T) Float.valueOf(0f);
+            return 0f;
         } else if (type == double.class) {
-            return (T) Double.valueOf(0d);
+            return 0d;
         }
         return null;
     }
