@@ -15,7 +15,6 @@ import com.github.arteam.simplejsonrpc.server.simple.exception.ExceptionWithData
 import com.github.arteam.simplejsonrpc.server.simple.exception.ExceptionWithDataMultipleMixed;
 import com.github.arteam.simplejsonrpc.server.simple.exception.ExceptionWithWrongMethods;
 import com.github.arteam.simplejsonrpc.server.simple.exception.TeamServiceAuthException;
-import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -23,6 +22,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -233,7 +233,7 @@ public class TeamService extends BaseService {
 
     @JsonRpcMethod
     public Map<String, Double> getContractSums(@JsonRpcParam("contractLengths") Map<String, ? extends Number> contractLengths) {
-        Map<String, Double> playerContractSums = Maps.newLinkedHashMap();
+        Map<String, Double> playerContractSums = new LinkedHashMap<>();
         for (Player player : players) {
             playerContractSums.put(player.lastName(),
                     player.capHit() * contractLengths.get(player.lastName()).intValue());

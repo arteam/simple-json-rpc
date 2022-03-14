@@ -1,10 +1,10 @@
 package com.github.arteam.simplejsonrpc.client.generator;
 
-import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 public class SecureRandomStringIdGeneratorTest {
@@ -26,7 +26,7 @@ public class SecureRandomStringIdGeneratorTest {
 
     private void testSize(int size) {
         int amount = 100;
-        Set<String> ids = Sets.newHashSetWithExpectedSize(amount);
+        Set<String> ids = new HashSet<>(amount * 2);
         for (int i = 0; i < amount; i++) {
             String id = secureRandomStringIdGenerator.generate();
             System.out.println(id);

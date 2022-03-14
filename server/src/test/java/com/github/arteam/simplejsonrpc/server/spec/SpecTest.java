@@ -3,7 +3,6 @@ package com.github.arteam.simplejsonrpc.server.spec;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
-import com.google.common.cache.CacheBuilderSpec;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -18,7 +17,7 @@ public class SpecTest {
 
     final CalculatorService calculatorService = new CalculatorService();
     // Just test factory method
-    final JsonRpcServer rpcServer = JsonRpcServer.withCacheSpec(CacheBuilderSpec.disableCaching());
+    final JsonRpcServer rpcServer = new JsonRpcServer();
     final ObjectMapper mapper = new ObjectMapper();
 
     private void test(String testName) {

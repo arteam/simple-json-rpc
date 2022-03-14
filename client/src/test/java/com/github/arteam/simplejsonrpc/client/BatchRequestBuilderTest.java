@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.github.arteam.simplejsonrpc.client.domain.Player;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +23,7 @@ public class BatchRequestBuilderTest {
     private static Map<String, RequestResponse> requestsResponses;
 
     final ObjectMapper mapper = new ObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .registerModule(new GuavaModule());
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
 
     @BeforeAll
@@ -49,15 +46,15 @@ public class BatchRequestBuilderTest {
     }
 
     private static Map<String, String> stevenStamkos() {
-        return ImmutableMap.of("firstName", "Steven", "lastName", "Stamkos");
+        return Map.of("firstName", "Steven", "lastName", "Stamkos");
     }
 
-    private static ImmutableMap<String, String> jackAllen() {
-        return ImmutableMap.of("firstName", "Jack", "lastName", "Allen");
+    private static Map<String, String> jackAllen() {
+        return Map.of("firstName", "Jack", "lastName", "Allen");
     }
 
-    private static ImmutableMap<String, String> vladimirSobotka() {
-        return ImmutableMap.of("firstName", "Vladimir", "lastName", "Sobotka");
+    private static Map<String, String> vladimirSobotka() {
+        return Map.of("firstName", "Vladimir", "lastName", "Sobotka");
     }
 
     private static void checkBatch(Map<String, Player> result) {
@@ -161,7 +158,7 @@ public class BatchRequestBuilderTest {
         Map<Integer, ?> result = client.createBatchRequest()
                 .add(12000, "isAlive", new HashMap<>(), Boolean.class)
                 .add(12001, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
-                .add(12002, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {
+                .add(12002, "find_by_birth_year", Map.of("birth_year", 1990), new TypeReference<List<Player>>() {
                 })
                 .keysType(Integer.class)
                 .execute();
@@ -181,7 +178,7 @@ public class BatchRequestBuilderTest {
         Map<Long, ?> result = client.createBatchRequest()
                 .add(12000L, "isAlive", new HashMap<>(), Boolean.class)
                 .add(12001L, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
-                .add(12002L, "find_by_birth_year", ImmutableMap.of("birth_year", 1990), new TypeReference<List<Player>>() {
+                .add(12002L, "find_by_birth_year", Map.of("birth_year", 1990), new TypeReference<List<Player>>() {
                 })
                 .keysType(Long.class)
                 .execute();
@@ -214,7 +211,7 @@ public class BatchRequestBuilderTest {
         JsonRpcClient client = initClient("all_notifications");
         Map<?, ?> result = client.createBatchRequest()
                 .add("isAlive")
-                .add("updateCache", ImmutableMap.of("name", "assets"))
+                .add("updateCache", Map.of("name", "assets"))
                 .add("newSchedule", 0, 2, 0, 0, 0)
                 .execute();
         assertThat(result).isEmpty();

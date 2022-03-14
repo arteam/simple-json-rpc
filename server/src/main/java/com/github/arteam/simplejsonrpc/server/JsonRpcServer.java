@@ -19,14 +19,6 @@ import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
-import com.google.common.base.Defaults;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheBuilderSpec;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +30,8 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -72,48 +66,28 @@ public class JsonRpcServer {
     private final ObjectMapper mapper;
 
     /**
-     * Default Cache params specification
+     * Cache of classes metadata
      */
-    private static final CacheBuilderSpec DEFAULT_SPEC = CacheBuilderSpec.parse("expireAfterWrite=1h");
-
+    private final ConcurrentMap<Class<?>, ClassMetadata> classesMetadata = new ConcurrentHashMap<>();
     /**
      * Cache of classes metadata
      */
-    private final LoadingCache<Class<?>, ClassMetadata> classesMetadata;
-    /**
-     * Cache of classes metadata
-     */
-    private final LoadingCache<Class<? extends Throwable>, ErrorDataResolver> dataResolvers;
+    private final ConcurrentMap<Class<? extends Throwable>, ErrorDataResolver> dataResolvers = new ConcurrentHashMap<>();
 
     /**
      * Init JSON-RPC server
      *
-     * @param mapper           used-defined JSON mapper
-     * @param cacheBuilderSpec classes metadata cache specification
+     * @param mapper used-defined JSON mapper
      */
-    public JsonRpcServer(ObjectMapper mapper, CacheBuilderSpec cacheBuilderSpec) {
+    public JsonRpcServer(ObjectMapper mapper) {
         this.mapper = mapper;
-        classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
-                new CacheLoader<>() {
-                    @Override
-                    public @NotNull ClassMetadata load(@NotNull Class<?> clazz) throws Exception {
-                        return Reflections.getClassMetadata(clazz);
-                    }
-                });
-        dataResolvers = CacheBuilder.from(cacheBuilderSpec).build(
-                new CacheLoader<>() {
-                    @Override
-                    public @NotNull ErrorDataResolver load(@NotNull Class<? extends Throwable> clazz) throws Exception {
-                        return Reflections.buildErrorDataResolver(clazz);
-                    }
-                });
     }
 
     /**
      * Init JSON-RPC server with default parameters
      */
     public JsonRpcServer() {
-        this(new ObjectMapper(), DEFAULT_SPEC);
+        this(new ObjectMapper());
     }
 
     /**
@@ -123,17 +97,7 @@ public class JsonRpcServer {
      * @return new JSON-RPC server
      */
     public static JsonRpcServer withMapper(ObjectMapper mapper) {
-        return new JsonRpcServer(mapper, DEFAULT_SPEC);
-    }
-
-    /**
-     * Factory for creating JSON-RPC server with a specific config of classes metadata cache.
-     *
-     * @param cacheSpec user-defined cache config
-     * @return new JSON-RPC server
-     */
-    public static JsonRpcServer withCacheSpec(CacheBuilderSpec cacheSpec) {
-        return new JsonRpcServer(new ObjectMapper(), cacheSpec);
+        return new JsonRpcServer(mapper);
     }
 
     /**
@@ -252,7 +216,7 @@ public class JsonRpcServer {
      * @return JSON-RPC error response
      */
     private ErrorResponse handleError(Request request, Exception e) {
-        Throwable rootCause = Throwables.getRootCause(e);
+        Throwable rootCause = getRootCause(e);
         Annotation[] annotations = rootCause.getClass().getAnnotations();
         JsonRpcError jsonRpcErrorAnnotation =
                 Reflections.getAnnotation(annotations, JsonRpcError.class);
@@ -260,15 +224,15 @@ public class JsonRpcServer {
             return ErrorResponse.of(request.id(), INTERNAL_ERROR);
         }
         int code = jsonRpcErrorAnnotation.code();
-        String message = Strings.isNullOrEmpty(jsonRpcErrorAnnotation.message()) ?
+        String message = jsonRpcErrorAnnotation.message() == null || jsonRpcErrorAnnotation.message().isEmpty() ?
                 rootCause.getMessage() : jsonRpcErrorAnnotation.message();
-        if (Strings.isNullOrEmpty(message)) {
+        if (message == null || message.isEmpty()) {
             log.warn("Error message should not be empty");
             return ErrorResponse.of(request.id(), INTERNAL_ERROR);
         }
         JsonNode data;
         try {
-            data = dataResolvers.get(rootCause.getClass())
+            data = dataResolvers.computeIfAbsent(rootCause.getClass(), Reflections::buildErrorDataResolver)
                     .resolveData(rootCause)
                     .map((Function<Object, JsonNode>) mapper::valueToTree)
                     .orElse(null);
@@ -308,7 +272,7 @@ public class JsonRpcServer {
             return ErrorResponse.of(id, INVALID_REQUEST);
         }
 
-        ClassMetadata classMetadata = classesMetadata.get(service.getClass());
+        ClassMetadata classMetadata = classesMetadata.computeIfAbsent(service.getClass(), Reflections::getClassMetadata);
         if (!classMetadata.service()) {
             log.warn(service.getClass() + " is not available as a JSON-RPC 2.0 service");
             return ErrorResponse.of(id, METHOD_NOT_FOUND);
@@ -398,15 +362,12 @@ public class JsonRpcServer {
 
     @Nullable
     private Object getDefaultValue(Class<?> type) {
-        if (type == com.google.common.base.Optional.class) {
-            // If it's Guava optional then handle it as an absent value
-            return com.google.common.base.Optional.absent();
-        } else if (type == java.util.Optional.class) {
+        if (type == java.util.Optional.class) {
             // If it's Java optional then handle it as an absent value
             return java.util.Optional.empty();
         } else if (type.isPrimitive()) {
             // If parameter is a primitive set the appropriate default value
-            return Defaults.defaultValue(type);
+            return defaultPrimitiveValue(type);
         }
         return null;
     }
@@ -451,6 +412,48 @@ public class JsonRpcServer {
             log.error("Unable write json: " + value, e);
             throw new IllegalStateException(e);
         }
+    }
+
+    private static Throwable getRootCause(Throwable throwable) {
+        Throwable slowPointer = throwable;
+        boolean advanceSlowPointer = false;
+        Throwable cause;
+        while ((cause = throwable.getCause()) != null) {
+            throwable = cause;
+            if (throwable == slowPointer) {
+                throw new IllegalArgumentException("Loop in causal chain detected.", throwable);
+            }
+            if (advanceSlowPointer) {
+                slowPointer = slowPointer.getCause();
+            }
+            advanceSlowPointer = !advanceSlowPointer;
+        }
+        return throwable;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T defaultPrimitiveValue(Class<T> type) {
+        if (!type.isPrimitive()) {
+            return null;
+        }
+        if (type == boolean.class) {
+            return (T) Boolean.FALSE;
+        } else if (type == char.class) {
+            return (T) Character.valueOf('\0');
+        } else if (type == byte.class) {
+            return (T) Byte.valueOf((byte) 0);
+        } else if (type == short.class) {
+            return (T) Short.valueOf((short) 0);
+        } else if (type == int.class) {
+            return (T) Integer.valueOf(0);
+        } else if (type == long.class) {
+            return (T) Long.valueOf(0L);
+        } else if (type == float.class) {
+            return (T) Float.valueOf(0f);
+        } else if (type == double.class) {
+            return (T) Double.valueOf(0d);
+        }
+        return null;
     }
 
     @FunctionalInterface
