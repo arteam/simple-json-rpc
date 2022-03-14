@@ -59,15 +59,15 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // Check that it's a JSON-RPC method
-        MethodMetadata methodMetadata = classMetadata.getMethods().get(method);
+        MethodMetadata methodMetadata = classMetadata.methods().get(method);
         if (methodMetadata == null) {
             throw new IllegalStateException("Method '" + method.getName() + "' is not JSON-RPC available");
         }
 
         // Get method name (annotation or the actual name), params and id generator
-        String methodName = methodMetadata.getName();
+        String methodName = methodMetadata.name();
         JsonNode params = getParams(methodMetadata, args, getParamsType(classMetadata, methodMetadata));
-        IdGenerator<?> idGenerator = userIdGenerator != null ? userIdGenerator : classMetadata.getIdGenerator();
+        IdGenerator<?> idGenerator = userIdGenerator != null ? userIdGenerator : classMetadata.idGenerator();
 
         //  Construct a request
         ValueNode id = new POJONode(idGenerator.generate());
@@ -96,8 +96,8 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
                                ParamsType paramsType) {
         ObjectNode paramsAsMap = mapper.createObjectNode();
         ArrayNode paramsAsArray = mapper.createArrayNode();
-        for (String paramName : method.getParams().keySet()) {
-            ParameterMetadata parameterMetadata = method.getParams().get(paramName);
+        for (String paramName : method.params().keySet()) {
+            ParameterMetadata parameterMetadata = method.params().get(paramName);
             int index = parameterMetadata.getIndex();
             JsonNode jsonArg = mapper.valueToTree(args != null ? args[index] : null);
             if (jsonArg == null || jsonArg == NullNode.instance) {
@@ -107,7 +107,7 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
                     }
                 } else {
                     throw new IllegalArgumentException("Parameter '" + paramName +
-                            "' of method '" + method.getName() + "' is mandatory and can't be null");
+                            "' of method '" + method.name() + "' is mandatory and can't be null");
                 }
             } else {
                 if (paramsType == ParamsType.MAP) {
@@ -147,10 +147,10 @@ public class ObjectApiBuilder extends AbstractBuilder implements InvocationHandl
     private ParamsType getParamsType(ClassMetadata classMetadata, MethodMetadata methodMetadata) {
         if (userParamsType != null) {
             return userParamsType;
-        } else if (methodMetadata.getParamsType() != null) {
-            return methodMetadata.getParamsType();
-        } else if (classMetadata.getParamsType() != null) {
-            return classMetadata.getParamsType();
+        } else if (methodMetadata.paramsType() != null) {
+            return methodMetadata.paramsType();
+        } else if (classMetadata.paramsType() != null) {
+            return classMetadata.paramsType();
         }
         return ParamsType.MAP;
     }

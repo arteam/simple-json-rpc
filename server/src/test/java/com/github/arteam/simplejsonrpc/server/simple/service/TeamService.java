@@ -57,7 +57,7 @@ public class TeamService extends BaseService {
     @JsonRpcMethod("find_by_birth_year")
     public List<Player> findByBirthYear(@JsonRpcParam("birth_year") final int birthYear) {
         return players.stream().filter(player -> {
-            int year = new DateTime(player.getBirthDate()).getYear();
+            int year = new DateTime(player.birthDate()).getYear();
             return year == birthYear;
         }).collect(Collectors.toList());
     }
@@ -66,7 +66,7 @@ public class TeamService extends BaseService {
     public Player findByInitials(@JsonRpcParam("firstName") final String firstName,
                                  @JsonRpcParam("lastName") final String lastName) {
         return players.stream()
-                .filter(player -> player.getFirstName().equals(firstName) && player.getLastName().equals(lastName))
+                .filter(player -> player.firstName().equals(firstName) && player.lastName().equals(lastName))
                 .findAny()
                 .orElse(null);
     }
@@ -81,13 +81,13 @@ public class TeamService extends BaseService {
                              @JsonRpcOptional @JsonRpcParam("birthDate") @Nullable Date birthDate,
                              @JsonRpcOptional @JsonRpcParam("capHit") Optional<Double> capHit) {
         return players.stream().filter(player -> {
-            if (position != null && !player.getPosition().equals(position)) return false;
-            if (number != 0 && player.getNumber() != number) return false;
-            if (team.isPresent() && !player.getTeam().equals(team.get())) return false;
-            if (firstName != null && !player.getFirstName().equals(firstName)) return false;
-            if (lastName != null && !player.getLastName().equals(lastName)) return false;
-            if (birthDate != null && !player.getBirthDate().equals(birthDate)) return false;
-            if (capHit.isPresent() && player.getCapHit() != capHit.get()) return false;
+            if (position != null && !player.position().equals(position)) return false;
+            if (number != 0 && player.number() != number) return false;
+            if (team.isPresent() && !player.team().equals(team.get())) return false;
+            if (firstName != null && !player.firstName().equals(firstName)) return false;
+            if (lastName != null && !player.lastName().equals(lastName)) return false;
+            if (birthDate != null && !player.birthDate().equals(birthDate)) return false;
+            if (capHit.isPresent() && player.capHit() != capHit.get()) return false;
             return true;
         }).collect(Collectors.toList());
     }
@@ -203,14 +203,14 @@ public class TeamService extends BaseService {
 
     @JsonRpcMethod
     public List<Player> findPlayersByFirstNames(@JsonRpcParam("names") final List<String> names) {
-        return players.stream().filter(player -> names.contains(player.getFirstName())).collect(Collectors.toList());
+        return players.stream().filter(player -> names.contains(player.firstName())).collect(Collectors.toList());
     }
 
     @JsonRpcMethod
     public List<Player> findPlayersByNumbers(@JsonRpcParam("numbers") final int... numbers) {
         return players.stream().filter(player -> {
             for (int number : numbers) {
-                if (player.getNumber() == number) {
+                if (player.number() == number) {
                     return true;
                 }
             }
@@ -223,7 +223,7 @@ public class TeamService extends BaseService {
     public final <T> List<Player> genericFindPlayersByNumbers(@JsonRpcParam("numbers") final T... numbers) {
         return players.stream().filter(player -> {
             for (T number : numbers) {
-                if (String.valueOf(player.getNumber()).equals(number.toString())) {
+                if (String.valueOf(player.number()).equals(number.toString())) {
                     return true;
                 }
             }
@@ -235,8 +235,8 @@ public class TeamService extends BaseService {
     public Map<String, Double> getContractSums(@JsonRpcParam("contractLengths") Map<String, ? extends Number> contractLengths) {
         Map<String, Double> playerContractSums = Maps.newLinkedHashMap();
         for (Player player : players) {
-            playerContractSums.put(player.getLastName(),
-                    player.getCapHit() * contractLengths.get(player.getLastName()).intValue());
+            playerContractSums.put(player.lastName(),
+                    player.capHit() * contractLengths.get(player.lastName()).intValue());
         }
         return playerContractSums;
     }

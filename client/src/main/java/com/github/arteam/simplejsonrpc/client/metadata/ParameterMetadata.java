@@ -6,22 +6,7 @@ package com.github.arteam.simplejsonrpc.client.metadata;
  * <p>
  * Method parameter metadata
  */
-public class ParameterMetadata {
-
-    /**
-     * Index in method arguments
-     */
-    private final int index;
-
-    /**
-     * Whether parameter is optional
-     */
-    private final boolean optional;
-
-    public ParameterMetadata(int index, boolean optional) {
-        this.index = index;
-        this.optional = optional;
-    }
+public record ParameterMetadata(int index, boolean optional) {
 
     public int getIndex() {
         return index;
@@ -29,13 +14,5 @@ public class ParameterMetadata {
 
     public boolean isOptional() {
         return optional;
-    }
-
-    @Override
-    public String toString() {
-        return "ParameterMetadata{" +
-                "index=" + index +
-                ", optional=" + optional +
-                '}';
     }
 }

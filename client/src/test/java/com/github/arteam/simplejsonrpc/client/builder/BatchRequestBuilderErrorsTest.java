@@ -257,8 +257,8 @@ public class BatchRequestBuilderErrorsTest {
         Object result = successes.get(1L);
         assertThat(result).isNotNull();
         assertThat(result).isInstanceOf(Player.class);
-        assertThat(((Player) result).getFirstName()).isEqualTo("Steven");
-        assertThat(((Player) result).getLastName()).isEqualTo("Stamkos");
+        assertThat(((Player) result).firstName()).isEqualTo("Steven");
+        assertThat(((Player) result).lastName()).isEqualTo("Stamkos");
 
         assertThat(errors).isNotEmpty();
         ErrorMessage errorMessage = errors.get(2L);

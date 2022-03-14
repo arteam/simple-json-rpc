@@ -10,18 +10,8 @@ import org.jetbrains.annotations.Nullable;
  * Time: 15:16
  * <p>Representation of a JSON-RPC error message</p>
  */
-public class ErrorMessage {
-
-    @JsonProperty("code")
-    private final int code;
-
-    @JsonProperty("message")
-    private final String message;
-
-    @JsonProperty("data")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Nullable
-    private final JsonNode data;
+public record ErrorMessage(@JsonProperty("code") int code, @JsonProperty("message") String message,
+                           @JsonProperty("data") @JsonInclude(JsonInclude.Include.NON_NULL) @Nullable JsonNode data) {
 
     public ErrorMessage(@JsonProperty("code") int code,
                         @JsonProperty("message") String message,

@@ -61,10 +61,10 @@ public class BatchRequestBuilderTest {
     }
 
     private static void checkBatch(Map<String, Player> result) {
-        assertThat(result.get("43121").getFirstName()).isEqualTo("Steven");
-        assertThat(result.get("43121").getLastName()).isEqualTo("Stamkos");
-        assertThat(result.get("43122").getFirstName()).isEqualTo("Jack");
-        assertThat(result.get("43122").getLastName()).isEqualTo("Allen");
+        assertThat(result.get("43121").firstName()).isEqualTo("Steven");
+        assertThat(result.get("43121").lastName()).isEqualTo("Stamkos");
+        assertThat(result.get("43122").firstName()).isEqualTo("Jack");
+        assertThat(result.get("43122").lastName()).isEqualTo("Allen");
         assertThat(result.get("43123")).isNull();
     }
 
@@ -168,8 +168,8 @@ public class BatchRequestBuilderTest {
         assertThat(result.get(12000)).isExactlyInstanceOf(Boolean.class);
         assertThat((Boolean) result.get(12000)).isTrue();
         assertThat(result.get(12001)).isExactlyInstanceOf(Player.class);
-        assertThat(((Player) result.get(12001)).getFirstName()).isEqualTo("Kevin");
-        assertThat(((Player) result.get(12001)).getLastName()).isEqualTo("Shattenkirk");
+        assertThat(((Player) result.get(12001)).firstName()).isEqualTo("Kevin");
+        assertThat(((Player) result.get(12001)).lastName()).isEqualTo("Shattenkirk");
         assertThat(result.get(12002)).isInstanceOf(List.class);
         assertThat((List<Player>) result.get(12002)).hasSize(3);
     }
@@ -188,8 +188,8 @@ public class BatchRequestBuilderTest {
         assertThat(result.get(12000L)).isExactlyInstanceOf(Boolean.class);
         assertThat((Boolean) result.get(12000L)).isTrue();
         assertThat(result.get(12001L)).isExactlyInstanceOf(Player.class);
-        assertThat(((Player) result.get(12001L)).getFirstName()).isEqualTo("Kevin");
-        assertThat(((Player) result.get(12001L)).getLastName()).isEqualTo("Shattenkirk");
+        assertThat(((Player) result.get(12001L)).firstName()).isEqualTo("Kevin");
+        assertThat(((Player) result.get(12001L)).lastName()).isEqualTo("Shattenkirk");
         assertThat(result.get(12002L)).isInstanceOf(List.class);
         assertThat((List<Player>) result.get(12002L)).hasSize(3);
     }
@@ -204,8 +204,8 @@ public class BatchRequestBuilderTest {
                 .keysType(Integer.class)
                 .execute();
         assertThat(result.get(1)).isExactlyInstanceOf(Player.class);
-        assertThat(((Player) result.get(1)).getFirstName()).isEqualTo("Steven");
-        assertThat(((Player) result.get(1)).getLastName()).isEqualTo("Stamkos");
+        assertThat(((Player) result.get(1)).firstName()).isEqualTo("Steven");
+        assertThat(((Player) result.get(1)).lastName()).isEqualTo("Stamkos");
         assertThat(result.get(3)).isNull();
     }
 
