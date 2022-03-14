@@ -415,20 +415,13 @@ public class JsonRpcServer {
     }
 
     private static Throwable getRootCause(Throwable throwable) {
-        Throwable slowPointer = throwable;
-        boolean advanceSlowPointer = false;
-        Throwable cause;
-        while ((cause = throwable.getCause()) != null) {
-            throwable = cause;
-            if (throwable == slowPointer) {
-                throw new IllegalArgumentException("Loop in causal chain detected.", throwable);
+        Throwable t = throwable;
+        while (true) {
+            if (t.getCause() == null) {
+                return t;
             }
-            if (advanceSlowPointer) {
-                slowPointer = slowPointer.getCause();
-            }
-            advanceSlowPointer = !advanceSlowPointer;
+            t = t.getCause();
         }
-        return throwable;
     }
 
     @SuppressWarnings("unchecked")
