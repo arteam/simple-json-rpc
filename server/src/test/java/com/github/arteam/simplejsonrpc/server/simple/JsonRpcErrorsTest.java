@@ -6,7 +6,6 @@ import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.github.arteam.simplejsonrpc.server.simple.service.BaseService;
 import com.github.arteam.simplejsonrpc.server.simple.service.BogusService;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -29,9 +28,8 @@ public class JsonRpcErrorsTest {
 
     @SuppressWarnings("UnstableApiUsage")
     private static String requestFile(String name) {
-        try {
-            return Resources.toString(Objects.requireNonNull(JsonRpcErrorsTest.class.getResource("/error/request/" + name)),
-                    StandardCharsets.UTF_8);
+        try (var is = Objects.requireNonNull(JsonRpcErrorsTest.class.getResourceAsStream("/error/request/" + name))) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -39,14 +37,12 @@ public class JsonRpcErrorsTest {
 
     @SuppressWarnings("UnstableApiUsage")
     private static String responseFile(String name) {
-        try {
-            return Resources.toString(Objects.requireNonNull(JsonRpcErrorsTest.class.getResource("/error/response/" + name)),
-                    StandardCharsets.UTF_8);
+        try (var is = Objects.requireNonNull(JsonRpcErrorsTest.class.getResourceAsStream("/error/response/" + name))) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
-
 
     private static JsonNode json(String text) {
         try {

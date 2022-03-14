@@ -8,7 +8,6 @@ import com.github.arteam.simplejsonrpc.client.domain.Team;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.util.MapBuilder;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import com.google.common.collect.Lists;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Assertions;
@@ -79,10 +78,7 @@ public class JsonRpcClientTest extends BaseClientTest {
         Set<Player> players = client.createRequest().method("find_by_birth_year").id(5621).param("birth_year", 1990).returnAsSet(Player.class).execute();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        List<String> lastNames = Lists.newArrayList();
-        for (Player player : players) {
-            lastNames.add(player.lastName());
-        }
+        List<String> lastNames = players.stream().map(Player::lastName).toList();
         assertThat(lastNames).containsOnly("Allen", "Stamkos", "Hedman");
     }
 

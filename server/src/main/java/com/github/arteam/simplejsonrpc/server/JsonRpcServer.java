@@ -94,14 +94,14 @@ public class JsonRpcServer {
     public JsonRpcServer(ObjectMapper mapper, CacheBuilderSpec cacheBuilderSpec) {
         this.mapper = mapper;
         classesMetadata = CacheBuilder.from(cacheBuilderSpec).build(
-                new CacheLoader<Class<?>, ClassMetadata>() {
+                new CacheLoader<>() {
                     @Override
                     public @NotNull ClassMetadata load(@NotNull Class<?> clazz) throws Exception {
                         return Reflections.getClassMetadata(clazz);
                     }
                 });
         dataResolvers = CacheBuilder.from(cacheBuilderSpec).build(
-                new CacheLoader<Class<? extends Throwable>, ErrorDataResolver>() {
+                new CacheLoader<>() {
                     @Override
                     public @NotNull ErrorDataResolver load(@NotNull Class<? extends Throwable> clazz) throws Exception {
                         return Reflections.buildErrorDataResolver(clazz);
@@ -203,11 +203,11 @@ public class JsonRpcServer {
         if (requestNode.get("id") == null) {
             if (response instanceof SuccessResponse) {
                 return true;
-            } else if (response instanceof ErrorResponse) {
+            } else if (response instanceof ErrorResponse errorResponse) {
                 // Notification request should be a valid JSON-RPC request.
                 // So if we get "Parse error" or "Invalid request"
                 // we can't consider the request as a notification
-                int errorCode = ((ErrorResponse) response).error().getCode();
+                int errorCode = errorResponse.error().getCode();
                 if (errorCode != PARSE_ERROR.getCode() && errorCode != INVALID_REQUEST.getCode()) {
                     return true;
                 }
