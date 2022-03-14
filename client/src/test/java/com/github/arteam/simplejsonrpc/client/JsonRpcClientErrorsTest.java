@@ -16,7 +16,9 @@ public class JsonRpcClientErrorsTest {
 
     JsonRpcClient client = new JsonRpcClient(request -> {
         System.out.println(request);
-        return "{\"jsonrpc\": \"2.0\", \"id\": 1001, \"result\": true}";
+        return """
+                {"jsonrpc": "2.0", "id": 1001, "result": true}
+                """;
     });
 
     @Test
@@ -79,7 +81,9 @@ public class JsonRpcClientErrorsTest {
     public void testResultAndErrorAreNotSet() {
         JsonRpcClient client = new JsonRpcClient(request -> {
             System.out.println(request);
-            return "{\"jsonrpc\": \"2.0\", \"id\": 1001}";
+            return """
+                    {"jsonrpc": "2.0", "id": 1001}
+                    """;
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("update")
@@ -102,7 +106,9 @@ public class JsonRpcClientErrorsTest {
     public void testExpectedNotNull() {
         JsonRpcClient client = new JsonRpcClient(request -> {
             System.out.println(request);
-            return "{\"jsonrpc\": \"2.0\", \"result\" : null, \"id\": 1001}";
+            return """
+                    {"jsonrpc": "2.0", "result" : null, "id": 1001}
+                    """;
         });
         assertThatIllegalStateException().isThrownBy(() -> client.createRequest()
                 .method("getPlayer")

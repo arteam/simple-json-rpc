@@ -6,7 +6,6 @@ import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.google.common.cache.CacheBuilderSpec;
 import org.junit.jupiter.api.Test;
 
-import java.io.InputStream;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,9 +22,9 @@ public class SpecTest {
     final ObjectMapper mapper = new ObjectMapper();
 
     private void test(String testName) {
-        try (InputStream stream = SpecTest.class.getResourceAsStream("/spec/" + testName + ".properties")) {
+        try (var is = SpecTest.class.getResourceAsStream("/spec/" + testName + ".properties")) {
             Properties testProps = new Properties();
-            testProps.load(stream);
+            testProps.load(is);
             String textRequest = testProps.getProperty("request");
             JsonNode response = mapper.readTree(testProps.getProperty("response"));
 
