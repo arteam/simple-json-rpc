@@ -1,8 +1,7 @@
 package com.github.arteam.simplejsonrpc.server.metadata;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.lang.invoke.MethodHandle;
+import java.util.Map;
 
 /**
  * Date: 8/1/14
@@ -11,5 +10,5 @@ import java.lang.invoke.MethodHandle;
  * Metadata about a Java method
  */
 public record MethodMetadata(String name, MethodHandle methodHandle,
-                             ImmutableMap<String, ParameterMetadata> params) {
+                             Map<String, ParameterMetadata> params) {
 }

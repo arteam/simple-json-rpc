@@ -9,7 +9,6 @@ import com.github.arteam.simplejsonrpc.server.metadata.ClassMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ErrorDataResolver;
 import com.github.arteam.simplejsonrpc.server.metadata.MethodMetadata;
 import com.github.arteam.simplejsonrpc.server.metadata.ParameterMetadata;
-import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -65,7 +66,7 @@ class Reflections {
      * @return service class JSON-RPC meta-information
      */
     public static ClassMetadata getClassMetadata(Class<?> clazz) {
-        ImmutableMap.Builder<String, MethodMetadata> methodsMetadata = ImmutableMap.builder();
+        Map<String, MethodMetadata> methodsMetadata = new HashMap<>();
         Class<?> searchType = clazz;
         // Search through the class hierarchy
         while (searchType != null) {
@@ -89,7 +90,7 @@ class Reflections {
                 }
 
                 String rpcMethodName = !jsonRpcMethod.value().isEmpty() ? jsonRpcMethod.value() : methodName;
-                ImmutableMap<String, ParameterMetadata> methodParams = getMethodParameters(method);
+                Map<String, ParameterMetadata> methodParams = getMethodParameters(method);
                 if (methodParams == null) {
                     log.warn("Method '" + methodName + "' has misconfigured parameters");
                     continue;
@@ -102,18 +103,18 @@ class Reflections {
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-                methodsMetadata.put(rpcMethodName, new MethodMetadata(rpcMethodName, methodHandle, methodParams));
+                MethodMetadata oldMethodMetadata = methodsMetadata.put(rpcMethodName,
+                        new MethodMetadata(rpcMethodName, methodHandle, methodParams));
+                if (oldMethodMetadata != null) {
+                    // Throw exception, because two methods with the same name leads to unexpected behaviour
+                    throw new IllegalArgumentException("There two methods with the same name in " + clazz);
+                }
             }
             searchType = searchType.getSuperclass();
         }
 
         boolean isService = getAnnotation(clazz != null ? clazz.getAnnotations() : null, JsonRpcService.class) != null;
-        try {
-            return new ClassMetadata(isService, methodsMetadata.build());
-        } catch (IllegalArgumentException e) {
-            // Throw exception, because two methods with the same name leads to unexpected behaviour
-            throw new IllegalArgumentException("There two methods with the same name in " + clazz, e);
-        }
+        return new ClassMetadata(isService, Map.copyOf(methodsMetadata));
     }
 
     /**
@@ -123,13 +124,13 @@ class Reflections {
      * @return map of parameters metadata by their names
      */
     @Nullable
-    private static ImmutableMap<String, ParameterMetadata> getMethodParameters(Method method) {
+    private static Map<String, ParameterMetadata> getMethodParameters(Method method) {
         Annotation[][] allParametersAnnotations = method.getParameterAnnotations();
         int methodParamsSize = allParametersAnnotations.length;
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
 
-        ImmutableMap.Builder<String, ParameterMetadata> parametersMetadata = ImmutableMap.builder();
+        Map<String, ParameterMetadata> parametersMetadata = new HashMap<>();
         for (int i = 0; i < methodParamsSize; i++) {
             Annotation[] parameterAnnotations = allParametersAnnotations[i];
             JsonRpcParam jsonRpcParam = Reflections.getAnnotation(parameterAnnotations, JsonRpcParam.class);
@@ -141,17 +142,15 @@ class Reflections {
 
             String paramName = jsonRpcParam.value();
             boolean optional = Reflections.getAnnotation(parameterAnnotations, JsonRpcOptional.class) != null;
-            parametersMetadata.put(paramName, new ParameterMetadata(paramName, parameterTypes[i],
-                    genericParameterTypes[i], i, optional));
+            ParameterMetadata oldParameterMetadata = parametersMetadata.put(paramName,
+                    new ParameterMetadata(paramName, parameterTypes[i], genericParameterTypes[i], i, optional));
+            if (oldParameterMetadata != null) {
+                log.error("There two parameters with the same name in method '" + method.getName() +
+                        "' of the class '" + method.getDeclaringClass() + "'");
+                return null;
+            }
         }
-
-        try {
-            return parametersMetadata.build();
-        } catch (IllegalArgumentException e) {
-            log.error("There two parameters with the same name in method '" + method.getName() +
-                    "' of the class '" + method.getDeclaringClass() + "'", e);
-            return null;
-        }
+        return Map.copyOf(parametersMetadata);
     }
 
     static ErrorDataResolver buildErrorDataResolver(Class<? extends Throwable> throwableClass) {
