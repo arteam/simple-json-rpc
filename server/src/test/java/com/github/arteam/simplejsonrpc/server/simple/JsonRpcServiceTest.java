@@ -158,13 +158,13 @@ public class JsonRpcServiceTest {
     private void test(String testName) {
         try {
             RequestResponse requestResponse = testData.get(testName);
-            String textRequest = userMapper.writeValueAsString(requestResponse.request);
+            String textRequest = userMapper.writeValueAsString(requestResponse.request());
 
             String actual = rpcServer.handle(textRequest, teamService);
             if (!actual.isEmpty()) {
-                assertThat(userMapper.readTree(actual)).isEqualTo(requestResponse.response);
+                assertThat(userMapper.readTree(actual)).isEqualTo(requestResponse.response());
             } else {
-                assertThat(actual).isEqualTo(requestResponse.response.asText());
+                assertThat(actual).isEqualTo(requestResponse.response().asText());
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
