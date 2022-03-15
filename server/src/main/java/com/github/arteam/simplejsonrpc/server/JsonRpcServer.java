@@ -29,7 +29,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -416,10 +418,12 @@ public class JsonRpcServer {
 
     private static Throwable getRootCause(Throwable throwable) {
         Throwable t = throwable;
+        List<Throwable> causes = new ArrayList<>();
         while (true) {
-            if (t.getCause() == null) {
+            if (t.getCause() == null || causes.contains(t)) {
                 return t;
             }
+            causes.add(t);
             t = t.getCause();
         }
     }
