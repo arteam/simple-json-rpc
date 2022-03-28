@@ -16,11 +16,9 @@ import com.github.arteam.simplejsonrpc.server.simple.exception.ExceptionWithData
 import com.github.arteam.simplejsonrpc.server.simple.exception.ExceptionWithWrongMethods;
 import com.github.arteam.simplejsonrpc.server.simple.exception.TeamServiceAuthException;
 import org.jetbrains.annotations.Nullable;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,8 +33,6 @@ import java.util.stream.Stream;
  */
 @JsonRpcService
 public class TeamService extends BaseService {
-
-    private static final DateTimeFormatter fmt = ISODateTimeFormat.date().withZone(DateTimeZone.UTC);
 
     private final List<Player> players = Stream.of(
                     new Player("David", "Backes", new Team("St. Louis Blues", "NHL"), 42, Position.CENTER, date("1984-05-01"), 4.5),
@@ -57,7 +53,7 @@ public class TeamService extends BaseService {
     @JsonRpcMethod("find_by_birth_year")
     public List<Player> findByBirthYear(@JsonRpcParam("birth_year") final int birthYear) {
         return players.stream().filter(player -> {
-            int year = new DateTime(player.birthDate()).getYear();
+            int year = LocalDate.ofInstant(player.birthDate().toInstant(), ZoneOffset.UTC).getYear();
             return year == birthYear;
         }).collect(Collectors.toList());
     }
@@ -244,7 +240,7 @@ public class TeamService extends BaseService {
 
     @JsonRpcMethod
     public static Date date(@JsonRpcParam("textDate") String textDate) {
-        return fmt.parseDateTime(textDate).toDate();
+        return Date.from(LocalDate.parse(textDate).atStartOfDay(ZoneOffset.UTC).toInstant());
     }
 
 }

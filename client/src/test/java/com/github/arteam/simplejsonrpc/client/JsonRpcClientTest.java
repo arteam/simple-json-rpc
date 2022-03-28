@@ -8,11 +8,12 @@ import com.github.arteam.simplejsonrpc.client.domain.Team;
 import com.github.arteam.simplejsonrpc.client.exception.JsonRpcException;
 import com.github.arteam.simplejsonrpc.client.util.MapBuilder;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,10 +30,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcClientTest extends BaseClientTest {
 
+
     @Test
     public void testAddPlayer() {
         JsonRpcClient client = initClient("add_player");
-        Boolean result = client.createRequest().id("asd671").method("add").param("player", new Player("Kevin", "Shattenkirk", new Team("St. Louis Blues", "NHL"), 22, Position.DEFENDER, ISODateTimeFormat.date().withZone(DateTimeZone.UTC).parseDateTime("1989-01-29").toDate(), 4.25)).returnAs(Boolean.class).execute();
+        Boolean result = client.createRequest()
+                .id("asd671")
+                .method("add")
+                .param("player", new Player("Kevin", "Shattenkirk",
+                        new Team("St. Louis Blues", "NHL"), 22, Position.DEFENDER,
+                        Date.from(LocalDate.parse("1989-01-29").atStartOfDay(ZoneId.of("UTC")).toInstant()), 4.25))
+                .returnAs(Boolean.class)
+                .execute();
         assertThat(result).isTrue();
     }
 
