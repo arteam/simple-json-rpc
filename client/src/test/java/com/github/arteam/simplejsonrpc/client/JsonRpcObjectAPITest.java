@@ -12,11 +12,12 @@ import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcMethod;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcParam;
 import com.github.arteam.simplejsonrpc.core.annotation.JsonRpcService;
 import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
         JsonRpcClient client = initClient("add_player");
         TeamService teamService = client.onDemand(TeamService.class, new FixedStringIdGenerator("asd671"));
         boolean result = teamService.add(new Player("Kevin", "Shattenkirk", new Team("St. Louis Blues", "NHL"), 22, Position.DEFENDER,
-                ISODateTimeFormat.date().withZone(DateTimeZone.UTC).parseDateTime("1989-01-29").toDate(),
+                Date.from(LocalDate.parse("1989-01-29").atStartOfDay(ZoneOffset.UTC).toInstant()),
                 4.25));
         assertThat(result).isTrue();
     }

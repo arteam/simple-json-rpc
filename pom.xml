@@ -25,7 +25,6 @@
 
         <!--test dependencies -->
         <junit.version>5.8.2</junit.version>
-        <joda.time.version>2.10.14</joda.time.version>
         <assertj.version>3.22.0</assertj.version>
     </properties>
 
@@ -176,13 +175,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda.time.version}</version>
             <scope>test</scope>
         </dependency>
 
