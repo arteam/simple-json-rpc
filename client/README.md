@@ -1,17 +1,15 @@
 ## JSON-RPC 2.0 client
 
-Simple JSON-RPC client is a convenient way to access a JSON-RPC 2.0 server.
+`simple-json-rpc` client is a convenient way to access a JSON-RPC 2.0 server. It exposes two styles of API:
 
-It exposes two styles of API:
-
-* Fluent-style type-safe builder API for generating requests and handling responses;
-* Object style API for representing a remote service as a Java interface.
+* The fluent type-safe builder style API for generating requests and handling responses;
+* The object style API for representing a remote service as a Java interface.
 
 ### Client
 
-The basic class in API is `JsonRpcClient`. It's a factory for creating request builders: you pass to it an
-implementation of the `Transport` class. It actually sends a request through the network and converts a response to a
-text implementation. Other optional argument is Jackson's `ObjectMapper` which could be used for customization of JSON
+The basic class in API is `JsonRpcClient`. It's a factory for creating request builders: you configure it with a
+`Transport`. `JsonRpcClient` sends requests via the network and converts a response to a text/byte representation. 
+You can specify a custom `ObjectMapper` which could be used for customization of JSON
 serialization and data binding. After that `JsonRpcClient` is ready for creating builders and proxies.
 
 #### Configuration
@@ -19,17 +17,16 @@ serialization and data binding. After that `JsonRpcClient` is ready for creating
 ```java
 JsonRpcClient client = new JsonRpcClient(new Transport() {
 
+   // Apache HttpClient is used as an example
     CloseableHttpClient httpClient = HttpClients.createDefault();
-
     
     @Override
-    public String pass( String request) throws IOException {
-        // Apache HttpClient 4.3.1 is used as an example
+    public String pass(String request) throws IOException {
         HttpPost post = new HttpPost("http://json-rpc-server/team");
-        post.setEntity(new StringEntity(request, Charsets.UTF_8));
+        post.setEntity(new StringEntity(request, StandardCharsets.UTF_8));
         post.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString());
         try (CloseableHttpResponse httpResponse = httpClient.execute(post)) {
-            return EntityUtils.toString(httpResponse.getEntity(), Charsets.UTF_8);
+            return EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
         }
     }
 });
@@ -38,9 +35,9 @@ JsonRpcClient client = new JsonRpcClient(new Transport() {
 ### Builder API
 
 The idea of this API is to provide a simple way to build a JSON-RPC request and handle a response without any JSON
-code. `Builder` is a great pattern for this task. Builders are created by the `createRequest` method of
-a `JsonRpcClient`. They are focused on processing actual requests data and require minimal boilerplate code. Builders
-are immutable and type-safe, so the actual request is built only in the execution phase.
+code. Builder is a great pattern for a such task. Builders are created via the `createRequest` method of
+a `JsonRpcClient`. They are focused on the requests data and require minimal boilerplate code. Builders
+are immutable and type-safe, so the actual request gets built only in the execution phase.
 
 #### Basic JSON-RPC request
 
@@ -161,15 +158,15 @@ Maven:
 <dependency>
    <groupId>com.github.arteam</groupId>
    <artifactId>simple-json-rpc-client</artifactId>
-   <version>1.2</version>
+   <version>1.3</version>
 </dependency>
 ```
 
 ## Requirements
 
-JDK 1.8 and higher
+JDK 11 and higher
 
 ## Dependencies
 
-* [Jackson](https://github.com/FasterXML/jackson) 2.11.0
-* [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0) 12.0
+* [Jackson](https://github.com/FasterXML/jackson) 
+* [IntelliJ IDEA Annotations](http://mvnrepository.com/artifact/com.intellij/annotations/12.0)
