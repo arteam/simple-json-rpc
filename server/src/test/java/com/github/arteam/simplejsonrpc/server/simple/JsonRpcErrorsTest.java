@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -26,18 +26,16 @@ public class JsonRpcErrorsTest {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @SuppressWarnings("UnstableApiUsage")
     private static String requestFile(String name) {
-        try (var is = Objects.requireNonNull(JsonRpcErrorsTest.class.getResourceAsStream("/error/request/" + name))) {
+        try (var is = requireNonNull(JsonRpcErrorsTest.class.getResourceAsStream("/error/request/" + name))) {
             return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private static String responseFile(String name) {
-        try (var is = Objects.requireNonNull(JsonRpcErrorsTest.class.getResourceAsStream("/error/response/" + name))) {
+        try (var is = requireNonNull(JsonRpcErrorsTest.class.getResourceAsStream("/error/response/" + name))) {
             return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(e);

@@ -20,17 +20,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BatchRequestBuilderTest {
 
-    private static Map<String, RequestResponse> requestsResponses;
-
-    final ObjectMapper mapper = new ObjectMapper()
+    private static final TypeReference<Player> PLAYER_TYPE_REFERENCE = new TypeReference<>() {
+    };
+    private static final ObjectMapper mapper = new ObjectMapper()
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
+    private static Map<String, RequestResponse> requestsResponses;
 
     @BeforeAll
     public static void load() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         requestsResponses = mapper.readValue(BatchRequestBuilderTest.class.getResource("/batch_requests.json"),
-                mapper.getTypeFactory().constructMapType(HashMap.class, String.class, RequestResponse.class));
+                new TypeReference<>() {
+                });
     }
 
     private JsonRpcClient initClient(String testName) {
@@ -72,11 +73,6 @@ public class BatchRequestBuilderTest {
         checkBatch((Map<String, Player>) result);
     }
 
-    private static TypeReference<Player> playerTypeReference() {
-        return new TypeReference<Player>() {
-        };
-    }
-
     @Test
     public void testBatchCommonType() {
         JsonRpcClient client = initClient("batch");
@@ -106,9 +102,9 @@ public class BatchRequestBuilderTest {
     public void testBatchTypeReferences() {
         JsonRpcClient client = initClient("batch");
         Map<String, ?> result = client.createBatchRequest()
-                .add("43121", "findByInitials", stevenStamkos(), playerTypeReference())
-                .add("43122", "findByInitials", jackAllen(), playerTypeReference())
-                .add("43123", "findByInitials", vladimirSobotka(), playerTypeReference())
+                .add("43121", "findByInitials", stevenStamkos(), PLAYER_TYPE_REFERENCE)
+                .add("43122", "findByInitials", jackAllen(), PLAYER_TYPE_REFERENCE)
+                .add("43123", "findByInitials", vladimirSobotka(), PLAYER_TYPE_REFERENCE)
                 .keysType(String.class)
                 .execute();
         checkUncheckedBatch(result);
@@ -122,7 +118,7 @@ public class BatchRequestBuilderTest {
                 .add("43122", "findByInitials", "Jack", "Allen")
                 .add("43123", "findByInitials", "Vladimir", "Sobotka")
                 .keysType(String.class)
-                .returnType(playerTypeReference())
+                .returnType(PLAYER_TYPE_REFERENCE)
                 .execute();
         checkBatch(result);
     }
@@ -143,9 +139,9 @@ public class BatchRequestBuilderTest {
     public void testBatchArrayRequestsWithTypeReferences() {
         JsonRpcClient client = initClient("batch_array");
         Map<String, ?> result = client.createBatchRequest()
-                .add("43121", "findByInitials", new Object[]{"Steven", "Stamkos"}, playerTypeReference())
-                .add("43122", "findByInitials", new Object[]{"Jack", "Allen"}, playerTypeReference())
-                .add("43123", "findByInitials", new Object[]{"Vladimir", "Sobotka"}, playerTypeReference())
+                .add("43121", "findByInitials", new Object[]{"Steven", "Stamkos"}, PLAYER_TYPE_REFERENCE)
+                .add("43122", "findByInitials", new Object[]{"Jack", "Allen"}, PLAYER_TYPE_REFERENCE)
+                .add("43123", "findByInitials", new Object[]{"Vladimir", "Sobotka"}, PLAYER_TYPE_REFERENCE)
                 .keysType(String.class)
                 .execute();
         checkUncheckedBatch(result);
@@ -158,8 +154,9 @@ public class BatchRequestBuilderTest {
         Map<Integer, ?> result = client.createBatchRequest()
                 .add(12000, "isAlive", new HashMap<>(), Boolean.class)
                 .add(12001, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
-                .add(12002, "find_by_birth_year", Map.of("birth_year", 1990), new TypeReference<List<Player>>() {
-                })
+                .add(12002, "find_by_birth_year", Map.of("birth_year", 1990),
+                        new TypeReference<List<Player>>() {
+                        })
                 .keysType(Integer.class)
                 .execute();
         assertThat(result.get(12000)).isExactlyInstanceOf(Boolean.class);
@@ -178,8 +175,9 @@ public class BatchRequestBuilderTest {
         Map<Long, ?> result = client.createBatchRequest()
                 .add(12000L, "isAlive", new HashMap<>(), Boolean.class)
                 .add(12001L, "findByInitials", new Object[]{"Kevin", "Shattenkirk"}, Player.class)
-                .add(12002L, "find_by_birth_year", Map.of("birth_year", 1990), new TypeReference<List<Player>>() {
-                })
+                .add(12002L, "find_by_birth_year", Map.of("birth_year", 1990),
+                        new TypeReference<List<Player>>() {
+                        })
                 .keysType(Long.class)
                 .execute();
         assertThat(result.get(12000L)).isExactlyInstanceOf(Boolean.class);
@@ -197,7 +195,7 @@ public class BatchRequestBuilderTest {
         Map<Integer, ?> result = client.createBatchRequest()
                 .add(1, "findByInitials", stevenStamkos(), Player.class)
                 .add("updateCache")
-                .add(2, "findByInitials", new Object[]{"Vladimir", "Sobotka"}, playerTypeReference())
+                .add(2, "findByInitials", new Object[]{"Vladimir", "Sobotka"}, PLAYER_TYPE_REFERENCE)
                 .keysType(Integer.class)
                 .execute();
         assertThat(result.get(1)).isExactlyInstanceOf(Player.class);
