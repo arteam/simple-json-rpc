@@ -62,7 +62,6 @@ public class JsonRpcServer {
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
     private static final String VERSION = "2.0";
 
-
     private final ObjectMapper mapper;
 
     /**
@@ -88,16 +87,6 @@ public class JsonRpcServer {
      */
     public JsonRpcServer() {
         this(new ObjectMapper());
-    }
-
-    /**
-     * Factory for creating a JSON-RPC server with a specific JSON mapper
-     *
-     * @param mapper user-defined JSON mapper
-     * @return new JSON-RPC server
-     */
-    public static JsonRpcServer withMapper(ObjectMapper mapper) {
-        return new JsonRpcServer(mapper);
     }
 
     /**
