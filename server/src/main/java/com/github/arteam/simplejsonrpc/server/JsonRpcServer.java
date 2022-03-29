@@ -415,6 +415,7 @@ public class JsonRpcServer {
     }
 
     private static Throwable getRootCause(Throwable throwable) {
+        // https://github.com/google/guava/blob/v31.1/guava/src/com/google/common/base/Throwables.java#L255
         Throwable slowPointer = throwable;
         boolean advanceSlowPointer = false;
         Throwable cause;
