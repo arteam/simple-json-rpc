@@ -22,16 +22,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonRpcServiceTest {
 
-    private static final ObjectMapper userMapper = new ObjectMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    private static Map<String, RequestResponse> testData;
-
-    private static final JsonRpcServer rpcServer = JsonRpcServer.withMapper(userMapper);
+    private static final ObjectMapper userMapper = new ObjectMapper()
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .registerModule(new Jdk8Module());
+    private static final JsonRpcServer rpcServer = new JsonRpcServer(userMapper);
     private static final TeamService teamService = new TeamService();
+
+    private static Map<String, RequestResponse> testData;
 
     @BeforeAll
     @SuppressWarnings("UnstableApiUsage")
     public static void init() throws Exception {
-        userMapper.registerModule(new Jdk8Module());
         try (var is = Objects.requireNonNull(JsonRpcServiceTest.class.getResourceAsStream("/test_data.json"))) {
             testData = new ObjectMapper()
                     .readValue(is.readAllBytes(),
