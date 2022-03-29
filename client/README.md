@@ -42,7 +42,7 @@ are immutable and type-safe, so the actual request gets built only in the execut
 #### Basic JSON-RPC request
 
 ```java
-Player player=client.createRequest()
+Player player = client.createRequest()
         .method("findByInitials")
         .id(43121)
         .param("firstName","Steven")
@@ -69,7 +69,7 @@ API [here](https://github.com/arteam/simple-json-rpc/blob/master/client/src/test
 #### Batch JSON-RPC request
 
 ```java
-Map<String, Player> result=client.createBatchRequest()
+Map<String, Player> result = client.createBatchRequest()
         .add("43121","findByInitials","Steven","Stamkos")
         .add("43122","findByInitials","Jack","Allen")
         .keysType(String.class)
