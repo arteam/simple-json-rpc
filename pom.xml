@@ -20,6 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jackson.version>2.13.2</jackson.version>
+        <jackson-datatype-jdk8.version>2.13.2</jackson-datatype-jdk8.version>
         <intellij.annotations.version>23.0.0</intellij.annotations.version>
         <slf4j.version>1.7.36</slf4j.version>
 
@@ -188,7 +189,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson-datatype-jdk8.version}</version>
             <scope>test</scope>
         </dependency>
 
