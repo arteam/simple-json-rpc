@@ -144,11 +144,11 @@ public interface TeamService {
 **Basic request**
 
 ```java
- Player player=client.onDemand(TeamService.class).findByInitials("Steven","Stamkos");
+ Player player = client.onDemand(TeamService.class).findByInitials("Steven","Stamkos");
 ```
 
 More examples for using the
-API [here] (https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/JsonRpcObjectAPITest.java)
+API [here](https://github.com/arteam/simple-json-rpc/blob/master/client/src/test/java/com/github/arteam/simplejsonrpc/client/JsonRpcObjectAPITest.java)
 
 ## Setup
 
