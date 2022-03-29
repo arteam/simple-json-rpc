@@ -1,8 +1,8 @@
 package com.github.arteam.simplejsonrpc.server.simple;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
 import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
@@ -11,8 +11,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -31,16 +31,11 @@ public class JsonRpcServiceTest {
     private static Map<String, RequestResponse> testData;
 
     @BeforeAll
-    @SuppressWarnings("UnstableApiUsage")
     public static void init() throws Exception {
-        try (var is = Objects.requireNonNull(JsonRpcServiceTest.class.getResourceAsStream("/test_data.json"))) {
-            testData = new ObjectMapper()
-                    .readValue(is.readAllBytes(),
-                            TypeFactory.defaultInstance().constructMapType(Map.class,
-                                    TypeFactory.defaultInstance().constructType(String.class),
-                                    TypeFactory.defaultInstance().constructType(RequestResponse.class)));
+        try (var is = requireNonNull(JsonRpcServiceTest.class.getResourceAsStream("/test_data.json"))) {
+            testData = userMapper.readValue(is.readAllBytes(), new TypeReference<>() {
+            });
         }
-
     }
 
     /**

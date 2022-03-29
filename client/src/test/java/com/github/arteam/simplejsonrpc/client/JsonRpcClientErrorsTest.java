@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 public class JsonRpcClientErrorsTest {
 
-    JsonRpcClient client = new JsonRpcClient(request -> {
+    private JsonRpcClient client = new JsonRpcClient(request -> {
         System.out.println(request);
         return """
                 {"jsonrpc": "2.0", "id": 1001, "result": true}
@@ -25,7 +25,6 @@ public class JsonRpcClientErrorsTest {
     public void testMethodIsNotSet() {
         assertThatIllegalArgumentException().isThrownBy(() -> client.createRequest().execute());
     }
-
 
     @Test
     public void testBadJson() {

@@ -37,7 +37,8 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     public void testAddPlayer() {
         JsonRpcClient client = initClient("add_player");
         TeamService teamService = client.onDemand(TeamService.class, new FixedStringIdGenerator("asd671"));
-        boolean result = teamService.add(new Player("Kevin", "Shattenkirk", new Team("St. Louis Blues", "NHL"), 22, Position.DEFENDER,
+        boolean result = teamService.add(new Player("Kevin", "Shattenkirk",
+                new Team("St. Louis Blues", "NHL"), 22, Position.DEFENDER,
                 Date.from(LocalDate.parse("1989-01-29").atStartOfDay(ZoneOffset.UTC).toInstant()),
                 4.25));
         assertThat(result).isTrue();
@@ -63,7 +64,8 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     public void testOptionalParams() {
         JsonRpcClient client = initClient("optional_params");
         List<Player> players = client.onDemand(TeamService.class, new FixedStringIdGenerator("xar331"))
-                .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
+                .find(null, 91, Optional.of(new Team("St. Louis Blues", "NHL")),
+                        null, null, null, Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
         assertThat(player.team()).isEqualTo(new Team("St. Louis Blues", "NHL"));
@@ -76,7 +78,8 @@ public class JsonRpcObjectAPITest extends BaseClientTest {
     public void testOptionalArray() {
         JsonRpcClient client = initClient("find_array_null_params");
         List<Player> players = client.onDemand(TeamService.class, ParamsType.ARRAY, new FixedStringIdGenerator("pasd81"))
-                .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")), null, null, null, Optional.empty());
+                .find(null, 19, Optional.of(new Team("St. Louis Blues", "NHL")),
+                        null, null, null, Optional.empty());
         Assertions.assertEquals(players.size(), 1);
         Player player = players.get(0);
         assertThat(player.team()).isEqualTo(new Team("St. Louis Blues", "NHL"));
