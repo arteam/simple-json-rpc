@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -155,7 +156,7 @@ class Reflections {
 
     static ErrorDataResolver buildErrorDataResolver(Class<? extends Throwable> throwableClass) {
         Class<?> c = throwableClass;
-        MethodHandle dataField = null;
+        VarHandle dataField = null;
         MethodHandle dataMethod = null;
         while (c != null) {
             for (Field field : c.getDeclaredFields()) {
@@ -166,7 +167,7 @@ class Reflections {
                     }
                     try {
                         dataField = MethodHandles.privateLookupIn(field.getDeclaringClass(), LOOKUP)
-                                .unreflectGetter(field);
+                                .unreflectVarHandle(field);
                     } catch (IllegalAccessException e) {
                         throw new IllegalStateException(e);
                     }
@@ -197,10 +198,10 @@ class Reflections {
             c = c.getSuperclass();
         }
         if (dataField != null) {
-            MethodHandle finalDataField = dataField;
+            VarHandle finalDataField = dataField;
             return t -> {
                 try {
-                    return Optional.ofNullable(finalDataField.invoke(t));
+                    return Optional.ofNullable(finalDataField.get(t));
                 } catch (Throwable e) {
                     throw new IllegalStateException(e);
                 }
