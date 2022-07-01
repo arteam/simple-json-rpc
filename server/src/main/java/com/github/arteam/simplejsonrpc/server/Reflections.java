@@ -198,25 +198,28 @@ class Reflections {
             c = c.getSuperclass();
         }
         if (dataField != null) {
-            VarHandle finalDataField = dataField;
-            return t -> {
-                try {
-                    return Optional.ofNullable(finalDataField.get(t));
-                } catch (Throwable e) {
-                    throw new IllegalStateException(e);
-                }
-            };
+            return new ThrowableErrorResolver(dataField::get);
         } else if (dataMethod != null) {
-            MethodHandle finalDataMethod = dataMethod;
-            return t -> {
-                try {
-                    return Optional.ofNullable(finalDataMethod.invoke(t));
-                } catch (Throwable e) {
-                    throw new IllegalStateException(e);
-                }
-            };
+            return new ThrowableErrorResolver(dataMethod::invoke);
         } else {
             return t -> Optional.empty();
+        }
+    }
+
+    @FunctionalInterface
+    private interface DataFunction {
+        Object get(Throwable t) throws Throwable;
+    }
+
+    private record ThrowableErrorResolver(DataFunction function) implements ErrorDataResolver {
+
+        @Override
+        public Optional<Object> resolveData(Throwable throwable) throws Exception {
+            try {
+                return Optional.ofNullable(function.get(throwable));
+            } catch (Throwable e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 }
