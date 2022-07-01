@@ -32,7 +32,7 @@ import java.util.Optional;
 class Reflections {
 
     private static final Logger log = LoggerFactory.getLogger(JsonRpcServer.class);
-    private static final MethodHandles.Lookup METHOD_HANDLES_LOOKUP = MethodHandles.lookup();
+    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     private Reflections() {
     }
@@ -96,10 +96,10 @@ class Reflections {
                     continue;
                 }
 
-                method.setAccessible(true);
                 MethodHandle methodHandle;
                 try {
-                    methodHandle = METHOD_HANDLES_LOOKUP.unreflect(method);
+                    methodHandle = MethodHandles.privateLookupIn(method.getDeclaringClass(), LOOKUP)
+                            .unreflect(method);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -164,9 +164,9 @@ class Reflections {
                         throw new IllegalArgumentException("Ambiguous configuration: there is more than one " +
                                 "@JsonRpcErrorData annotated property in " + c.getName());
                     }
-                    field.setAccessible(true);
                     try {
-                        dataField = METHOD_HANDLES_LOOKUP.unreflectGetter(field);
+                        dataField = MethodHandles.privateLookupIn(field.getDeclaringClass(), LOOKUP)
+                                .unreflectGetter(field);
                     } catch (IllegalAccessException e) {
                         throw new IllegalStateException(e);
                     }
@@ -186,9 +186,9 @@ class Reflections {
                         throw new IllegalArgumentException("Ambiguous configuration: there is more than one " +
                                 "@JsonRpcErrorData annotated property in " + c.getName());
                     }
-                    method.setAccessible(true);
                     try {
-                        dataMethod = METHOD_HANDLES_LOOKUP.unreflect(method);
+                        dataMethod = MethodHandles.privateLookupIn(method.getDeclaringClass(), LOOKUP)
+                                .unreflect(method);
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
