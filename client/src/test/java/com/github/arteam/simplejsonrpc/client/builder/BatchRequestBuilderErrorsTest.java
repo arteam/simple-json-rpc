@@ -9,6 +9,9 @@ import com.github.arteam.simplejsonrpc.core.domain.ErrorMessage;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,38 +24,17 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
  * Time: 11:55 PM
  */
 public class BatchRequestBuilderErrorsTest {
-
-    final JsonRpcClient client = new JsonRpcClient(request -> {
-        System.out.println(request);
-        return """
-                [{
-                    "jsonrpc": "2.0",
-                    "id": 1,
-                    "result": {
-                        "firstName": "Steven",
-                        "lastName": "Stamkos",
-                        "team": {
-                            "name": "Tampa Bay Lightning",
-                            "league": "NHL"
-                        },
-                        "number": 91,
-                        "position": "C",
-                        "birthDate": "1990-02-07T00:00:00.000+00:00",
-                        "capHit": 7.5
-                    }
-                }]
-                """;
-    });
+    private JsonRpcClient client;
 
     @Test
     public void testRequestsAreEmpty() {
-        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest().execute())
+        assertThatIllegalArgumentException().isThrownBy(() -> getClient().createBatchRequest().execute())
                 .withMessage("Requests are not set");
     }
 
     @Test
     public void testRequestWithoutReturnType() {
-        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
+        assertThatIllegalArgumentException().isThrownBy(() -> getClient().createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .execute())
                 .withMessage("Return type isn't specified for request with id='1'");
@@ -61,7 +43,7 @@ public class BatchRequestBuilderErrorsTest {
     @Test
     public void testBothSingleAndGlobalResponseTypeAreSet() {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> client.createBatchRequest()
+                .isThrownBy(() -> getClient().createBatchRequest()
                         .add(1L, "findPlayer", new Object[]{"Steven", "Stamkos"}, Player.class)
                         .returnType(Player.class)
                         .execute())
@@ -71,7 +53,7 @@ public class BatchRequestBuilderErrorsTest {
     @Test
     public void testBadId() {
         assertThatIllegalArgumentException().isThrownBy(() -> {
-            BatchRequestBuilder<?, ?> batchRequest = client.createBatchRequest();
+            BatchRequestBuilder<?, ?> batchRequest = getClient().createBatchRequest();
             batchRequest.getRequests()
                     .add(batchRequest.request(BooleanNode.TRUE, "findPlayer",
                             new ObjectMapper().createArrayNode().add("Steven").add("Stamkos")));
@@ -81,7 +63,7 @@ public class BatchRequestBuilderErrorsTest {
 
     @Test
     public void tesKeyIdIsNotExpectedType() {
-        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
+        assertThatIllegalArgumentException().isThrownBy(() -> getClient().createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .returnType(Player.class)
                         .keysType(String.class)
@@ -107,7 +89,7 @@ public class BatchRequestBuilderErrorsTest {
 
     @Test
     public void testFailFastOnNotJsonData() {
-        assertThatIllegalArgumentException().isThrownBy(() -> client.createBatchRequest()
+        assertThatIllegalArgumentException().isThrownBy(() -> getClient().createBatchRequest()
                         .add(1L, "findPlayer", new Name("Steven"), new Name("Stamkos"))
                         .add(2L, "findPlayer", new Name("Vladimir"), new Name("Sobotka"))
                         .keysType(Long.class)
@@ -126,9 +108,7 @@ public class BatchRequestBuilderErrorsTest {
 
     @Test
     public void testNotArrayResponse() {
-        JsonRpcClient client = new JsonRpcClient(request -> """
-                {"test":"data"}
-                """);
+        JsonRpcClient client = new JsonRpcClient(request -> "{\"test\":\"data\"}");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -150,9 +130,7 @@ public class BatchRequestBuilderErrorsTest {
 
     @Test
     public void testNoVersion() {
-        JsonRpcClient client = new JsonRpcClient(request -> """
-                [{"test":"data"}]
-                """);
+        JsonRpcClient client = new JsonRpcClient(request -> "[{\"test\":\"data\"}]");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -162,25 +140,9 @@ public class BatchRequestBuilderErrorsTest {
     }
 
     @Test
-    public void testBadVersion() {
-        JsonRpcClient client = new JsonRpcClient(request -> """
-                [{
-                    "jsonrpc": "1.0",
-                    "id": 1,
-                    "result": {
-                        "firstName": "Steven",
-                        "lastName": "Stamkos",
-                        "team": {
-                            "name": "Tampa Bay Lightning",
-                            "league": "NHL"
-                        },
-                        "number": 91,
-                        "position": "C",
-                        "birthDate": "1990-02-07T00:00:00.000+00:00",
-                        "capHit": 7.5
-                    }
-                }]
-                """);
+    public void testBadVersion() throws Exception {
+        String data = Files.readString(Paths.get(getClass().getResource("/testBadVersion.json").toURI()));
+        JsonRpcClient client = new JsonRpcClient(request -> data);
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -191,12 +153,7 @@ public class BatchRequestBuilderErrorsTest {
 
     @Test
     public void testUnexpectedResult() {
-        JsonRpcClient client = new JsonRpcClient(request -> """
-                [{
-                    "jsonrpc": "2.0",
-                    "id": 1
-                }]
-                """);
+        JsonRpcClient client = new JsonRpcClient(request -> "[{\"jsonrpc\": \"2.0\", \"id\": 1}]");
         assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
@@ -206,26 +163,10 @@ public class BatchRequestBuilderErrorsTest {
     }
 
     @Test
-    public void testUnspecifiedId() {
-        JsonRpcClient client = new JsonRpcClient(request -> """
-                [{
-                    "jsonrpc": "2.0",
-                    "id": 10,
-                    "result": {
-                        "firstName": "Steven",
-                        "lastName": "Stamkos",
-                        "team": {
-                            "name": "Tampa Bay Lightning",
-                            "league": "NHL"
-                        },
-                        "number": 91,
-                        "position": "C",
-                        "birthDate": "1990-02-07T00:00:00.000+00:00",
-                        "capHit": 7.5
-                    }
-                }]
-                """);
-        assertThatIllegalStateException().isThrownBy(() -> client.createBatchRequest()
+    public void testUnspecifiedId() throws Exception {
+        String data = Files.readString(Paths.get(getClass().getResource("/testUnspecifiedId.json").toURI()));
+        JsonRpcClient clientUnspecifiedId = new JsonRpcClient(request -> data);
+        assertThatIllegalStateException().isThrownBy(() -> clientUnspecifiedId.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .returnType(Player.class)
                         .execute())
@@ -233,29 +174,11 @@ public class BatchRequestBuilderErrorsTest {
     }
 
     @Test
-    public void testJsonRpcError() {
-        JsonRpcClient client = new JsonRpcClient(request -> """
-                [{
-                    "jsonrpc": "2.0",
-                    "id": 1,
-                    "result": {
-                        "firstName": "Steven",
-                        "lastName": "Stamkos",
-                        "team": {
-                            "name": "Tampa Bay Lightning",
-                            "league": "NHL"
-                        },
-                        "number": 91,
-                        "position": "C",
-                        "birthDate": "1990-02-07T00:00:00.000+00:00",
-                        "capHit": 7.5
-                    }
-                },
-                {"jsonrpc":"2.0","id":2, "error":{"code":-32603,"message":"Internal error"}}]
-                """);
-
+    public void testJsonRpcError() throws Exception {
+        String data = Files.readString(Paths.get(getClass().getResource("/testJsonRpcError.json").toURI()));
+        JsonRpcClient clientJsonRpcError = new JsonRpcClient(request ->  data);
         JsonRpcBatchException e = catchThrowableOfType(() ->
-                client.createBatchRequest()
+                clientJsonRpcError.createBatchRequest()
                         .add(1L, "findPlayer", "Steven", "Stamkos")
                         .add(2L, "findPlayer", "Vladimir", "Sobotka")
                         .returnType(Player.class)
@@ -277,5 +200,22 @@ public class BatchRequestBuilderErrorsTest {
         ErrorMessage errorMessage = errors.get(2L);
         assertThat(errorMessage.getCode()).isEqualTo(-32603);
         assertThat(errorMessage.getMessage()).isEqualTo("Internal error");
+    }
+
+    private JsonRpcClient getClient() {
+        if (null == client){
+            String data;
+            try {
+                data = Files.readString(Paths.get(getClass().getResource("/client_init.json").toURI()));
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+
+            client = new JsonRpcClient(request -> data);
+        }
+        return client;
     }
 }

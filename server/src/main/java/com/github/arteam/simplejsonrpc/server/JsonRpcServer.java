@@ -156,10 +156,11 @@ public class JsonRpcServer {
         if (requestNode.get("id") == null) {
             if (response instanceof SuccessResponse) {
                 return true;
-            } else if (response instanceof ErrorResponse errorResponse) {
+            } else if (response instanceof ErrorResponse) {
                 // Notification request should be a valid JSON-RPC request.
                 // So if we get "Parse error" or "Invalid request"
                 // we can't consider the request as a notification
+                ErrorResponse errorResponse = (ErrorResponse)response;
                 int errorCode = errorResponse.error().getCode();
                 if (errorCode != PARSE_ERROR.getCode() && errorCode != INVALID_REQUEST.getCode()) {
                     return true;

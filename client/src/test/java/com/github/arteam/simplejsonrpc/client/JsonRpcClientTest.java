@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,7 +115,7 @@ public class JsonRpcClientTest extends BaseClientTest {
                 .execute();
         assertThat(players).isNotNull();
         assertThat(players).hasSize(3);
-        List<String> lastNames = players.stream().map(Player::lastName).toList();
+        List<String> lastNames = players.stream().map(Player::lastName).collect(Collectors.toList());
         assertThat(lastNames).containsOnly("Allen", "Stamkos", "Hedman");
     }
 

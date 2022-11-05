@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -211,15 +212,44 @@ class Reflections {
         Object get(Throwable t) throws Throwable;
     }
 
-    private record ThrowableErrorResolver(DataFunction function) implements ErrorDataResolver {
+    private static final class ThrowableErrorResolver implements ErrorDataResolver {
+        private final DataFunction function;
+
+        private ThrowableErrorResolver(DataFunction function) {
+            this.function = function;
+        }
+
+            @Override
+            public Optional<Object> resolveData(Throwable throwable) throws Exception {
+                try {
+                    return Optional.ofNullable(function.get(throwable));
+                } catch (Throwable e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+
+        public DataFunction function() {
+            return function;
+        }
 
         @Override
-        public Optional<Object> resolveData(Throwable throwable) throws Exception {
-            try {
-                return Optional.ofNullable(function.get(throwable));
-            } catch (Throwable e) {
-                throw new IllegalStateException(e);
-            }
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (ThrowableErrorResolver) obj;
+            return Objects.equals(this.function, that.function);
         }
-    }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(function);
+        }
+
+        @Override
+        public String toString() {
+            return "ThrowableErrorResolver[" +
+                    "function=" + function + ']';
+        }
+
+        }
 }
