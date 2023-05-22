@@ -20,7 +20,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jackson.version>2.15.0</jackson.version>
+        <jackson.version>2.15.1</jackson.version>
         <intellij.annotations.version>24.0.1</intellij.annotations.version>
         <slf4j.version>2.0.7</slf4j.version>
 
