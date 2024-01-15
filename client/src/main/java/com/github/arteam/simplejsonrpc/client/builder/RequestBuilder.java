@@ -62,6 +62,11 @@ public class RequestBuilder<T> extends AbstractBuilder {
     private final JavaType javaType;
 
     /**
+     * JSON-RPC version. As per specification it is mandatory attribute for v2.0 but optional for 1.0
+     */
+    private Integer protocolVersion = 2;
+
+    /**
      * Creates a new default request builder without actual parameters
      *
      * @param transport transport for request performing
@@ -79,23 +84,25 @@ public class RequestBuilder<T> extends AbstractBuilder {
     /**
      * Creates new builder as part of a chain of builders to a full-initialized type-safe builder
      *
-     * @param transport    new transport
-     * @param mapper       new mapper
-     * @param method       new method
-     * @param id           new id
-     * @param objectParams new object params
-     * @param arrayParams  new array params
-     * @param javaType     new response type
+     * @param transport       new transport
+     * @param mapper          new mapper
+     * @param method          new method
+     * @param id              new id
+     * @param objectParams    new object params
+     * @param arrayParams     new array params
+     * @param javaType        new response type
+     * @param protocolVersion JSON-RPC version
      */
     private RequestBuilder(Transport transport, ObjectMapper mapper, String method,
                            ValueNode id, ObjectNode objectParams, ArrayNode arrayParams,
-                           JavaType javaType) {
+                           JavaType javaType, Integer protocolVersion) {
         super(transport, mapper);
         this.method = method;
         this.id = id;
         this.objectParams = objectParams;
         this.arrayParams = arrayParams;
         this.javaType = javaType;
+        this.protocolVersion = protocolVersion;
     }
 
     /**
@@ -105,7 +112,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @return new builder
      */
     public RequestBuilder<T> id(Long id) {
-        return new RequestBuilder<>(transport, mapper, method, new LongNode(id), objectParams, arrayParams, javaType);
+        return new RequestBuilder<>(transport, mapper, method, new LongNode(id), objectParams, arrayParams, javaType, protocolVersion);
     }
 
     /**
@@ -115,7 +122,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @return new builder
      */
     public RequestBuilder<T> id(Integer id) {
-        return new RequestBuilder<>(transport, mapper, method, new IntNode(id), objectParams, arrayParams, javaType);
+        return new RequestBuilder<>(transport, mapper, method, new IntNode(id), objectParams, arrayParams, javaType, protocolVersion);
     }
 
     /**
@@ -125,7 +132,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @return new builder
      */
     public RequestBuilder<T> id(String id) {
-        return new RequestBuilder<>(transport, mapper, method, new TextNode(id), objectParams, arrayParams, javaType);
+        return new RequestBuilder<>(transport, mapper, method, new TextNode(id), objectParams, arrayParams, javaType, protocolVersion);
     }
 
     /**
@@ -135,7 +142,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @return new builder
      */
     public RequestBuilder<T> method(String method) {
-        return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams, javaType);
+        return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams, javaType, protocolVersion);
     }
 
     /**
@@ -160,7 +167,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     public RequestBuilder<T> param(String name, Object value) {
         ObjectNode newObjectParams = objectParams.deepCopy();
         newObjectParams.set(name, mapper.valueToTree(value));
-        return new RequestBuilder<>(transport, mapper, method, id, newObjectParams, arrayParams, javaType);
+        return new RequestBuilder<>(transport, mapper, method, id, newObjectParams, arrayParams, javaType, protocolVersion);
     }
 
     /**
@@ -171,8 +178,23 @@ public class RequestBuilder<T> extends AbstractBuilder {
      * @return new builder
      */
     public RequestBuilder<T> params(Object... values) {
-        return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams(values), javaType);
+        return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams(values), javaType, protocolVersion);
     }
+
+    /**
+     * Sets JSON-RPC version. As per specification it is mandatory attribute for v2.0 but optional for 1.0
+     *
+     * @see <a href="https://www.jsonrpc.org/specification_v1">JSON-RPC Spec v1</a>
+     * @see <a href="https://www.jsonrpc.org/specification">JSON-RPC Spec v2</a>
+     * @see <a href="http://www.simple-is-better.org/rpc/#differences-between-1-0-and-2-0">Differences between 1 and 2</a>
+     *
+     * @param version JSON-RPC protocol version
+     * @return new builder
+     */
+    public RequestBuilder<T> version(final Integer version) {
+        return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams, javaType, version);
+    }
+
 
     /**
      * Sets expected return type. This method is suitable for non-generic types
@@ -183,7 +205,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     public <NT> RequestBuilder<NT> returnAs(Class<NT> responseType) {
         return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams,
-                TypeFactory.defaultInstance().constructType(responseType));
+                TypeFactory.defaultInstance().constructType(responseType), protocolVersion);
     }
 
     /**
@@ -195,7 +217,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     public <E> RequestBuilder<List<E>> returnAsList(Class<E> elementType) {
         return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructCollectionType(List.class, elementType));
+                mapper.getTypeFactory().constructCollectionType(List.class, elementType), protocolVersion);
     }
 
     /**
@@ -207,7 +229,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     public <E> RequestBuilder<Set<E>> returnAsSet(Class<E> elementType) {
         return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructCollectionType(Set.class, elementType));
+                mapper.getTypeFactory().constructCollectionType(Set.class, elementType), protocolVersion);
     }
 
     /**
@@ -223,7 +245,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     public <E> RequestBuilder<Collection<E>> returnAsCollection(Class<? extends Collection> collectionType,
                                                                 Class<E> elementType) {
         return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructCollectionType(collectionType, elementType));
+                mapper.getTypeFactory().constructCollectionType(collectionType, elementType), protocolVersion);
     }
 
     /**
@@ -235,7 +257,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     public <E> RequestBuilder<E[]> returnAsArray(Class<E> elementType) {
         return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructArrayType(elementType));
+                mapper.getTypeFactory().constructArrayType(elementType), protocolVersion);
     }
 
     /**
@@ -253,7 +275,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
     public <V> RequestBuilder<Map<String, V>> returnAsMap(Class<? extends Map> mapClass,
                                                           Class<V> valueType) {
         return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructMapType(mapClass, String.class, valueType));
+                mapper.getTypeFactory().constructMapType(mapClass, String.class, valueType), protocolVersion);
     }
 
     /**
@@ -267,7 +289,7 @@ public class RequestBuilder<T> extends AbstractBuilder {
      */
     public <NT> RequestBuilder<NT> returnAs(TypeReference<NT> tr) {
         return new RequestBuilder<>(transport, mapper, method, id, objectParams, arrayParams,
-                mapper.getTypeFactory().constructType(tr.getType()));
+                mapper.getTypeFactory().constructType(tr.getType()), protocolVersion);
     }
 
     /**
@@ -307,17 +329,17 @@ public class RequestBuilder<T> extends AbstractBuilder {
             JsonNode version = responseNode.get(JSONRPC);
             JsonNode id = responseNode.get(ID);
 
-            if (version == null) {
+            if (this.protocolVersion.equals(2) && version == null) {
                 throw new IllegalStateException("Not a JSON-RPC response: " + responseNode);
             }
-            if (!version.asText().equals(VERSION_2_0)) {
+            if (this.protocolVersion.equals(2) && !version.asText().equals(VERSION_2_0)) {
                 throw new IllegalStateException("Bad protocol version in a response: " + responseNode);
             }
             if (id == null) {
                 throw new IllegalStateException("Unspecified id in a response: " + responseNode);
             }
 
-            if (error == null) {
+            if (null == error || error.isNull()) {
                 if (result != null) {
                     return mapper.convertValue(result, javaType);
                 } else {
