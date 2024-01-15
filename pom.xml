@@ -22,7 +22,7 @@
 
         <jackson.version>2.16.1</jackson.version>
         <intellij.annotations.version>24.1.0</intellij.annotations.version>
-        <slf4j.version>2.0.10</slf4j.version>
+        <slf4j.version>2.0.11</slf4j.version>
 
         <!--test dependencies -->
         <junit.version>5.10.1</junit.version>
