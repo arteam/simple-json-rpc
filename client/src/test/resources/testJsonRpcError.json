@@ -1,0 +1,17 @@
+[{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "firstName": "Steven",
+    "lastName": "Stamkos",
+    "team": {
+      "name": "Tampa Bay Lightning",
+      "league": "NHL"
+    },
+    "number": 91,
+    "position": "C",
+    "birthDate": "1990-02-07T00:00:00.000+00:00",
+    "capHit": 7.5
+  }
+},
+  {"jsonrpc":"2.0","id":2, "error":{"code":-32603,"message":"Internal error"}}]
