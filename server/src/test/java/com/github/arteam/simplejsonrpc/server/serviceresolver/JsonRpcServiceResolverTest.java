@@ -1,0 +1,276 @@
+package com.github.arteam.simplejsonrpc.server.serviceresolver;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.github.arteam.simplejsonrpc.server.JsonRpcServer;
+import com.github.arteam.simplejsonrpc.server.simple.service.TeamService;
+import com.github.arteam.simplejsonrpc.server.simple.util.RequestResponse;
+import com.github.arteam.simplejsonrpc.server.spec.CalculatorService;
+import com.github.arteam.simplejsonrpc.server.spec.SpecTest;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
+import static java.util.Objects.requireNonNull;
+import java.util.Properties;
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Tests typical patterns of a JSON-RPC interaction
+ * JsonRpcServiceResolverTest in combination with SpecTest
+ */
+public class JsonRpcServiceResolverTest {
+
+    private static final ObjectMapper userMapper = new ObjectMapper()
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .registerModule(new Jdk8Module());
+    private static final JsonRpcServer rpcServer = new JsonRpcServer(userMapper);
+    
+    private static final DefaultServiceResolver serviceResolver = new DefaultServiceResolver()
+            .add("teamService", new TeamService())
+            .add("calculatorService", new CalculatorService());
+
+    private static Map<String, RequestResponse> testData;
+
+    @BeforeAll
+    public static void init() throws Exception {
+        try (var is = requireNonNull(JsonRpcServiceResolverTest.class.getResourceAsStream("/test_data.json"))) {
+            testData = userMapper.readValue(is.readAllBytes(), new TypeReference<>() {
+            });
+        }
+    }
+
+    /**
+     * Tests adding of a complex object
+     */
+    @Test
+    public void testAddPlayer() {
+        test("add_player");
+        test("find_shattenkirk");
+    }
+
+    /**
+     * Tests usual case (request and complex response)
+     */
+    @Test
+    public void testFindPlayer() {
+        test("find_player");
+    }
+
+    /**
+     * Tests null as a result
+     */
+    @Test
+    public void testPlayerIsNotFound() {
+        test("player_is_not_found");
+    }
+
+    /**
+     * Tests params are set as array
+     */
+    @Test
+    public void testFindPlayerWithArrayParams() {
+        test("find_player_array");
+    }
+
+    /**
+     * Tests optional fields
+     */
+    @Test
+    public void testFind() {
+        test("find");
+    }
+
+    /**
+     * Tests overridden method name and response as a list of objects
+     */
+    @Test
+    public void testFindByBirthYear() {
+        test("findByBirthYear");
+    }
+
+    /**
+     * Tests optional fields in array params
+     */
+    @Test
+    public void testFindWithArrayNullParams() {
+        test("find_array_null_params");
+    }
+
+    /**
+     * Tests calling a method from super-class and method without parameters
+     */
+    @Test
+    public void testIsAlive() {
+        test("isAlive");
+    }
+
+    /**
+     * Tests a notification request
+     */
+    @Test
+    public void testNotification() {
+        test("notification");
+    }
+
+    /**
+     * Tests a batch request
+     */
+    @Test
+    public void testBatch() {
+        test("batch");
+    }
+
+    /**
+     * Tests a mixed request
+     */
+    @Test
+    public void testBatchWithNotification() {
+        test("batchWithNotification");
+    }
+
+    /**
+     * Tests passing list as a parameter
+     */
+    @Test
+    public void testFindPlayersByNames() {
+        test("findPlayersByFirstNames");
+    }
+
+    @Test
+    public void testFindPlayersByNumbers() {
+        test("findPlayersByNumbers");
+    }
+
+    @Test
+    public void testGetContractSums() {
+        test("getContractSums");
+    }
+
+    @Test
+    public void testGenericFindPlayersByNumbers() {
+        test("genericFindPlayersByNumbers");
+    }
+
+    private void test(String testName) {
+        try {
+            RequestResponse requestResponse = testData.get(testName);
+            String textRequest = userMapper.writeValueAsString(requestResponse.request());
+            
+            //map here the given test methods to addressed service.
+            textRequest = textRequest.replace("\"method\":\"", "\"method\":\"teamService.");
+
+            String actual = rpcServer.handle(textRequest, serviceResolver);
+            if (!actual.isEmpty()) {
+                assertThat(userMapper.readTree(actual)).isEqualTo(requestResponse.response());
+            } else {
+                assertThat(actual).isEqualTo(requestResponse.response().asText());
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+    
+    // Following tests from SpecTest with mapping to calculatorService
+    private void testCalc(String testName) {
+        try (var is = SpecTest.class.getResourceAsStream("/spec/" + testName + ".properties")) {
+            Properties testProps = new Properties();
+            testProps.load(is);
+            String textRequest = testProps.getProperty("request");
+            
+            //map here the given test methods to addressed service.
+            textRequest = textRequest.replace("\"method\": \"", "\"method\": \"calculatorService.");
+            
+            JsonNode response = userMapper.readTree(testProps.getProperty("response"));
+
+            String actual = rpcServer.handle(textRequest, serviceResolver);
+            if (!actual.isEmpty()) {
+                assertThat(userMapper.readTree(actual)).isEqualTo(response);
+            } else {
+                assertThat(actual).isEqualTo(response.asText());
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Test
+    public void test1() {
+        testCalc("test_1");
+    }
+
+    @Test
+    public void test2() {
+        testCalc("test_2");
+    }
+
+    @Test
+    public void test3() {
+        testCalc("test_3");
+    }
+
+    @Test
+    public void test4() {
+        testCalc("test_4");
+    }
+
+    @Test
+    public void test5() {
+        testCalc("test_5");
+    }
+
+    @Test
+    public void test6() {
+        testCalc("test_6");
+    }
+
+    @Test
+    public void test7() {
+        testCalc("test_7");
+    }
+
+    @Test
+    public void test8() {
+        testCalc("test_8");
+    }
+
+    @Test
+    public void test9() {
+        testCalc("test_9");
+    }
+
+    @Test
+    public void test10() {
+        testCalc("test_10");
+    }
+
+    @Test
+    public void test11() {
+        testCalc("test_11");
+    }
+
+    @Test
+    public void test12() {
+        testCalc("test_12");
+    }
+
+    @Test
+    public void test13() {
+        testCalc("test_13");
+    }
+
+    @Test
+    public void test14() {
+        testCalc("test_14");
+    }
+
+    @Test
+    public void test15() {
+        testCalc("test_15");
+    }
+    
+}

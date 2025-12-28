@@ -74,6 +74,33 @@ public class JsonRpcServer {
     private final ConcurrentMap<Class<? extends Throwable>, ErrorDataResolver> dataResolvers = new ConcurrentHashMap<>();
 
     /**
+     * Generic service resolver interface
+     */
+    public static interface ServiceResolver {
+        
+        /**
+         * Resolve service by string
+         * @param serviceAddress
+         * @return the service or null if no service is present.
+         */
+        Object getService(String serviceAddress);
+
+        /**
+         * Extract the method part of a request given method.
+         * @param method from request
+         * @return resulting method for service call
+         */
+        String extractMethod(String method);
+
+        /**
+         * Extract the service addressing part of a request given method
+         * @param method from service
+         * @return resulting identifier for service resolvin for this ServiceResplver
+         */
+        String extractServiceAddress(String method);
+    }
+    
+    /**
      * Init JSON-RPC server
      *
      * @param mapper used-defined JSON mapper
@@ -186,6 +213,18 @@ public class JsonRpcServer {
             return ErrorResponse.of(INVALID_REQUEST);
         }
 
+        //Check if we have a scoped service address and need to resolve the service
+        if (service instanceof ServiceResolver serviceResolver) {
+            String requestMethod = request.method();
+            Object addressedService = serviceResolver.getService(serviceResolver.extractServiceAddress(requestMethod));
+            if (null == addressedService) {
+                log.warn(requestMethod + " is not available as a JSON-RPC 2.0 service");
+                return ErrorResponse.of(request.id(), METHOD_NOT_FOUND);
+            }
+            service = addressedService;
+            request = new Request(request.jsonrpc(), serviceResolver.extractMethod(request.method()), request.params(), request.id());
+        }
+        
         try {
             return handleSingle(request, service);
         } catch (Exception e) {
